@@ -1,4 +1,5 @@
 using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Services;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;

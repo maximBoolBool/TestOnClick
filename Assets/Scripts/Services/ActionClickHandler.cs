@@ -7,7 +7,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
 
-public interface IActionClickHandler
+namespace Assets.Scripts.Services
+{
+    public interface IActionClickHandler
 {
     void OnClick(BaseAction action);
 
@@ -141,5 +143,6 @@ public class ActionClickHandler : IActionClickHandler
         var deltaX = Mathf.Abs(targetPosition.x - currentPosition.x);
         var deltaY = Mathf.Abs(targetPosition.y - currentPosition.y);
         return Mathf.Max(deltaX, deltaY) <= actionRange && !(deltaX == 0 && deltaY == 0);
+    }
     }
 }

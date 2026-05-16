@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public interface IHitService
+namespace Assets.Scripts.Services
+{
+    public interface IHitService
 {
     bool IsHit(
         int defendSkeel,
@@ -35,4 +37,5 @@ public class HitService : IHitService
     }
 }
 
-public enum HitModifierType { }
+    public enum HitModifierType { }
+}

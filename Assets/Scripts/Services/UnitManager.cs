@@ -2,6 +2,7 @@
 using Assets.Db.Models;
 using Assets.Scripts;
 using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;

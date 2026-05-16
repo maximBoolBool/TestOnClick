@@ -2,12 +2,14 @@ using Assets.Scripts;
 using Assets.UnitsCharacteristics;
 using Zenject;
 
-public interface IDamageService
+namespace Assets.Scripts.Services
 {
-    bool SetUnitDamage(Unit targetUnit, int damagePoints);
-}
+    public interface IDamageService
+    {
+        bool SetUnitDamage(Unit targetUnit, int damagePoints);
+    }
 
-public class DamageService : IDamageService
+    public class DamageService : IDamageService
 {
     [Inject]
     private readonly IHealthBarService _healthBarService;
@@ -33,5 +35,6 @@ public class DamageService : IDamageService
         }
 
         return isKillDamage;
+    }
     }
 }

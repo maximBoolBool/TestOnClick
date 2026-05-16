@@ -6,173 +6,176 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public interface IActionExecutionService
+namespace Assets.Scripts.Services
 {
-    void TryExecute(BaseAction action, Vector3Int? target);
-}
-
-public class ActionExecutionService : IActionExecutionService
-{
-    [Inject]
-    private readonly IHitService _hitService;
-
-    [Inject]
-    private readonly IDamageService _damageService;
-
-    [Inject]
-    private readonly IUnitManager _unitManager;
-
-    [Inject]
-    private readonly IActionUIService _actionUIService;
-
-    [Inject]
-    private readonly IActionClickHandler _actionClickHandler;
-
-    [Inject]
-    private readonly IGridService _gridService;
-
-    [Inject]
-    private readonly IAnimationService _animationService;
-
-    public void TryExecute(
-        BaseAction action,
-        Vector3Int? target
-    )
+    public interface IActionExecutionService
     {
-        try
-        {
-            switch (action.Type)
-            {
-                case ActionTargetType.UnitPeack:
-                case ActionTargetType.AreaPeack:
-                    if (target == null)
-                    {
-                        Debug.LogError("This action can only be performed with the target");
-                        break;
-                    }
-
-                    if (!_actionClickHandler.IsCanBeTarget(target.Value))
-                    {
-                        Debug.LogWarning("Tile can not be target");
-                        break;
-                    }
-
-                    ExecuteTargetActionIternal(action.Steps, target.Value, action.PointCost);
-                    break;
-                case ActionTargetType.SelfPeak:
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        catch 
-        {
-            Debug.Log("Error accurated when execute action");        
-        }
-        finally
-        {
-            _actionClickHandler.CancelAction();
-        }
+        void TryExecute(BaseAction action, Vector3Int? target);
     }
 
-    private void ExecuteTargetActionIternal(
-        BaseActionStep[] steps,
-        Vector3Int target,
-        int pointCost
-    )
+    public class ActionExecutionService : IActionExecutionService
     {
-        var currentUnit = _unitManager.Units.First(x => x.IsSelected) ?? throw new Exception("залупа");
-        var targetUnit = _unitManager.Units.First(x => _gridService.ToGridCordinates(x) == target);
-        var random = new System.Random();
+        [Inject]
+        private readonly IHitService _hitService;
 
-        var stepResults = new Dictionary<int, bool>();
+        [Inject]
+        private readonly IDamageService _damageService;
 
-        foreach (var step in steps.OrderBy(x => x.Order)) 
+        [Inject]
+        private readonly IUnitManager _unitManager;
+
+        [Inject]
+        private readonly IActionUIService _actionUIService;
+
+        [Inject]
+        private readonly IActionClickHandler _actionClickHandler;
+
+        [Inject]
+        private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IAnimationService _animationService;
+
+        public void TryExecute(
+            BaseAction action,
+            Vector3Int? target
+        )
         {
-            if (step.NeedCheckPreviousResult)
+            try
             {
-                if (!stepResults.TryGetValue(step.BeforeStepResult.Value, out var stepResult))
+                switch (action.Type)
                 {
-                    Debug.Log("Нет результата нужного шага");
-                    continue;
-                }
+                    case ActionTargetType.UnitPeack:
+                    case ActionTargetType.AreaPeack:
+                        if (target == null)
+                        {
+                            Debug.LogError("This action can only be performed with the target");
+                            break;
+                        }
 
-                if (!stepResult)
-                {
-                    continue;
+                        if (!_actionClickHandler.IsCanBeTarget(target.Value))
+                        {
+                            Debug.LogWarning("Tile can not be target");
+                            break;
+                        }
+
+                        ExecuteTargetActionIternal(action.Steps, target.Value, action.PointCost);
+                        break;
+                    case ActionTargetType.SelfPeak:
+                    default:
+                        throw new NotImplementedException();
                 }
             }
-
-            switch (step.Type)
+            catch
             {
-                case ActionStepType.Damage:
+                Debug.Log("Error accurated when execute action");
+            }
+            finally
+            {
+                _actionClickHandler.CancelAction();
+            }
+        }
 
-                    _animationService.SwitchUnitAnimation(currentUnit, UnitAnimationType.Attack, true);
-                    var isHit = _hitService.IsHit(
-                        targetUnit.Characterictics.DefendSkill,
-                        currentUnit.Characterictics.MeleeSkill,
-                        new Dictionary<HitModifierType, int>()
-                    );
+        private void ExecuteTargetActionIternal(
+            BaseActionStep[] steps,
+            Vector3Int target,
+            int pointCost
+        )
+        {
+            var currentUnit = _unitManager.Units.First(x => x.IsSelected) ?? throw new Exception("залупа");
+            var targetUnit = _unitManager.Units.First(x => _gridService.ToGridCordinates(x) == target);
+            var random = new System.Random();
 
-                    if (isHit)
+            var stepResults = new Dictionary<int, bool>();
+
+            foreach (var step in steps.OrderBy(x => x.Order))
+            {
+                if (step.NeedCheckPreviousResult)
+                {
+                    if (!stepResults.TryGetValue(step.BeforeStepResult.Value, out var stepResult))
                     {
-                        var damageSetStep = step as ActionDamageStep;
-                        _damageService.SetUnitDamage(
-                            targetUnit: targetUnit,
-                            damagePoints: random.Next(damageSetStep.MinDamageValue, damageSetStep.MaxDamageValue)
-                        );
-                        stepResults.TryAdd(step.Order, true);
-                    }
-                    else
-                    {
-                        stepResults.TryAdd(step.Order, false);
-                    }
-                    break;
-                case ActionStepType.EffectWithDuration:
-                    var effectStep = step as EffectWithDurationStep;
-                    var chance = random.Next(0, 100);
-                    if (chance > effectStep.BaseChanceToHit)
-                    {
+                        Debug.Log("Нет результата нужного шага");
                         continue;
                     }
 
-                    if (effectStep.Duration != null)
+                    if (!stepResult)
                     {
-                        targetUnit.DuratationConditions.Add((effectStep.Condition, effectStep.Duration.Value));
+                        continue;
                     }
-                    else
-                    {
-                        targetUnit.GlobalConditions.Add(effectStep.Condition);
-                    }
+                }
 
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }        
-        }
+                switch (step.Type)
+                {
+                    case ActionStepType.Damage:
 
-        currentUnit.ActualActionPoints -= pointCost;
+                        _animationService.SwitchUnitAnimation(currentUnit, UnitAnimationType.Attack, true);
+                        var isHit = _hitService.IsHit(
+                            targetUnit.Characterictics.DefendSkill,
+                            currentUnit.Characterictics.MeleeSkill,
+                            new Dictionary<HitModifierType, int>()
+                        );
 
-        if (currentUnit.Characterictics.Side == SideType.UserSide && currentUnit.IsSelected)
-        {
-            _actionUIService.SetActionPoints(
-                 currentValue: currentUnit.ActualActionPoints,
-                 maxValue: currentUnit.Characterictics.ActiveActionPoints
-             );
-        }
-    }
+                        if (isHit)
+                        {
+                            var damageSetStep = step as ActionDamageStep;
+                            _damageService.SetUnitDamage(
+                                targetUnit: targetUnit,
+                                damagePoints: random.Next(damageSetStep.MinDamageValue, damageSetStep.MaxDamageValue)
+                            );
+                            stepResults.TryAdd(step.Order, true);
+                        }
+                        else
+                        {
+                            stepResults.TryAdd(step.Order, false);
+                        }
+                        break;
+                    case ActionStepType.EffectWithDuration:
+                        var effectStep = step as EffectWithDurationStep;
+                        var chance = random.Next(0, 100);
+                        if (chance > effectStep.BaseChanceToHit)
+                        {
+                            continue;
+                        }
 
-    private void ExecuteTargetActionIternal(
-        BaseActionStep[] steps
-    )
-    {
-        foreach (var step in steps.OrderBy(x => x.Order))
-        {
-            switch (step.Type)
+                        if (effectStep.Duration != null)
+                        {
+                            targetUnit.DuratationConditions.Add((effectStep.Condition, effectStep.Duration.Value));
+                        }
+                        else
+                        {
+                            targetUnit.GlobalConditions.Add(effectStep.Condition);
+                        }
+
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            currentUnit.ActualActionPoints -= pointCost;
+
+            if (currentUnit.Characterictics.Side == SideType.UserSide && currentUnit.IsSelected)
             {
-                case ActionStepType.Damage:
-                    return;
-                default:
-                    throw new NotImplementedException();
+                _actionUIService.SetActionPoints(
+                     currentValue: currentUnit.ActualActionPoints,
+                     maxValue: currentUnit.Characterictics.ActiveActionPoints
+                 );
+            }
+        }
+
+        private void ExecuteTargetActionIternal(
+            BaseActionStep[] steps
+        )
+        {
+            foreach (var step in steps.OrderBy(x => x.Order))
+            {
+                switch (step.Type)
+                {
+                    case ActionStepType.Damage:
+                        return;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
     }

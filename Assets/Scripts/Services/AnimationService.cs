@@ -1,12 +1,14 @@
 using Assets.Scripts;
 using UnityEngine;
 
-public interface IAnimationService
+namespace Assets.Scripts.Services
 {
-    void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive);
-}
+    public interface IAnimationService
+    {
+        void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive);
+    }
 
-public class AnimationService : IAnimationService
+    public class AnimationService : IAnimationService
 {
     public void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive)
     {
@@ -27,9 +29,10 @@ public class AnimationService : IAnimationService
     }
 }
 
-public enum UnitAnimationType
-{
-    Idle = 0,
-    Attack = 1,
-    Move = 2,
+    public enum UnitAnimationType
+    {
+        Idle = 0,
+        Attack = 1,
+        Move = 2,
+    }
 }

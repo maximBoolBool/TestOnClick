@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Zenject;
 
-public interface IConditionService
+namespace Assets.Scripts.Services
+{
+    public interface IConditionService
 {
     void ExecuteConditionEffect(Unit unit, ConditionEffectStartType type);
 
@@ -62,5 +64,6 @@ public class ConditionService : IConditionService
             .Select(x => (x.Condition, DisappearancesTurn : x.DisappearancesTurn - 1))
             .Where(x => x.DisappearancesTurn > 0)
             .ToList();
+    }
     }
 }
