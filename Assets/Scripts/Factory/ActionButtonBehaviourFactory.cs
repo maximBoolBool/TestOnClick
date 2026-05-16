@@ -1,4 +1,7 @@
 using Assets.Scripts;
 using Zenject;
 
-public class ActionButtonBehaviourFactory : PlaceholderFactory<Unit> { }
+namespace Assets.Scripts.Factory
+{
+    public class ActionButtonBehaviourFactory : PlaceholderFactory<Unit> { }
+}

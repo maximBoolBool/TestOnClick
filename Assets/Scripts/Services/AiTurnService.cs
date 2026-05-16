@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Models.Conditions;
 using Assets.UnitsCharacteristics;
 using System;

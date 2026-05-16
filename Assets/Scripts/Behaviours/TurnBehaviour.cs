@@ -1,7 +1,10 @@
+using Assets.Scripts.Managers;
 using UnityEngine;
 using Zenject;
 
-public class TurnBehaviour : MonoBehaviour
+namespace Assets.Scripts.Behaviours
+{
+    public class TurnBehaviour : MonoBehaviour
 {
     [Inject]
     private readonly ITurnManager _turnManager;
@@ -14,5 +17,6 @@ public class TurnBehaviour : MonoBehaviour
     public void TurnSkipHandler()
     {
         _turnManager.SkipTurn();
+    }
     }
 }

@@ -1,15 +1,17 @@
 using Assets.Scripts;
 
-public interface IGameGlobalStateManager
+namespace Assets.Scripts.Managers
 {
-    Unit? SelectedUnit { get; set; }
+    public interface IGameGlobalStateManager
+    {
+        Unit? SelectedUnit { get; set; }
 
-    void SwitchGameStatus(GameStatus gameStatus);
+        void SwitchGameStatus(GameStatus gameStatus);
 
-    GameStatus GameStatus { get; }
-}
+        GameStatus GameStatus { get; }
+    }
 
-public class GameGlobalStateManager : IGameGlobalStateManager
+    public class GameGlobalStateManager : IGameGlobalStateManager
 {
     private GameStatus _gameStatus = GameStatus.Non;
 
@@ -23,12 +25,13 @@ public class GameGlobalStateManager : IGameGlobalStateManager
     }
 }
 
-public enum GameStatus
-{
-    ActiveTurn = 0,
-    ReactiveTurn = 1,
-    Loading = 2,
-    Looting = 3,
-    Deployment = 4,
-    Non = 5
+    public enum GameStatus
+    {
+        ActiveTurn = 0,
+        ReactiveTurn = 1,
+        Loading = 2,
+        Looting = 3,
+        Deployment = 4,
+        Non = 5
+    }
 }

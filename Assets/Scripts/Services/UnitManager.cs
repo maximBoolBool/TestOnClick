@@ -1,6 +1,8 @@
 ﻿using Assets.Db;
 using Assets.Db.Models;
 using Assets.Scripts;
+using Assets.Scripts.Factory;
+using Assets.Scripts.Helpers;
 using Assets.Scripts.Models.Equipment;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
@@ -10,7 +12,9 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public interface IUnitManager
+namespace Assets.Scripts.Services
+{
+    public interface IUnitManager
 {
     void GenerateUnits();
 
@@ -224,5 +228,6 @@ public class UnitManager : IUnitManager
     private UnitEntity[] GetUnitsData(int[] ids)
     {
         return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
+    }
     }
 }

@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
@@ -11,8 +12,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using Zenject;
 
-// Вынести в общий сервис movementCosts/IsWalkable/GetMovementCost
-public class UserUnitsBehaviour : MonoBehaviour
+namespace Assets.Scripts.Behaviours
+{
+    // Вынести в общий сервис movementCosts/IsWalkable/GetMovementCost
+    public class UserUnitsBehaviour : MonoBehaviour
 {
     // перейти на сервис
     [SerializeField]
@@ -332,5 +335,6 @@ public class UserUnitsBehaviour : MonoBehaviour
         int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
         bool isDiagonal = direction.x != 0 && direction.y != 0;
         return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+    }
     }
 }

@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class EquipmentSlotBehaviour : MonoBehaviour, IDropHandler
+namespace Assets.Scripts.Behaviours
+{
+    public class EquipmentSlotBehaviour : MonoBehaviour, IDropHandler
 {
     public void OnDrop(PointerEventData eventData)
     {
@@ -13,5 +15,6 @@ public class EquipmentSlotBehaviour : MonoBehaviour, IDropHandler
                 draggableItem.parentAfterDrag = transform;
             }
         }
+    }
     }
 }

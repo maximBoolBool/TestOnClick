@@ -1,5 +1,8 @@
 using Assets.Db;
 using Assets.Scripts;
+using Assets.Scripts.Behaviours;
+using Assets.Scripts.Factory;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
 using TMPro;
 using UnityEngine;
@@ -7,7 +10,9 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Zenject;
 
-public class LoggerMonoInstaller : MonoInstaller
+namespace Assets.Scripts
+{
+    public class LoggerMonoInstaller : MonoInstaller
 {
     [SerializeField] 
     private Unit _unitPrefab;
@@ -245,5 +250,6 @@ public class LoggerMonoInstaller : MonoInstaller
             .To<AnimationService>()
             .AsSingle()
             .NonLazy();
+    }
     }
 }

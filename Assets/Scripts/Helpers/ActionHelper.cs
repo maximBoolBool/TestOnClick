@@ -1,6 +1,8 @@
 using Assets.Scripts.Models.Actions;
 
-public static class ActionHelper
+namespace Assets.Scripts.Helpers
+{
+    public static class ActionHelper
 {
     public static BaseAction[] GetUserUnitTestActions()
     {
@@ -23,5 +25,6 @@ public static class ActionHelper
                 }
             }
         };
+    }
     }
 }
