@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Assets.Db;
+using Assets.Db.Models;
+using Assets.Scripts;
+using Assets.Scripts.Models.Equipment;
+using Assets.UnitsCharacteristics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

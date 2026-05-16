@@ -1,10 +1,15 @@
-public class EquipmentSlot
+using Assets.Scripts.Models.Equipment;
+
+namespace Assets.Scripts.Models.Slot
 {
-    public CharacterEquipmentSlotType Type { get; set; }
+    public class EquipmentSlot
+    {
+        public CharacterEquipmentSlotType Type { get; set; }
 
-    public ISlotEquipment? Equipment { get; set; }
+        public ISlotEquipment? Equipment { get; set; }
 
-    public int Order { get; set; }
+        public int Order { get; set; }
 
-    public bool IsEquipped => Equipment != null;
+        public bool IsEquipped => Equipment != null;
+    }
 }

@@ -1,4 +1,7 @@
-public enum ResourceType
+namespace Assets.Scripts.Enums
 {
-    Money = 0,
+    public enum ResourceType
+    {
+        Money = 0,
+    }
 }

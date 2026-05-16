@@ -1,3 +1,5 @@
+using Assets.Db;
+using Assets.Scripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -67,7 +69,8 @@ public class LoggerMonoInstaller : MonoInstaller
 
         Container.Bind<StaticDb>()
             .FromInstance(new StaticDb())
-            .AsCached();
+            .AsSingle()
+            .NonLazy();
 
         Container.Bind<AnimatorOverrideController>()
             .WithId(Constants.BlueMonkAnimatorController)

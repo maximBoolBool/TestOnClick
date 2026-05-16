@@ -1,3 +1,4 @@
+using Assets.Scripts.Models.Equipment;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;

@@ -1,3 +1,7 @@
+using Assets.Scripts;
+using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Models.Slot;
+using Assets.UnitsCharacteristics;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;

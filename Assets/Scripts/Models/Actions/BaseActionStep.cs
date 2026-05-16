@@ -1,4 +1,8 @@
-public abstract class BaseActionStep
+using Assets.Scripts.Models.Conditions;
+
+namespace Assets.Scripts.Models.Actions
+{
+    public abstract class BaseActionStep
 {
     public virtual ActionStepType Type { get; }
     public int Order { get; set; }
@@ -39,9 +43,10 @@ public enum TargetType
     Area = 2
 }
 
-public enum ActionStepType
-{
-    Damage = 0,
-    Movment = 1,
-    EffectWithDuration = 2
+    public enum ActionStepType
+    {
+        Damage = 0,
+        Movment = 1,
+        EffectWithDuration = 2
+    }
 }

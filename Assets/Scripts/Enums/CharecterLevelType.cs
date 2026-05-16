@@ -1,6 +1,9 @@
-public enum CharecterLevelType
+namespace Assets.Scripts.Enums
 {
-    First = 0,
-    Second = 1,
-    Third = 2,
+    public enum CharecterLevelType
+    {
+        First = 0,
+        Second = 1,
+        Third = 2,
+    }
 }

@@ -1,3 +1,5 @@
+using Assets.Scripts;
+using Assets.UnitsCharacteristics;
 using Zenject;
 
 public interface IDamageService

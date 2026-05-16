@@ -1,3 +1,4 @@
+using Assets.Scripts.Models.Equipment;
 using UnityEngine;
 
 public class SlotInfo : MonoBehaviour

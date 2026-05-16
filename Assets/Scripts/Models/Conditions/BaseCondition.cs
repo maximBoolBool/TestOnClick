@@ -1,4 +1,6 @@
-public abstract class BaseCondition
+namespace Assets.Scripts.Models.Conditions
+{
+    public abstract class BaseCondition
 {
     public string Name { get; set; }
     public virtual ConditionType Type { get;} 
@@ -29,12 +31,13 @@ public enum ConditionEffectStartType
     OnEnemyKill = 5
 }
 
-public enum ConditionType
-{
-    Damage = 0,
-    HealthPointsRestore = 1,
-    MaxHealthPointsIncrement = 2,
-    MaxHealthPointsReduce = 3,
-    MaxActionPointsIncrement = 4,
-    MaxActionPointsReduce = 5,
+    public enum ConditionType
+    {
+        Damage = 0,
+        HealthPointsRestore = 1,
+        MaxHealthPointsIncrement = 2,
+        MaxHealthPointsReduce = 3,
+        MaxActionPointsIncrement = 4,
+        MaxActionPointsReduce = 5,
+    }
 }

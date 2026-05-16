@@ -2,8 +2,11 @@ using SQLite;
 using System;
 using System.IO;
 using UnityEngine;
+using Assets.Db.Models;
 
-public class StaticDb : IDisposable
+namespace Assets.Db
+{
+    public class StaticDb : IDisposable
 {
     private SQLiteConnection _connection;
 
@@ -46,5 +49,6 @@ public class StaticDb : IDisposable
     {
         _connection?.Close();
         _connection?.Dispose();        
+    }
     }
 }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Models.Equipment;
 using System;
 
 public static class RuneHelper

@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Zenject;
 
 public interface IUiService

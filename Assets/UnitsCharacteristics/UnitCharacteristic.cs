@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitCharacteristic
+namespace Assets.UnitsCharacteristics
+{
+    public class UnitCharacteristic
 {
     public int HealthPoints { get; set; }
     public int ActiveActionPoints { get; set; }
@@ -34,8 +36,9 @@ public static class SideTypeExtension
     }
 }
 
-public enum SideType
-{
-    UserSide = 0,
-    EnemySide = 1,
+    public enum SideType
+    {
+        UserSide = 0,
+        EnemySide = 1,
+    }
 }

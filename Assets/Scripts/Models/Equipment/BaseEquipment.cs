@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using Assets.Scripts.Models.Actions;
+using Assets.Scripts.Models.Conditions;
 
-public interface ISlotEquipment
+namespace Assets.Scripts.Models.Equipment
+{
+    public interface ISlotEquipment
 {
     CharacterEquipmentSlotType SlotType { get; set; }
 }
@@ -40,8 +44,9 @@ public enum CharacterEquipmentSlotType
     Rune = 5,
 }
 
-public enum CellType
-{
-    Unit = 0,
-    SharedStorage = 1
+    public enum CellType
+    {
+        Unit = 0,
+        SharedStorage = 1
+    }
 }

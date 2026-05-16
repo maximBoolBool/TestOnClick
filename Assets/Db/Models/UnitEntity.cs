@@ -1,7 +1,10 @@
 using SQLite;
+using Assets.UnitsCharacteristics;
 
-[Table("units")]
-public class UnitEntity 
+namespace Assets.Db.Models
+{
+    [Table("units")]
+    public class UnitEntity
 {
     [PrimaryKey, AutoIncrement]
     [Column("id")]
@@ -30,4 +33,5 @@ public class UnitEntity
 
     [Column("side")]
     public SideType Side { get; set; }
+    }
 }

@@ -1,3 +1,6 @@
+using Assets.Scripts;
+using Assets.Scripts.Models.Conditions;
+using Assets.UnitsCharacteristics;
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -1,3 +1,5 @@
+using Assets.Scripts;
+
 public interface IGameGlobalStateManager
 {
     Unit? SelectedUnit { get; set; }

@@ -1,4 +1,6 @@
-public static class Constants
+namespace Assets.Scripts
+{
+    public static class Constants
 {
     #region Zenject Game Object Ids
 
@@ -41,8 +43,9 @@ public static class Constants
     #endregion
 
     #region Db
-    
+
     public const string StaticDataBase = "StaticDatabase";
 
     #endregion
+    }
 }
