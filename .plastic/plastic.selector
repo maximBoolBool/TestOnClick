@@ -1,0 +1,3 @@
+repository "TestOnClick/TestOnClick@10170653776810@cloud"
+  path "/"
+    smartbranch "/main/master/new-main"
