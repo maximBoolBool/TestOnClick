@@ -1,6 +1,4 @@
 using Assets.Db;
-using Assets.Scripts;
-using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
@@ -78,7 +76,12 @@ namespace Assets.Scripts
             .AsSingle()
             .NonLazy();
 
-        Container.Bind<AnimatorOverrideController>()
+        Container.Bind<ProgressDb>()
+            .FromInstance(new ProgressDb())
+            .AsSingle()
+            .NonLazy();
+
+            Container.Bind<AnimatorOverrideController>()
             .WithId(Constants.BlueMonkAnimatorController)
             .FromInstance(_blueMonkAnimationController)
             .AsCached();

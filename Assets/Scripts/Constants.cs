@@ -41,11 +41,5 @@ namespace Assets.Scripts
     public const string UnitAttackTrigger = "AttackTrigger";
 
     #endregion
-
-    #region Db
-
-    public const string StaticDataBase = "StaticDatabase";
-
-    #endregion
     }
 }
