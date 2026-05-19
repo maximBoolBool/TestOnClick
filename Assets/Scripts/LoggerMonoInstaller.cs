@@ -253,6 +253,11 @@ namespace Assets.Scripts
             .To<AnimationService>()
             .AsSingle()
             .NonLazy();
+
+        Container.Bind<IRoomLoaderService>()
+            .To<RoomLoaderService>()
+            .AsSingle()
+            .NonLazy();
     }
     }
 }
