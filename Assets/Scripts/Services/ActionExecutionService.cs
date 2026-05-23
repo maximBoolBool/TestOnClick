@@ -66,9 +66,9 @@ namespace Assets.Scripts.Services
                         throw new NotImplementedException();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.Log("Error accurated when execute action");
+                Debug.LogError($"Error occurred when executing action: {ex.Message}");
             }
             finally
             {
@@ -82,8 +82,17 @@ namespace Assets.Scripts.Services
             int pointCost
         )
         {
-            var currentUnit = _unitManager.Units.First(x => x.IsSelected) ?? throw new Exception("залупа");
-            var targetUnit = _unitManager.Units.First(x => _gridService.ToGridCordinates(x) == target);
+            var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
+            if (currentUnit == null)
+            {
+                throw new InvalidOperationException("No unit is currently selected");
+            }
+            var targetUnit = _unitManager.Units.FirstOrDefault(x => _gridService.ToGridCordinates(x) == target);
+            if (targetUnit == null)
+            {
+                Debug.LogWarning("No unit found at target position");
+                return;
+            }
             var random = new System.Random();
 
             var stepResults = new Dictionary<int, bool>();
@@ -94,7 +103,7 @@ namespace Assets.Scripts.Services
                 {
                     if (!stepResults.TryGetValue(step.BeforeStepResult.Value, out var stepResult))
                     {
-                        Debug.Log("Нет результата нужного шага");
+                        Debug.LogWarning("Previous step result not found for validation");
                         continue;
                     }
 

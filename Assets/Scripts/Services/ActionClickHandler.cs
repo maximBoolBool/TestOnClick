@@ -81,7 +81,12 @@ public class ActionClickHandler : IActionClickHandler
 
     public void CancelAction()
     {
-        var currentUnit = _unitManager.Units.First(x => x.IsSelected) ?? throw new Exception("залупа");
+        var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
+        if (currentUnit == null)
+        {
+            Debug.LogError("No unit is currently selected");
+            return;
+        }
         _highlightTilemap.ClearAllTiles();
         _hilightService.HighlightTiles(true, _actionChooseVectors, currentUnit);
         _hilightService.HilightReachebleTiles(currentUnit, _actionChooseVectors);
@@ -103,12 +108,16 @@ public class ActionClickHandler : IActionClickHandler
     private void FirstButtonClick(BaseAction baseAction)
     {
         _lastActionClick = baseAction;
-        var currentUnit = _unitManager.Units.First(x => x.IsSelected)
-            ?? throw new Exception("залупа");
+        var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
+        if (currentUnit == null)
+        {
+            Debug.LogError("No unit is currently selected");
+            return;
+        }
 
         if(!_actionCostService.IsActionAvaliable(points: currentUnit.ActualActionPoints, pointCost: baseAction.PointCost))
         {
-            Debug.Log("Бля тебе очков не хватает");
+            Debug.LogWarning("Not enough action points to perform this action");
             return;
         }
 

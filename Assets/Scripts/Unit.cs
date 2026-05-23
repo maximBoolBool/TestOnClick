@@ -19,7 +19,7 @@ namespace Assets.Scripts
     public List<EquipmentSlot> EqupmentSlots = new();
     public List<BaseCondition> GlobalConditions { get; set; } = new();
     public List<(BaseCondition Condition, int DisappearancesTurn)> DuratationConditions { get; set; } = new();
-    // На всякий случай сравниваем и меньше
+    // TODO: Consider adding validation - checking for values less than zero
     public bool IsDead => ActualHealthPoints <= 0;
 }
 

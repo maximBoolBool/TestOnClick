@@ -121,7 +121,8 @@ public class UnitManager : IUnitManager
 
         if (leftEquipment.Equipment == null || rightEquipment.Equipment == null)
         {
-            Debug.LogError("В списке нет предметов с таким порядком");
+            Debug.LogError($"Equipment not found with orders: {leftOrder} or {rightOrder}");
+            return;
         }
 
         _sharedEquipments.RemoveAll(x => x.Order == leftOrder || x.Order == rightOrder);
@@ -148,13 +149,21 @@ public class UnitManager : IUnitManager
         CharacterEquipmentSlotType slotType
     )
     {
-        var unit = _units.FirstOrDefault(x => x.Name == unitName) ?? throw new Exception("Бля не найду юнита");
+        var unit = _units.FirstOrDefault(x => x.Name == unitName);
+        if (unit == null)
+        {
+            throw new InvalidOperationException($"Unit with name '{unitName}' not found");
+        }
 
         var fromSlot = unit.EqupmentSlots
             .Where(x => x.Type == slotType)
             .Where(x => x.Order == fromOrder)
-            .FirstOrDefault()
-            ?? throw new Exception("Бля не найду юнита");
+            .FirstOrDefault();
+
+        if (fromSlot == null)
+        {
+            throw new InvalidOperationException($"Equipment slot of type '{slotType}' with order {fromOrder} not found for unit '{unitName}'");
+        }
 
         var toSlot = unit.EqupmentSlots
             .Where(x => x.Type == slotType)

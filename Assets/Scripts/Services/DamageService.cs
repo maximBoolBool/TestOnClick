@@ -27,8 +27,7 @@ namespace Assets.Scripts.Services
             targetUnit.ActualHealthPoints -= damagePoints;
         }
 
-        // Если целю урона является актуальный unit,
-        // под упарвлением игрока меняем отображаем актуальное HP
+        // Update the health bar UI if this is the currently selected player-controlled unit
         if(targetUnit.IsSelected && targetUnit.Characterictics.Side == SideType.UserSide)
         {
             _healthBarService.SetUnitHelthPoints(targetUnit.ActualHealthPoints, targetUnit.Characterictics.HealthPoints);
