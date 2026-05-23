@@ -21,34 +21,20 @@ CREATE TABLE IF NOT EXISTS rooms (
     location_type INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS enemy_wave (
-    id INTEGER PRIMARY KEY,
-    wave_id INTEGER NOT NULL,
-    room_id INTEGER NOT NULL,
-    FOREIGN KEY (wave_id) REFERENCES waves(id),
-    FOREIGN KEY (room_id) REFERENCES rooms(id)
-);
-
-CREATE TABLE IF NOT EXISTS wave_enemies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE wave_enemies (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
     wave_id INTEGER NOT NULL,
     unit_id INTEGER NOT NULL,
     count INTEGER NOT NULL,
-    FOREIGN KEY (wave_id) REFERENCES waves(id),
-    FOREIGN KEY (unit_id) REFERENCES units(id)
+    FOREIGN KEY (wave_id) REFERENCES waves(Id),
+    FOREIGN KEY (unit_id) REFERENCES units(Id)
 );
 
-CREATE TABLE IF NOT EXISTS room_wave (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    room_id INTEGER NOT NULL,
+CREATE TABLE wave_room (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     wave_id INTEGER NOT NULL,
+    room_id INTEGER NOT NULL,
     [order] INTEGER NOT NULL,
-    
-    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
-    FOREIGN KEY (wave_id) REFERENCES waves(id) ON DELETE CASCADE
+    FOREIGN KEY (wave_id) REFERENCES waves(Id),
+    FOREIGN KEY (room_id) REFERENCES rooms(Id)
 );
-
-CREATE INDEX IF NOT EXISTS idx_enemy_wave_wave_id ON enemy_wave(wave_id);
-CREATE INDEX IF NOT EXISTS idx_enemy_wave_room_id ON enemy_wave(room_id);
-CREATE INDEX IF NOT EXISTS idx_wave_enemies_wave_id ON wave_enemies(wave_id);
-CREATE INDEX IF NOT EXISTS idx_wave_enemies_unit_id ON wave_enemies(unit_id);

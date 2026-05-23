@@ -47,11 +47,9 @@ namespace Assets.Db
 
         public TableQuery<RoomEntity> Rooms => _connection.Table<RoomEntity>();
 
-        public TableQuery<EnemyWaveEntity> EnemyWaves => _connection.Table<EnemyWaveEntity>();
+        public TableQuery<WaveEnemiesEntity> WaveEnemies => _connection.Table<WaveEnemiesEntity>();
 
-        public TableQuery<WaveEnemies> WaveEnemies => _connection.Table<WaveEnemies>();
-
-        public TableQuery<RoomWaveEntity> RoomWaves => _connection.Table<RoomWaveEntity>();
+        public TableQuery<WaveRoomEntity> WaveRooms => _connection.Table<WaveRoomEntity>();
 
         #endregion
 

@@ -3,7 +3,7 @@
 namespace Assets.Db.Models
 {
     [Table("wave_enemies")]
-    public class WaveEnemies
+    public class WaveEnemiesEntity
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
