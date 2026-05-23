@@ -38,6 +38,16 @@ CREATE TABLE IF NOT EXISTS wave_enemies (
     FOREIGN KEY (unit_id) REFERENCES units(id)
 );
 
+CREATE TABLE IF NOT EXISTS room_wave (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    room_id INTEGER NOT NULL,
+    wave_id INTEGER NOT NULL,
+    [order] INTEGER NOT NULL,
+    
+    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+    FOREIGN KEY (wave_id) REFERENCES waves(id) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_enemy_wave_wave_id ON enemy_wave(wave_id);
 CREATE INDEX IF NOT EXISTS idx_enemy_wave_room_id ON enemy_wave(room_id);
 CREATE INDEX IF NOT EXISTS idx_wave_enemies_wave_id ON wave_enemies(wave_id);

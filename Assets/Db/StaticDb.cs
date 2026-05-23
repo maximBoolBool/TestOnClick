@@ -51,6 +51,8 @@ namespace Assets.Db
 
         public TableQuery<WaveEnemies> WaveEnemies => _connection.Table<WaveEnemies>();
 
+        public TableQuery<RoomWaveEntity> RoomWaves => _connection.Table<RoomWaveEntity>();
+
         #endregion
 
         public void Dispose()
