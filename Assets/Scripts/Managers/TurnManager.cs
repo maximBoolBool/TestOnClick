@@ -1,4 +1,3 @@
-using Assets.Scripts;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
@@ -52,8 +51,12 @@ namespace Assets.Scripts.Managers
         [Inject]
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
+        [Inject]
+        private readonly IRoomLoaderService _roomLoaderService;
+
         public void SceneStart()
         {
+            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync("Room1"));
             _unitManager.GenerateUnits();
             _unitManager.SetStartEquipment();
             units = _unitManager.Units;

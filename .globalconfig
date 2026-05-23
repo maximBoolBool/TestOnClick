@@ -1,0 +1,19 @@
+# Global analyzer configuration for Unity project
+is_global = true
+
+# Naming conventions - detect typos
+dotnet_diagnostic.IDE1006.severity = warning
+
+# Code quality
+dotnet_diagnostic.CA1826.severity = warning # Use FirstOrDefault instead of First when possible
+dotnet_diagnostic.CA1001.severity = warning # Types that own disposable fields should be disposable
+dotnet_diagnostic.IDE0059.severity = warning # Unnecessary assignment of a value
+
+# Style rules
+dotnet_diagnostic.IDE0005.severity = warning # Remove unnecessary using directives
+dotnet_diagnostic.IDE0051.severity = warning # Remove unused private members
+dotnet_diagnostic.IDE0052.severity = warning # Remove unread private members
+
+# Spelling and naming
+dotnet_diagnostic.CA1707.severity = suggestion # Identifiers should not contain underscores (except fields)
+dotnet_diagnostic.CA1710.severity = suggestion # Identifiers should have correct suffix
