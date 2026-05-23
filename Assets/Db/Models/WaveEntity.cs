@@ -3,9 +3,9 @@
 namespace Assets.Db.Models
 {
     [Table("waves")]
-    class WaveEntity
+    public class WaveEntity
     {
-        [Column("id"), PrimaryKey]
+        [Column("id"), PrimaryKey, AutoIncrement]
         public int Id { get; set; }
     }
 }

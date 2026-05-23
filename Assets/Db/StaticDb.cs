@@ -43,6 +43,8 @@ namespace Assets.Db
 
         public TableQuery<UnitEntity> Units => _connection.Table<UnitEntity>();
 
+        public TableQuery<WaveEntity> Waves => _connection.Table<WaveEntity>();
+
         public TableQuery<RoomEntity> Rooms => _connection.Table<RoomEntity>();
 
         public TableQuery<EnemyWaveEntity> EnemyWaves => _connection.Table<EnemyWaveEntity>();
