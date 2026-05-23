@@ -1,6 +1,9 @@
+using Assets.Scripts;
 using Zenject;
 
-public interface IUiService
+namespace Assets.Scripts.Services
+{
+    public interface IUiService
 {
     public void RefreshUnitUi(Unit unit);
 }
@@ -14,5 +17,6 @@ public class UiService : IUiService
     {
         _actionUIService.HideActions();
         _actionUIService.ShowActions(unit);
+    }
     }
 }

@@ -1,3 +1,5 @@
+using Assets.Scripts;
+using Assets.Scripts.Models.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +7,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
 
-public interface IActionClickHandler
+namespace Assets.Scripts.Services
+{
+    public interface IActionClickHandler
 {
     void OnClick(BaseAction action);
 
@@ -77,7 +81,12 @@ public class ActionClickHandler : IActionClickHandler
 
     public void CancelAction()
     {
-        var currentUnit = _unitManager.Units.First(x => x.IsSelected) ?? throw new Exception("залупа");
+        var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
+        if (currentUnit == null)
+        {
+            Debug.LogError("No unit is currently selected");
+            return;
+        }
         _highlightTilemap.ClearAllTiles();
         _hilightService.HighlightTiles(true, _actionChooseVectors, currentUnit);
         _hilightService.HilightReachebleTiles(currentUnit, _actionChooseVectors);
@@ -99,12 +108,16 @@ public class ActionClickHandler : IActionClickHandler
     private void FirstButtonClick(BaseAction baseAction)
     {
         _lastActionClick = baseAction;
-        var currentUnit = _unitManager.Units.First(x => x.IsSelected)
-            ?? throw new Exception("залупа");
+        var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
+        if (currentUnit == null)
+        {
+            Debug.LogError("No unit is currently selected");
+            return;
+        }
 
         if(!_actionCostService.IsActionAvaliable(points: currentUnit.ActualActionPoints, pointCost: baseAction.PointCost))
         {
-            Debug.Log("Бля тебе очков не хватает");
+            Debug.LogWarning("Not enough action points to perform this action");
             return;
         }
 
@@ -139,5 +152,6 @@ public class ActionClickHandler : IActionClickHandler
         var deltaX = Mathf.Abs(targetPosition.x - currentPosition.x);
         var deltaY = Mathf.Abs(targetPosition.y - currentPosition.y);
         return Mathf.Max(deltaX, deltaY) <= actionRange && !(deltaX == 0 && deltaY == 0);
+    }
     }
 }

@@ -1,6 +1,9 @@
+using Assets.Scripts.Models.Equipment;
 using System;
 
-public static class IconHelper
+namespace Assets.Scripts.Helpers
+{
+    public static class IconHelper
 {
     public static string GetIconFullPath(object obj)
     {
@@ -10,5 +13,6 @@ public static class IconHelper
             Rune rune => $"Icons/Equipment/{RuneHelper.GetRuneIconName(rune.Type)}",
             _ => throw new NotImplementedException($"Тип {obj.GetType()} не поддерживается"),
         };
+    }
     }
 }

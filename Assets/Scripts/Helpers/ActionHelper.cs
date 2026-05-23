@@ -1,4 +1,8 @@
-public static class ActionHelper
+using Assets.Scripts.Models.Actions;
+
+namespace Assets.Scripts.Helpers
+{
+    public static class ActionHelper
 {
     public static BaseAction[] GetUserUnitTestActions()
     {
@@ -21,5 +25,6 @@ public static class ActionHelper
                 }
             }
         };
+    }
     }
 }

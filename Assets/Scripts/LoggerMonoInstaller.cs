@@ -1,10 +1,16 @@
+using Assets.Db;
+using Assets.Scripts.Factory;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Services;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Zenject;
 
-public class LoggerMonoInstaller : MonoInstaller
+namespace Assets.Scripts
+{
+    public class LoggerMonoInstaller : MonoInstaller
 {
     [SerializeField] 
     private Unit _unitPrefab;
@@ -67,9 +73,15 @@ public class LoggerMonoInstaller : MonoInstaller
 
         Container.Bind<StaticDb>()
             .FromInstance(new StaticDb())
-            .AsCached();
+            .AsSingle()
+            .NonLazy();
 
-        Container.Bind<AnimatorOverrideController>()
+        Container.Bind<ProgressDb>()
+            .FromInstance(new ProgressDb())
+            .AsSingle()
+            .NonLazy();
+
+            Container.Bind<AnimatorOverrideController>()
             .WithId(Constants.BlueMonkAnimatorController)
             .FromInstance(_blueMonkAnimationController)
             .AsCached();
@@ -241,5 +253,11 @@ public class LoggerMonoInstaller : MonoInstaller
             .To<AnimationService>()
             .AsSingle()
             .NonLazy();
+
+        Container.Bind<IRoomLoaderService>()
+            .To<RoomLoaderService>()
+            .AsSingle()
+            .NonLazy();
+    }
     }
 }

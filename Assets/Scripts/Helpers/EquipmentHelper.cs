@@ -1,7 +1,12 @@
+using Assets.Scripts.Models.Actions;
+using Assets.Scripts.Models.Conditions;
+using Assets.Scripts.Models.Equipment;
 using System;
 using System.Collections.Generic;
 
-public static class EquipemntHelper
+namespace Assets.Scripts.Helpers
+{
+    public static class EquipemntHelper
 {
     public static ISlotEquipment[] GetStartedEquipment()
     {
@@ -98,4 +103,5 @@ public static class EquipemntHelper
         [(CharacterEquipmentSlotType.Body, 0)] = (0, 0),
         [(CharacterEquipmentSlotType.Legs, 0)] = (0, -65)
     };
+    }
 }

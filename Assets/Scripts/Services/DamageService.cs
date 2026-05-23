@@ -1,11 +1,15 @@
+using Assets.Scripts;
+using Assets.UnitsCharacteristics;
 using Zenject;
 
-public interface IDamageService
+namespace Assets.Scripts.Services
 {
-    bool SetUnitDamage(Unit targetUnit, int damagePoints);
-}
+    public interface IDamageService
+    {
+        bool SetUnitDamage(Unit targetUnit, int damagePoints);
+    }
 
-public class DamageService : IDamageService
+    public class DamageService : IDamageService
 {
     [Inject]
     private readonly IHealthBarService _healthBarService;
@@ -23,13 +27,13 @@ public class DamageService : IDamageService
             targetUnit.ActualHealthPoints -= damagePoints;
         }
 
-        // Если целю урона является актуальный unit,
-        // под упарвлением игрока меняем отображаем актуальное HP
+        // Update the health bar UI if this is the currently selected player-controlled unit
         if(targetUnit.IsSelected && targetUnit.Characterictics.Side == SideType.UserSide)
         {
             _healthBarService.SetUnitHelthPoints(targetUnit.ActualHealthPoints, targetUnit.Characterictics.HealthPoints);
         }
 
         return isKillDamage;
+    }
     }
 }

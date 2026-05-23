@@ -2,49 +2,61 @@ using SQLite;
 using System;
 using System.IO;
 using UnityEngine;
+using Assets.Db.Models;
 
-public class StaticDb : IDisposable
+namespace Assets.Db
 {
-    private SQLiteConnection _connection;
-
-    public StaticDb()
+    public class StaticDb : IDisposable
     {
-        _connection = new SQLiteConnection(GetDataBasePath());
-    }
+        private SQLiteConnection _connection;
 
-    private string GetDataBasePath()
-    {
-        const string dbName = "game_data.db";
-        string persistentPath = Path.Combine(Application.persistentDataPath, dbName);
-        string streamingPath = Path.Combine(Application.streamingAssetsPath, dbName);
-
-        // 1. Если файл в рабочей папке УЖЕ ЕСТЬ — просто отдаем путь
-        if (File.Exists(persistentPath))
+        public StaticDb()
         {
-            Debug.Log($"[Db] Работаю с существующей базой: {persistentPath}");
+            _connection = new SQLiteConnection(GetDataBasePath());
+        }
+
+        private string GetDataBasePath()
+        {
+            const string dbName = "game_data.db";
+            string persistentPath = Path.Combine(Application.persistentDataPath, dbName);
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, dbName);
+
+            // 1. Если файл в рабочей папке УЖЕ ЕСТЬ — просто отдаем путь
+            if (File.Exists(persistentPath))
+            {
+                Debug.Log($"[Db] Работаю с существующей базой: {persistentPath}");
+                return persistentPath;
+            }
+
+            Debug.Log($"[Db] Файл не найден в PersistentData. Ищу в StreamingAssets: {streamingPath}");
+
+            if (File.Exists(streamingPath))
+            {
+                File.Copy(streamingPath, persistentPath);
+                Debug.Log("[Db] База успешно скопирована из StreamingAssets.");
+            }
+
             return persistentPath;
         }
 
-        Debug.Log($"[Db] Файл не найден в PersistentData. Ищу в StreamingAssets: {streamingPath}");
+        #region Tables
 
-        if (File.Exists(streamingPath))
+        public TableQuery<UnitEntity> Units => _connection.Table<UnitEntity>();
+
+        public TableQuery<WaveEntity> Waves => _connection.Table<WaveEntity>();
+
+        public TableQuery<RoomEntity> Rooms => _connection.Table<RoomEntity>();
+
+        public TableQuery<WaveEnemiesEntity> WaveEnemies => _connection.Table<WaveEnemiesEntity>();
+
+        public TableQuery<WaveRoomEntity> WaveRooms => _connection.Table<WaveRoomEntity>();
+
+        #endregion
+
+        public void Dispose()
         {
-            File.Copy(streamingPath, persistentPath);
-            Debug.Log("[Db] База успешно скопирована из StreamingAssets.");
+            _connection?.Close();
+            _connection?.Dispose();        
         }
-
-        return persistentPath;
-    }
-
-    #region Tables
-
-    public TableQuery<UnitEntity> Units => _connection.Table<UnitEntity>();
-
-    #endregion
-
-    public void Dispose()
-    {
-        _connection?.Close();
-        _connection?.Dispose();        
     }
 }

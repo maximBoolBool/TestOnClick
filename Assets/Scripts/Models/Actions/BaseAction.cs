@@ -1,6 +1,8 @@
 using System;
 
-public abstract class BaseAction
+namespace Assets.Scripts.Models.Actions
+{
+    public abstract class BaseAction
 {
     public int PointCost { get; set; }
 
@@ -36,9 +38,10 @@ public class AreaTargetAction: BaseAction
     public override ActionTargetType Type => ActionTargetType.AreaPeack;
 }
 
-public enum ActionTargetType
-{
-    SelfPeak = 0,
-    UnitPeack = 1,
-    AreaPeack = 2
+    public enum ActionTargetType
+    {
+        SelfPeak = 0,
+        UnitPeack = 1,
+        AreaPeack = 2
+    }
 }

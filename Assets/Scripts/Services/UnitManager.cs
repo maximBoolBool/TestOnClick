@@ -1,10 +1,20 @@
-﻿using System;
+﻿using Assets.Db;
+using Assets.Db.Models;
+using Assets.Scripts;
+using Assets.Scripts.Factory;
+using Assets.Scripts.Helpers;
+using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Services;
+using Assets.UnitsCharacteristics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public interface IUnitManager
+namespace Assets.Scripts.Services
+{
+    public interface IUnitManager
 {
     void GenerateUnits();
 
@@ -111,7 +121,8 @@ public class UnitManager : IUnitManager
 
         if (leftEquipment.Equipment == null || rightEquipment.Equipment == null)
         {
-            Debug.LogError("В списке нет предметов с таким порядком");
+            Debug.LogError($"Equipment not found with orders: {leftOrder} or {rightOrder}");
+            return;
         }
 
         _sharedEquipments.RemoveAll(x => x.Order == leftOrder || x.Order == rightOrder);
@@ -138,13 +149,21 @@ public class UnitManager : IUnitManager
         CharacterEquipmentSlotType slotType
     )
     {
-        var unit = _units.FirstOrDefault(x => x.Name == unitName) ?? throw new Exception("Бля не найду юнита");
+        var unit = _units.FirstOrDefault(x => x.Name == unitName);
+        if (unit == null)
+        {
+            throw new InvalidOperationException($"Unit with name '{unitName}' not found");
+        }
 
         var fromSlot = unit.EqupmentSlots
             .Where(x => x.Type == slotType)
             .Where(x => x.Order == fromOrder)
-            .FirstOrDefault()
-            ?? throw new Exception("Бля не найду юнита");
+            .FirstOrDefault();
+
+        if (fromSlot == null)
+        {
+            throw new InvalidOperationException($"Equipment slot of type '{slotType}' with order {fromOrder} not found for unit '{unitName}'");
+        }
 
         var toSlot = unit.EqupmentSlots
             .Where(x => x.Type == slotType)
@@ -218,5 +237,6 @@ public class UnitManager : IUnitManager
     private UnitEntity[] GetUnitsData(int[] ids)
     {
         return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
+    }
     }
 }

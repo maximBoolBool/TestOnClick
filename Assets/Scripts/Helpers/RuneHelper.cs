@@ -1,6 +1,9 @@
+using Assets.Scripts.Models.Equipment;
 using System;
 
-public static class RuneHelper
+namespace Assets.Scripts.Helpers
+{
+    public static class RuneHelper
 {
     public static void GetRuneEffect()
     {
@@ -31,5 +34,6 @@ public static class RuneHelper
             _ => throw new NotImplementedException()
 
         };
+    }
     }
 }

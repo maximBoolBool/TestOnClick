@@ -1,8 +1,11 @@
+using Assets.Scripts;
 using TMPro;
 using UnityEngine.UI;
 using Zenject;
 
-public interface IHealthBarService
+namespace Assets.Scripts.Services
+{
+    public interface IHealthBarService
 {
     void SetUnitHelthPoints(int actualHealthPoints, int maxHealthPoints);
 }
@@ -27,5 +30,6 @@ public class HealthBarService : IHealthBarService
         _slider.maxValue = maxHealthPoints;
         _slider.value = actualHealthPoints;
         _healthBarText.text = $"{actualHealthPoints}/{maxHealthPoints}";
+    }
     }
 }

@@ -1,9 +1,13 @@
+using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Services;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DraggbleItemBehaviour : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+namespace Assets.Scripts.Behaviours
+{
+    public class DraggbleItemBehaviour : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Transform parentAfterDrag;
     private Transform originalParent;
@@ -89,5 +93,6 @@ public class DraggbleItemBehaviour : MonoBehaviour, IBeginDragHandler, IDragHand
                 .Equipment
                 .SlotType;
         }
+    }
     }
 }

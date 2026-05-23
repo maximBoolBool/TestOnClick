@@ -1,4 +1,6 @@
-public interface ITilemapService
+namespace Assets.Scripts.Services
+{
+    public interface ITilemapService
 {
 
 }
@@ -9,8 +11,9 @@ public class TilemapService : ITilemapService
 }
 
 //Вырезать как решим 
-public enum TilemapType
-{
-    Base = 0,
-    Hilight = 1
+    public enum TilemapType
+    {
+        Base = 0,
+        Hilight = 1
+    }
 }

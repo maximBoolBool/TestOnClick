@@ -1,9 +1,12 @@
+using Assets.Scripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public interface IEnemyPanelService
+namespace Assets.Scripts.Services
+{
+    public interface IEnemyPanelService
 {
     public void ShowUnitInfo(Unit unit);
 
@@ -56,5 +59,6 @@ public class EnemyPanelService : IEnemyPanelService
     public void HideUnitInfo()
     {
         _enemyPanel.SetActive(false);
+    }
     }
 }

@@ -1,7 +1,10 @@
+using Assets.Scripts.Services;
 using UnityEngine;
 using Zenject;
 
-public class EquipmentBehaviour : MonoBehaviour
+namespace Assets.Scripts.Behaviours
+{
+    public class EquipmentBehaviour : MonoBehaviour
 {
     private bool isPannelShow = false;
 
@@ -12,5 +15,6 @@ public class EquipmentBehaviour : MonoBehaviour
     {
         isPannelShow = !isPannelShow;
         _equipmentService.SetEquipemtPanelActive(isPannelShow);
+    }
     }
 }
