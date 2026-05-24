@@ -2,6 +2,7 @@
 using Assets.Db.Models;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Models.Equipment;
 using Assets.UnitsCharacteristics;
 using System;
@@ -67,6 +68,9 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly StaticDb _staticDb;
+
+        [Inject]
+        private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         public static UnitManager Instance {  get; private set; }
 
@@ -188,8 +192,8 @@ namespace Assets.Scripts.Services
         private void GenerateAiUnits()
         {
             var enemiesCounts = rommSpawnService.GetEnemyUnitIdCountsPairs(
-                roomId:1,
-                order:1
+                roomId: _gameGlobalStateManager.ActualRoomId,
+                waveOrder: _gameGlobalStateManager.ActualWaveId
             );
 
             var units = GetUnitsData(enemiesCounts.Keys.ToArray());
@@ -235,11 +239,6 @@ namespace Assets.Scripts.Services
         private int[] GetUserUnitIds()
         {
             return new[]{ 1, 2}; 
-        }
-
-        private int[] GetEnemyLevelUnitIds()
-        {
-            return new[] {3};
         }
 
         private UnitEntity[] GetUnitsData(int[] ids)

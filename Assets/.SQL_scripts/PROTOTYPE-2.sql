@@ -10,3 +10,5 @@ INSERT INTO wave_room (wave_id, room_id, "order")
 VALUES (1, 1, 1);
 
 ALTER TABLE room ADD COLUMN [key] TEXT 
+
+ALTER TABLE room ALTER COLUMN [key] NOT NULL

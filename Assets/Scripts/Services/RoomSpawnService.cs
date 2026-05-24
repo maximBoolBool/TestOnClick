@@ -11,9 +11,9 @@ namespace Assets.Scripts.Services
         /// Returns a dictionary where the key is the unit ID and the value is the count of units of that type to spawn
         /// </summary>
         /// <param name="roomId">The room identifier</param>
-        /// <param name="order">The wave order</param>
+        /// <param name="waveOrder">The wave order</param>
         /// <returns>Dictionary with unit IDs as keys and spawn counts as values</returns>
-        public Dictionary<int, int> GetEnemyUnitIdCountsPairs(int roomId, int order);
+        public Dictionary<int, int> GetEnemyUnitIdCountsPairs(int roomId, int waveOrder);
     }
 
     public class RoomSpawnService : IRoomSpawnService
@@ -21,11 +21,11 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly StaticDb _staticDb;
 
-        public Dictionary<int, int> GetEnemyUnitIdCountsPairs(int roomId, int order)
+        public Dictionary<int, int> GetEnemyUnitIdCountsPairs(int roomId, int waveOrder)
         {
             var wave = _staticDb.WaveRooms
                 .Where(x => x.RoomId == roomId)
-                .Where(x => x.Order == order)
+                .Where(x => x.Order == waveOrder)
                 .Select(x => x.WaveId)
                 .First();
 
