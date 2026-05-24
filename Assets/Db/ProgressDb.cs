@@ -4,7 +4,7 @@ using System;
 
 namespace Assets.Db
 {
-    class ProgressDb : IDisposable
+    public class ProgressDb : IDisposable
     {
         private SQLiteConnection _connection;
 

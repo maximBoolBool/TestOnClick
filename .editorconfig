@@ -1,0 +1,118 @@
+# EditorConfig for Unity C# Code Quality
+# https://editorconfig.org
+
+root = true
+
+[*.cs]
+
+#### Naming Conventions - найдет опечатки в именах ####
+
+# Interfaces должны начинаться с I
+dotnet_naming_rule.interface_should_be_begins_with_i.severity = warning
+dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
+dotnet_naming_rule.interface_should_be_begins_with_i.style = begins_with_i
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+
+dotnet_naming_style.begins_with_i.required_prefix = I
+dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# Types (class, struct, enum) = PascalCase
+dotnet_naming_rule.types_should_be_pascal_case.severity = warning
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
+dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+# Methods = PascalCase
+dotnet_naming_rule.methods_should_be_pascal_case.severity = warning
+dotnet_naming_rule.methods_should_be_pascal_case.symbols = method
+dotnet_naming_rule.methods_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_symbols.method.applicable_kinds = method
+
+# Properties = PascalCase
+dotnet_naming_rule.properties_should_be_pascal_case.severity = warning
+dotnet_naming_rule.properties_should_be_pascal_case.symbols = property
+dotnet_naming_rule.properties_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_symbols.property.applicable_kinds = property
+
+# Private fields = _camelCase
+dotnet_naming_rule.private_fields_should_be_camel_case_with_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case_with_underscore.symbols = private_field
+dotnet_naming_rule.private_fields_should_be_camel_case_with_underscore.style = camel_case_with_underscore
+
+dotnet_naming_symbols.private_field.applicable_kinds = field
+dotnet_naming_symbols.private_field.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_with_underscore.required_prefix = _
+dotnet_naming_style.camel_case_with_underscore.capitalization = camel_case
+
+#### Code Quality Rules ####
+
+# Предупреждать об unused variables
+dotnet_diagnostic.IDE0059.severity = warning
+
+# Предупреждать о missing Dispose
+dotnet_diagnostic.CA1001.severity = warning
+
+# Предупреждать об использовании First() вместо FirstOrDefault()
+dotnet_diagnostic.CA1826.severity = warning
+
+# Prefer FirstOrDefault over First when result may be null
+dotnet_diagnostic.CA1851.severity = suggestion
+
+# Избегать пустых catch блоков
+dotnet_diagnostic.CA1031.severity = suggestion
+
+# Use 'Count' property instead of 'Any()' 
+dotnet_diagnostic.CA1860.severity = suggestion
+
+# Simplify LINQ expressions
+dotnet_diagnostic.CA1826.severity = warning
+
+# Remove unnecessary suppression
+dotnet_diagnostic.IDE0079.severity = warning
+
+# Prefer pattern matching
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+
+# Null checking preferences
+csharp_style_throw_expression = true:suggestion
+csharp_style_conditional_delegate_call = true:suggestion
+
+# Modifier preferences
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
+
+# Expression preferences
+dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = false:silent
+csharp_prefer_simple_default_expression = true:suggestion
+
+# Code block preferences
+csharp_prefer_braces = when_multiline:suggestion
+
+#### Unity Specific ####
+
+# Suppress serialized fields naming convention (Unity uses lowercase)
+dotnet_diagnostic.IDE1006.severity = none
+
+# Allow unused parameters in Unity message methods (Start, Update, etc)
+dotnet_code_quality.CA1801.excluded_symbol_names = Awake|Start|Update|FixedUpdate|LateUpdate|OnEnable|OnDisable|OnDestroy
+
+#### Performance ####
+
+# Avoid unnecessary boxing
+dotnet_diagnostic.CA1825.severity = warning
+
+# Use string.IsNullOrEmpty
+dotnet_diagnostic.CA1820.severity = suggestion
+
+# Avoid multiple enumeration
+dotnet_diagnostic.CA1851.severity = warning

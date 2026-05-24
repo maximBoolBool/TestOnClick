@@ -178,7 +178,12 @@ namespace Assets.Scripts
             .To<GridService>()
             .AsSingle()
             .NonLazy();
-        
+
+        Container.Bind<IRoomSpawnService>()
+            .To<RoomSpawnService>()
+            .AsSingle()
+            .NonLazy();
+
         Container.Bind<IUnitManager>()
             .To<UnitManager>()
             .AsSingle()

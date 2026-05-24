@@ -4,7 +4,7 @@ using SQLite;
 namespace Assets.Db.Models
 {
     [Table("progress_data")]
-    class ProgressDataEntity
+    public class ProgressDataEntity
     {
         [Column("id"), PrimaryKey, AutoIncrement]
         public int Id { get; set; }
