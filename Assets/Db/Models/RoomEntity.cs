@@ -11,6 +11,9 @@ namespace Assets.Db.Models
         [Column("name")]
         public string Name { get; set; }
 
+        [Column("key")]
+        public string Key { get; set; }
+
         [Column("room_type")]
         public Enums.RoomType RoomType { get; set; }
 
