@@ -1,10 +1,12 @@
-using Assets.Scripts;
-
 namespace Assets.Scripts.Managers
 {
     public interface IGameGlobalStateManager
     {
         Unit? SelectedUnit { get; set; }
+
+        int ActualRoomId { get; set; }
+
+        int ActualWaveId { get; set; }
 
         void SwitchGameStatus(GameStatus gameStatus);
 
@@ -12,18 +14,22 @@ namespace Assets.Scripts.Managers
     }
 
     public class GameGlobalStateManager : IGameGlobalStateManager
-{
-    private GameStatus _gameStatus = GameStatus.Non;
-
-    public Unit SelectedUnit { get; set; }
-
-    public GameStatus GameStatus => _gameStatus;
-
-    public void SwitchGameStatus(GameStatus gameStatus)
     {
-        _gameStatus = gameStatus;
+        private GameStatus _gameStatus = GameStatus.Non;
+
+        public Unit SelectedUnit { get; set; }
+
+        public GameStatus GameStatus => _gameStatus;
+
+        public int ActualRoomId { get; set; }
+
+        public int ActualWaveId { get; set; }
+
+        public void SwitchGameStatus(GameStatus gameStatus)
+        {
+            _gameStatus = gameStatus;
+        }
     }
-}
 
     public enum GameStatus
     {

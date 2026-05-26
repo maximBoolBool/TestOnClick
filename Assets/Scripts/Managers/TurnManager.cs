@@ -1,3 +1,5 @@
+using Assets.Db;
+using Assets.Db.Enums;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
@@ -54,9 +56,27 @@ namespace Assets.Scripts.Managers
         [Inject]
         private readonly IRoomLoaderService _roomLoaderService;
 
+        [Inject]
+        private readonly StaticDb _staticDb;
+
         public void SceneStart()
         {
-            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync("Room1"));
+            var startLocation = _staticDb
+                .Locations
+                .Where(x => x.Type == StartConfiguration.LOCATION_TYPE)
+                .First();
+
+            var rooms = _staticDb
+                .Rooms
+                .Where(x => x.LocationType == StartConfiguration.LOCATION_TYPE)
+                .ToArray();
+
+            var roomsIds = rooms.Select(x => x.Id).ToArray();
+            var randomRoomId = roomsIds[UnityEngine.Random.Range(0, roomsIds.Length)];
+            _gameGlobalStateManager.ActualRoomId = randomRoomId;
+            _gameGlobalStateManager.ActualWaveId = 1;
+
+            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{_gameGlobalStateManager.ActualRoomId}"));
             _unitManager.GenerateUnits();
             _unitManager.SetStartEquipment();
             units = _unitManager.Units;
@@ -186,4 +206,9 @@ namespace Assets.Scripts.Managers
             }
         }
     }
+}
+
+public static class StartConfiguration
+{
+    public const LocationType LOCATION_TYPE = LocationType.Forest;
 }

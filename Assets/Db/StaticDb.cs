@@ -15,7 +15,7 @@ namespace Assets.Db
             _connection = new SQLiteConnection(GetDataBasePath());
         }
 
-        private string GetDataBasePath()
+        private static string GetDataBasePath()
         {
             const string dbName = "game_data.db";
             string persistentPath = Path.Combine(Application.persistentDataPath, dbName);
@@ -50,6 +50,8 @@ namespace Assets.Db
         public TableQuery<WaveEnemiesEntity> WaveEnemies => _connection.Table<WaveEnemiesEntity>();
 
         public TableQuery<WaveRoomEntity> WaveRooms => _connection.Table<WaveRoomEntity>();
+
+        public TableQuery<LocationEntity> Locations => _connection.Table<LocationEntity>();
 
         #endregion
 
