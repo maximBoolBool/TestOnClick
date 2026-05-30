@@ -4,17 +4,17 @@ using UnityEngine.EventSystems;
 namespace Assets.Scripts.Behaviours
 {
     public class EquipmentSlotBehaviour : MonoBehaviour, IDropHandler
-{
-    public void OnDrop(PointerEventData eventData)
     {
-        if (transform.Find("Image") != null)
+        public void OnDrop(PointerEventData eventData)
         {
-            var draggableItem = eventData.pointerDrag.GetComponent<DraggbleItemBehaviour>();
-            if (draggableItem != null)
+            if (transform.Find("Image") != null)
             {
-                draggableItem.parentAfterDrag = transform;
+                var draggableItem = eventData.pointerDrag.GetComponent<DraggbleItemBehaviour>();
+                if (draggableItem != null)
+                {
+                    draggableItem.parentAfterDrag = transform;
+                }
             }
         }
-    }
     }
 }

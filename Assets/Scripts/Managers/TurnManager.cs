@@ -4,9 +4,11 @@ using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -58,6 +60,11 @@ namespace Assets.Scripts.Managers
 
         [Inject]
         private readonly StaticDb _staticDb;
+
+        [Inject]
+        private readonly ICameraService _cameraService;
+
+        private Coroutine _textAnimationCoroutine;
 
         public void SceneStart()
         {
@@ -126,6 +133,8 @@ namespace Assets.Scripts.Managers
 
             CheckForGameOver();
 
+            _cameraService.MoveCamera(unit.transform.position);
+
             switch (unit.Characterictics.Side)
             {
                 case SideType.UserSide:
@@ -172,7 +181,12 @@ namespace Assets.Scripts.Managers
         {
             if (_moveCounterText != null)
             {
-                _moveCounterText.text = $"Turn: {turnCount}";
+                if (_textAnimationCoroutine != null)
+                {
+                    _moveCounterText.StopCoroutine(_textAnimationCoroutine);
+                }
+
+                _textAnimationCoroutine = _moveCounterText.StartCoroutine(SetTurnText($"Turn: {turnCount}"));
             }
             else
             {
@@ -182,8 +196,12 @@ namespace Assets.Scripts.Managers
 
         private void CheckForGameOver()
         {
-            var sides = _unitManager.Units.GroupBy(x => x.Characterictics.Side)
-                .ToDictionary(x => x.Key, x => x.Where(y => !y.IsDead).Any());
+            var sides = _unitManager.Units
+                .GroupBy(x => x.Characterictics.Side)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Where(y => !y.IsDead).Any()
+                );
 
             foreach (var side in sides)
             {
@@ -203,6 +221,19 @@ namespace Assets.Scripts.Managers
 
                 SceneManager.LoadScene("MainMenuScene");
                 return;
+            }
+        }
+
+        IEnumerator SetTurnText(string fullText)
+        {
+            string currentText = "";
+
+            for (int i = 0; i < fullText.Length; i++)
+            {
+                currentText += fullText[i];
+                _moveCounterText.text = currentText;
+
+                yield return new WaitForSeconds(0.1f);
             }
         }
     }
