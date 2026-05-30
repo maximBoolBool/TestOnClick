@@ -1,4 +1,5 @@
 using Assets.Db;
+using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
@@ -276,6 +277,8 @@ namespace Assets.Scripts
                 .To<RoomLoaderService>()
                 .AsSingle()
                 .NonLazy();
+
+            Container.BindInterfacesTo<CameraInputController>().AsSingle();
         }
     }
 }

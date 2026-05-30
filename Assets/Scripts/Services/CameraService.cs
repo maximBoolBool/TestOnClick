@@ -6,9 +6,9 @@ namespace Assets.Scripts.Services
 {
     public interface ICameraService
     {
-        void SetCamerCordinates(Vector2 vector2);
+        void SetCameraCordinates(Vector2 vector2);
 
-        void SetCamerCordinates(float2 cordinates);
+        void SetCameraCordinates(float2 cordinates);
 
         void MoveCamera(float2 cordinates);
 
@@ -17,8 +17,8 @@ namespace Assets.Scripts.Services
 
     public class CameraService : ICameraService
     {
-        private const float ABS_X_MAX_VALUE = 75;
-        private const float ABS_Y_MAX_VALUE = 75;
+        private const float ABS_X_MAX_VALUE = 10;
+        private const float ABS_Y_MAX_VALUE = 10;
 
         private const float MOVE_DELTA = 0.00002f;
 
@@ -27,13 +27,13 @@ namespace Assets.Scripts.Services
 
         #region Public methods
 
-        public void SetCamerCordinates(Vector2 cordinates)
+        public void SetCameraCordinates(Vector2 cordinates)
         {
             var normalizedCordinates = GetNormalizedValue(cordinates.x, cordinates.y);
             _camera.transform.position = new Vector3(normalizedCordinates.x, normalizedCordinates.y, _camera.transform.position.z);
         }
 
-        public void SetCamerCordinates(float2 cordinates)
+        public void SetCameraCordinates(float2 cordinates)
         {
             var normalizedCordinates = GetNormalizedValue(cordinates.x, cordinates.y);
             _camera.transform.position = new Vector3(normalizedCordinates.x, normalizedCordinates.y, _camera.transform.position.z);
