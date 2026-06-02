@@ -22,8 +22,8 @@ namespace Assets.Scripts.Services
         private const float ABS_X_MAX_VALUE = 10;
         private const float ABS_Y_MAX_VALUE = 10;
 
-        private const float MIN_ZOOM = 2f;
-        private const float MAX_ZOOM = 20f;
+        private const float MIN_ZOOM = 1f;
+        private const float MAX_ZOOM = 5f;
 
         private const float MOVE_DELTA = 0.00002f;
 

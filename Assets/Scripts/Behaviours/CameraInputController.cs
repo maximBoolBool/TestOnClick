@@ -28,7 +28,7 @@ namespace Assets.Scripts.Behaviours
         private const float DRAG_SPEED = 1f;
         private const float SMOOTH_SPEED = 15f;
 
-        private const float ZOOM_Sensitivity = 0.05f; // Чувствительность колесика
+        private const float ZOOM_SENSITIVITY = 0.2f; // Чувствительность колесика
         private const float ZOOM_SMOOTH_SPEED = 10f;  // Скорость плавности зума
 
         public void Initialize()
@@ -85,7 +85,7 @@ namespace Assets.Scripts.Behaviours
         {
             Vector2 scrollValue = context.ReadValue<Vector2>();
 
-            _targetZoom -= scrollValue.y * ZOOM_Sensitivity;
+            _targetZoom -= scrollValue.y * ZOOM_SENSITIVITY;
 
             if (!_isZooming)
             {
