@@ -82,7 +82,7 @@ namespace Assets.Scripts
                 .NonLazy();
 
             Container.Bind<ProgressDb>()
-                .FromInstance(new ProgressDb())
+                .FromMethod(CreateProgressDb)
                 .AsSingle()
                 .NonLazy();
 
@@ -280,6 +280,22 @@ namespace Assets.Scripts
                 .NonLazy();
 
             Container.BindInterfacesTo<CameraInputController>().AsSingle();
+        }
+
+        private ProgressDb CreateProgressDb(InjectContext context)
+        {
+            const string dbName = "progress.db";
+
+            var persistentPath = Path.Combine(Application.persistentDataPath, dbName);
+            var isNeedInittables = !File.Exists(persistentPath);
+            var db = new ProgressDb(persistentPath);
+
+            if (isNeedInittables)
+            {
+                db.InitTables();
+            }
+
+            return db;
         }
 
         private StaticDb CreateStaticDb(InjectContext context)

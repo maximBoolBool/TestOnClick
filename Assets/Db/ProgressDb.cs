@@ -6,18 +6,11 @@ namespace Assets.Db
 {
     public class ProgressDb : IDisposable
     {
-        private SQLiteConnection _connection;
+        private readonly SQLiteConnection _connection;
 
-        public ProgressDb()
+        public ProgressDb(string connectionString)
         {
-            _connection = new SQLiteConnection(GetDataBasePath());
-        }
-
-        public string GetDataBasePath()
-        {
-            const string dbName = "progress.db";
-            string path = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, dbName);
-            return path;
+            _connection = new SQLiteConnection(connectionString);
         }
 
         #region Tables
@@ -25,6 +18,11 @@ namespace Assets.Db
         public TableQuery<ProgressDataEntity> ProgressData => _connection.Table<ProgressDataEntity>();
 
         #endregion
+
+        public void InitTables()
+        {
+            _connection.CreateTable<ProgressDataEntity>();
+        }
 
         public void Dispose()
         {
