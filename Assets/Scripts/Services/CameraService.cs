@@ -13,12 +13,17 @@ namespace Assets.Scripts.Services
         void MoveCamera(float2 cordinates);
 
         void MoveCamera(Vector2 vector);
+
+        void ZoomCamera(float zoomDelta);
     }
 
     public class CameraService : ICameraService
     {
         private const float ABS_X_MAX_VALUE = 10;
         private const float ABS_Y_MAX_VALUE = 10;
+
+        private const float MIN_ZOOM = 1f;
+        private const float MAX_ZOOM = 5f;
 
         private const float MOVE_DELTA = 0.00002f;
 
@@ -70,6 +75,16 @@ namespace Assets.Scripts.Services
             };
 
             MoveCamera(cordinates);
+        }
+
+        public void ZoomCamera(float zoomDelta)
+        {
+            float currentZoom = _camera.orthographicSize;
+            // Минус, чтобы прокрутка вперед приближала, а назад — отдаляла
+            float newZoom = currentZoom - zoomDelta;
+
+            // Ограничиваем зум, чтобы не уйти в бесконечность или минус
+            _camera.orthographicSize = math.clamp(newZoom, MIN_ZOOM, MAX_ZOOM);
         }
 
         #endregion

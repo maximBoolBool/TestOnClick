@@ -3,6 +3,7 @@ using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -76,12 +77,12 @@ namespace Assets.Scripts
             _equipmentPanel.SetActive(false);
 
             Container.Bind<StaticDb>()
-                .FromInstance(new StaticDb())
+                .FromMethod(CreateStaticDb)
                 .AsSingle()
                 .NonLazy();
 
             Container.Bind<ProgressDb>()
-                .FromInstance(new ProgressDb())
+                .FromMethod(CreateProgressDb)
                 .AsSingle()
                 .NonLazy();
 
@@ -279,6 +280,41 @@ namespace Assets.Scripts
                 .NonLazy();
 
             Container.BindInterfacesTo<CameraInputController>().AsSingle();
+        }
+
+        private ProgressDb CreateProgressDb(InjectContext context)
+        {
+            const string dbName = "progress.db";
+
+            var persistentPath = Path.Combine(Application.persistentDataPath, dbName);
+            var isNeedInittables = !File.Exists(persistentPath);
+            var db = new ProgressDb(persistentPath);
+
+            if (isNeedInittables)
+            {
+                db.InitTables();
+            }
+
+            return db;
+        }
+
+        private StaticDb CreateStaticDb(InjectContext context)
+        {
+            const string dbName = "game_data.db";
+            string persistentPath = Path.Combine(Application.persistentDataPath, dbName);
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, dbName);
+
+            if (!File.Exists(persistentPath))
+            {
+                Debug.Log($"[Db] Файл не найден в PersistentData. Ищу в StreamingAssets: {streamingPath}");
+                if (File.Exists(streamingPath))
+                {
+                    File.Copy(streamingPath, persistentPath);
+                    Debug.Log("[Db] База успешно скопирована.");
+                }
+            }
+
+            return new StaticDb(persistentPath);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Assets.Scripts.Behaviours
     {
         private InputAction _mouseClickAction;
         private InputAction _mouseDeltaAction;
+        private InputAction _mouseScrollAction;
 
         [Inject]
         private readonly ICameraService _cameraService;
@@ -21,20 +22,28 @@ namespace Assets.Scripts.Behaviours
 
         private float2 _targetCameraPosition;
         private bool _isDragging;
+        private float _targetZoom;
+        private bool _isZooming;
 
         private const float DRAG_SPEED = 1f;
         private const float SMOOTH_SPEED = 15f;
+
+        private const float ZOOM_SENSITIVITY = 0.2f; // Чувствительность колесика
+        private const float ZOOM_SMOOTH_SPEED = 10f;  // Скорость плавности зума
 
         public void Initialize()
         {
             _mouseClickAction = new InputAction(binding: "<Mouse>/middleButton");
             _mouseDeltaAction = new InputAction(binding: "<Mouse>/delta");
+            _mouseScrollAction = new InputAction(binding: "<Mouse>/scroll");
 
             _mouseClickAction.started += OnDragStarted;
             _mouseClickAction.canceled += OnDragCanceled;
+            _mouseScrollAction.performed += OnScrollPerformed;
 
             _mouseClickAction.Enable();
             _mouseDeltaAction.Enable();
+            _mouseScrollAction.Enable();
         }
 
         private void OnDragStarted(InputAction.CallbackContext context)
@@ -72,13 +81,53 @@ namespace Assets.Scripts.Behaviours
             }
         }
 
+        private void OnScrollPerformed(InputAction.CallbackContext context)
+        {
+            Vector2 scrollValue = context.ReadValue<Vector2>();
+
+            _targetZoom -= scrollValue.y * ZOOM_SENSITIVITY;
+
+            if (!_isZooming)
+            {
+                _ = ZoomLoopAsync();
+            }
+        }
+
+        private async Task ZoomLoopAsync()
+        {
+            _isZooming = true;
+
+            while (_mainCamera != null)
+            {
+                float currentZoom = _mainCamera.orthographic ? _mainCamera.orthographicSize : _mainCamera.fieldOfView;
+
+                if (math.abs(currentZoom - _targetZoom) < 0.01f)
+                {
+                    float finalDelta = currentZoom - _targetZoom;
+                    _cameraService.ZoomCamera(finalDelta);
+                    break;
+                }
+
+                float nextZoom = math.lerp(currentZoom, _targetZoom, Time.deltaTime * ZOOM_SMOOTH_SPEED);
+
+                float deltaToApply = currentZoom - nextZoom;
+                _cameraService.ZoomCamera(deltaToApply);
+
+                await Task.Yield();
+            }
+
+            _isZooming = false;
+        }
+
         public void Dispose()
         {
             _mouseClickAction.started -= OnDragStarted;
             _mouseClickAction.canceled -= OnDragCanceled;
+            _mouseScrollAction.performed -= OnScrollPerformed;
 
             _mouseClickAction.Disable();
             _mouseDeltaAction.Disable();
+            _mouseScrollAction.Disable();
         }
     }
 }
