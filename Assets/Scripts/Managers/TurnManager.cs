@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -64,6 +63,9 @@ namespace Assets.Scripts.Managers
         [Inject]
         private readonly ICameraService _cameraService;
 
+        [Inject]
+        private readonly ILocationService _locationService;
+
         private Coroutine _textAnimationCoroutine;
 
         public void SceneStart()
@@ -83,6 +85,7 @@ namespace Assets.Scripts.Managers
             _gameGlobalStateManager.ActualRoomId = randomRoomId;
             _gameGlobalStateManager.ActualWaveId = 1;
 
+            _locationService.WriteLocationInfo();
             _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{_gameGlobalStateManager.ActualRoomId}"));
             _unitManager.GenerateUnits();
             _unitManager.SetStartEquipment();

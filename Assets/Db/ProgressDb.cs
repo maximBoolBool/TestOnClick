@@ -26,7 +26,18 @@ namespace Assets.Db
 
         public void Insert<T>(T[] data) where T : ProgressDataEntity
         {
-            _connection.InsertOrReplace(data);
+            if (data == null || data.Length == 0)
+            {
+                return;
+            }
+
+            _connection.RunInTransaction(() =>
+            {
+                foreach (var item in data)
+                {
+                    _connection.InsertOrReplace(item);
+                }
+            });
         }
 
         public void Dispose()

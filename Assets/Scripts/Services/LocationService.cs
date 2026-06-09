@@ -45,21 +45,25 @@ namespace Assets.Scripts.Services
             {
                 new()
                 {
+                    Id = 1,
                     Type = Db.Enums.ProgressDataType.LastLocation,
                     Value = startedLocation.Type.ToString(),
                 },
                 new()
                 {
+                    Id = 2,
                     Type = Db.Enums.ProgressDataType.LocationMaxRoomCount,
                     Value = roomCount.ToString(),
                 },
                 new()
                 {
+                    Id = 3,
                     Type = Db.Enums.ProgressDataType.CurrentRoomOrder,
                     Value = StartRoomOrder.ToString(),
                 },
                 new() 
                 {
+                    Id = 4,
                     Type = Db.Enums.ProgressDataType.OrderedRoomIds,
                     Value = JsonConvert.SerializeObject(roomOrder),
                 },
@@ -68,7 +72,7 @@ namespace Assets.Scripts.Services
 
         private LocationEntity GetStartLocation()
         {
-            return _staticDb.Locations.Where(x => x.Type == Db.Enums.LocationType.Desert).First();
+            return _staticDb.Locations.Where(x => x.Type == Db.Enums.LocationType.Forest).First();
         }
     }
 }
