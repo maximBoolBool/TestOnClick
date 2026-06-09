@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using Assets.Db.Enums;
+using SQLite;
 
 namespace Assets.Db.Models
 {
@@ -15,9 +16,9 @@ namespace Assets.Db.Models
         public string Key { get; set; }
 
         [Column("room_type")]
-        public Enums.RoomType RoomType { get; set; }
+        public RoomType RoomType { get; set; }
 
         [Column("location_type")]
-        public Enums.LocationType LocationType { get; set; }
+        public LocationType LocationType { get; set; }
     }
 }

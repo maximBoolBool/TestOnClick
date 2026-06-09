@@ -86,6 +86,11 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<ILocationService>()
+                .To<Services.LocationService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<Camera>()
                 .WithId(Constants.Camera)
                 .FromInstance(_camera)

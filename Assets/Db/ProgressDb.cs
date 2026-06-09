@@ -24,6 +24,11 @@ namespace Assets.Db
             _connection.CreateTable<ProgressDataEntity>();
         }
 
+        public void Insert<T>(T[] data) where T : ProgressDataEntity
+        {
+            _connection.InsertOrReplace(data);
+        }
+
         public void Dispose()
         {
             _connection?.Close();
