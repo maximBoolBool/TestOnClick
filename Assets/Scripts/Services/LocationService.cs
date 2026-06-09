@@ -10,6 +10,8 @@ namespace Assets.Scripts.Services
     public interface ILocationService
     {
         void WriteLocationInfo();
+
+        bool NeedGenerateLocationInfo();
     }
 
     public class LocationService : ILocationService
@@ -35,10 +37,11 @@ namespace Assets.Scripts.Services
 
             var roomOrder = new HashSet<int>();
 
-            for (var i = roomIds.Count - 1; i > 0; i--)
+            for (var i = roomIds.Count; i > 0; i--)
             {
-                var selectedIndex = UnityEngine.Random.Range(0, i + 1);
+                var selectedIndex = UnityEngine.Random.Range(0, i);
                 roomOrder.Add(roomIds[selectedIndex]);
+                roomIds.RemoveRange(selectedIndex, 1);
             }
 
             _progressDb.Insert(new ProgressDataEntity[]
@@ -46,7 +49,7 @@ namespace Assets.Scripts.Services
                 new()
                 {
                     Id = 1,
-                    Type = Db.Enums.ProgressDataType.LastLocation,
+                    Type = Db.Enums.ProgressDataType.CurrentLocation,
                     Value = startedLocation.Type.ToString(),
                 },
                 new()
@@ -68,6 +71,20 @@ namespace Assets.Scripts.Services
                     Value = JsonConvert.SerializeObject(roomOrder),
                 },
             });
+        }
+
+        public bool NeedGenerateLocationInfo()
+        {
+            var  progressData = _progressDb.ProgressData
+                .Where( x => x.Type == Db.Enums.ProgressDataType.CurrentLocation )
+                .ToArray();
+
+            if ( progressData.Any(x => x.Type == Db.Enums.ProgressDataType.CurrentLocation))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private LocationEntity GetStartLocation()

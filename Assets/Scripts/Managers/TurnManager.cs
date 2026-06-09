@@ -34,10 +34,10 @@ namespace Assets.Scripts.Managers
         private List<Unit> units;
 
         [Inject(Id = Constants.TurnCountText)]
-        private TextMeshProUGUI _moveCounterText;
+        private readonly TextMeshProUGUI _moveCounterText;
 
         [Inject]
-        private IUnitManager _unitManager;
+        private readonly IUnitManager _unitManager;
 
         [Inject]
         private readonly IConditionService _conditionService;
@@ -85,7 +85,11 @@ namespace Assets.Scripts.Managers
             _gameGlobalStateManager.ActualRoomId = randomRoomId;
             _gameGlobalStateManager.ActualWaveId = 1;
 
-            _locationService.WriteLocationInfo();
+            if (_locationService.NeedGenerateLocationInfo())
+            {
+                _locationService.WriteLocationInfo();
+            }
+
             _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{_gameGlobalStateManager.ActualRoomId}"));
             _unitManager.GenerateUnits();
             _unitManager.SetStartEquipment();

@@ -6,7 +6,7 @@ namespace Assets.Db.Models
     [Table("progress_data")]
     public class ProgressDataEntity
     {
-        [Column("id"), AutoIncrement]
+        [Column("id")]
         public int Id { get; set; }
 
         [Column("type"), PrimaryKey]
