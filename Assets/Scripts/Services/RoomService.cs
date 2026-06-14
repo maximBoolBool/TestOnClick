@@ -63,7 +63,7 @@ namespace Assets.Scripts.Services
 
             _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
             _gameGlobalStateManager.ActualRoomId = currentRoomId;
-            _gameGlobalStateManager.ActualWaveId = 1;            
+            _gameGlobalStateManager.ActualWaveOrder = 1;            
 
             return true;
         }

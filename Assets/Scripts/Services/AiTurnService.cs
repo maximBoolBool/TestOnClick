@@ -73,8 +73,8 @@ namespace Assets.Scripts.Services
                     )
                     {
                         if (_hitService.IsHit(
-                            target.Characterictics.DefendSkill,
-                            currentUnit.Characterictics.MeleeSkill,
+                            target.Characteristic.DefendSkill,
+                            currentUnit.Characteristic.MeleeSkill,
                             new Dictionary<HitModifierType, int>())
                         )
                         {
@@ -97,7 +97,7 @@ namespace Assets.Scripts.Services
             int minDist = int.MaxValue;
             foreach (var unit in _unitManager.Units)
             {
-                if (unit == currentUnit || !currentUnit.Characterictics.Side.IsEnemyType(unit.Characterictics.Side))
+                if (unit == currentUnit || !currentUnit.Characteristic.Side.IsEnemyType(unit.Characteristic.Side))
                 {
                     continue;
                 }
@@ -125,7 +125,7 @@ namespace Assets.Scripts.Services
         {
             _conditionService.ExecuteConditionEffect(unit, ConditionEffectStartType.OnTurnEnd);
             _conditionService.ActualizeUnitConditions(unit);
-            if (unit.Characterictics.Side == SideType.UserSide)
+            if (unit.Characteristic.Side == SideType.UserSide)
             {
 
             }

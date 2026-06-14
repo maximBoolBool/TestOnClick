@@ -23,7 +23,11 @@ namespace Assets.Scripts.Services
 
         void SetStartEquipment();
 
-        void SetSharedEquipemt(int? oldOrder, int newOrder, ISlotEquipment equipment);
+        void SetSharedEquipemt(
+            int? oldOrder,
+            int newOrder,
+            ISlotEquipment equipment
+        );
 
         void SwapSharedEquipmentOrders(int leftOrder, int rightOrder);
 
@@ -34,6 +38,12 @@ namespace Assets.Scripts.Services
             int fromOrder,
             int toOrder,
             CharacterEquipmentSlotType slotType
+        );
+
+        void GenerateWaveUnits(
+            int roomId,
+            int waveOrder,
+            bool withDeleteActual
         );
 
         List<Unit> Units { get; }
@@ -85,13 +95,16 @@ namespace Assets.Scripts.Services
 
         public Unit? GetActualUserUnit => _units
             .Where(x => x.IsSelected)
-            .Where(x => x.Characterictics.Side == SideType.UserSide)
+            .Where(x => x.Characteristic.Side == SideType.UserSide)
             .FirstOrDefault();
 
         public void GenerateUnits()
         {
             GenerateUserUnits();
-            GenerateEnemyUnits();
+            GenerateEnemyUnits(
+                roomId: _gameGlobalStateManager.ActualRoomId,
+                waveOrder: _gameGlobalStateManager.ActualWaveOrder
+            );
         }
 
         public void SetStartEquipment()
@@ -101,12 +114,12 @@ namespace Assets.Scripts.Services
 
         public void RefreshUnitsActionPoints()
         {
-            _units.ForEach(x => x.ActualActionPoints = x.Characterictics.ActiveActionPoints);
+            _units.ForEach(x => x.ActualActionPoints = x.Characteristic.ActiveActionPoints);
         }
 
         public void SetActualHealthPoins()
         {
-            _units.ForEach(x => x.ActualHealthPoints = x.Characterictics.HealthPoints);
+            _units.ForEach(x => x.ActualHealthPoints = x.Characteristic.HealthPoints);
         }
 
         public void SetSharedEquipemt(int? oldOrder, int newOrder, ISlotEquipment equipment)
@@ -160,40 +173,70 @@ namespace Assets.Scripts.Services
                 throw new InvalidOperationException($"Unit with name '{unitName}' not found");
             }
 
-            var fromSlot = unit.EqupmentSlots
+            var fromSlot = unit.EquipmentSlots
                 .Where(x => x.Type == slotType)
                 .Where(x => x.Order == fromOrder)
-                .FirstOrDefault();
-
-            if (fromSlot == null)
-            {
-                throw new InvalidOperationException($"Equipment slot of type '{slotType}' with order {fromOrder} not found for unit '{unitName}'");
-            }
-
-            var toSlot = unit.EqupmentSlots
+                .FirstOrDefault()
+                ?? throw new InvalidOperationException($"Equipment slot of type '{slotType}' with order {fromOrder} not found for unit '{unitName}'");
+            
+            var toSlot = unit.EquipmentSlots
                 .Where(x => x.Type == slotType)
                 .Where(x => x.Order == toOrder)
                 .FirstOrDefault();
 
             var clearOrders = toSlot == null ? new int[1]{ fromOrder } : new int[2] { fromOrder, toOrder };
-            unit.EqupmentSlots.RemoveAll(x => clearOrders.Contains(x.Order) && x.Type == slotType);
+            unit.EquipmentSlots.RemoveAll(x => clearOrders.Contains(x.Order) && x.Type == slotType);
 
             if (toSlot != null)
             {
 
                 toSlot.Order = fromOrder;
-                unit.EqupmentSlots.Add(toSlot);
+                unit.EquipmentSlots.Add(toSlot);
             }
 
             fromSlot.Order = toOrder;
-            unit.EqupmentSlots.Add(fromSlot);
+            unit.EquipmentSlots.Add(fromSlot);
         }
 
-        private void GenerateEnemyUnits()
+        public void GenerateWaveUnits(
+            int roomId,
+            int waveOrder,
+            bool withDeleteActual
+        )
+        {
+            if (withDeleteActual)
+            {
+                ClearEnemiesunits();
+            }
+
+            GenerateEnemyUnits(
+                roomId: roomId,
+                waveOrder: waveOrder
+            );
+        }
+
+        #region Private Methondes
+
+        private void ClearEnemiesunits()
+        {
+            var deleteUnits = _units.Where(x => x.Characteristic.Side == SideType.EnemySide).ToArray();
+
+            foreach (var unit in deleteUnits)
+            {
+                _units.Remove(unit);
+
+                if (unit != null && unit.gameObject != null)
+                {
+                    UnityEngine.Object.Destroy(unit.gameObject);
+                }
+            }
+        }
+
+        private void GenerateEnemyUnits(int roomId, int waveOrder)
         {
             var enemiesCounts = _roomSpawnService.GetEnemyUnitIdCountsPairs(
-                roomId: _gameGlobalStateManager.ActualRoomId,
-                waveOrder: _gameGlobalStateManager.ActualWaveId
+                roomId: roomId,
+                waveOrder: waveOrder
             );
 
             var units = GetUnitsData(enemiesCounts.Keys.ToArray());
@@ -245,5 +288,7 @@ namespace Assets.Scripts.Services
         {
             return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
         }
+
+        #endregion
     }
 }

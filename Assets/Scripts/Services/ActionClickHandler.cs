@@ -132,7 +132,7 @@ public class ActionClickHandler : IActionClickHandler
 
                 var action = (UnitTargetAction)baseAction;
                 var enemiesAdjacentVectors = _unitManager.Units
-                    .Where(x => x.Characterictics.Side != currentUnit.Characterictics.Side)
+                    .Where(x => x.Characteristic.Side != currentUnit.Characteristic.Side)
                     .Where(x => !x.IsDead)
                     .Where(x => IsAdjacent(_gridService.ToGridCordinates(currentUnit), _gridService.ToGridCordinates(x), action.Range))
                     .Select(x => _gridService.ToGridCordinates(x));

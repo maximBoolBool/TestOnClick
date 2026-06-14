@@ -277,7 +277,7 @@ namespace Assets.Scripts.Behaviours
         isUnitMoving = false;
         _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
 
-        if (unit.Characterictics.Side == SideType.UserSide)
+        if (unit.Characteristic.Side == SideType.UserSide)
         {
             if (unit.ActualActionPoints <= 0)
             {
@@ -288,7 +288,7 @@ namespace Assets.Scripts.Behaviours
 
         _actionUIService.SetActionPoints(
             currentValue: unit.ActualActionPoints,
-            maxValue: unit.Characterictics.ActiveActionPoints
+            maxValue: unit.Characteristic.ActiveActionPoints
         );
 
         reachableTiles = _hilightService.HilightReachebleTiles(unit, reachableTiles);

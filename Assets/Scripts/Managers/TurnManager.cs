@@ -106,7 +106,7 @@ namespace Assets.Scripts.Managers
 
         public void SkipTurn()
         {
-            if (units[currentUnitIndex].Characterictics.Side == SideType.UserSide)
+            if (units[currentUnitIndex].Characteristic.Side == SideType.UserSide)
             {
                 DeactivateUnit(units[currentUnitIndex]);
             }
@@ -125,7 +125,7 @@ namespace Assets.Scripts.Managers
 
             _cameraService.MoveCamera(unit.transform.position);
 
-            switch (unit.Characterictics.Side)
+            switch (unit.Characteristic.Side)
             {
                 case SideType.UserSide:
                     ActivateUserUnitIternal(unit);
@@ -144,12 +144,12 @@ namespace Assets.Scripts.Managers
         {
             _healthBarService.SetUnitHelthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
-                maxHealthPoints: unit.Characterictics.HealthPoints
+                maxHealthPoints: unit.Characteristic.HealthPoints
             );
             _actionUiService.ShowActions(unit);
             _actionUiService.SetActionPoints(
                 currentValue: unit.ActualActionPoints,
-                maxValue: unit.Characterictics.ActiveActionPoints
+                maxValue: unit.Characteristic.ActiveActionPoints
             );
             unit.IsSelected = true;
         }
@@ -187,7 +187,7 @@ namespace Assets.Scripts.Managers
         private void CheckForGameOver()
         {
             var sides = _unitManager.Units
-                .GroupBy(x => x.Characterictics.Side)
+                .GroupBy(x => x.Characteristic.Side)
                 .ToDictionary(
                     x => x.Key,
                     x => x.Where(y => !y.IsDead).Any()
@@ -211,6 +211,12 @@ namespace Assets.Scripts.Managers
                     if (_roomService.TrySwitchNextRoom(true))
                     {
                         Debug.Log("Переход в следующую комнату");
+
+                        _unitManager.GenerateWaveUnits(
+                            roomId: _gameGlobalStateManager.ActualRoomId,
+                            waveOrder: _gameGlobalStateManager.ActualWaveOrder,
+                            withDeleteActual: true
+                        );
                         return;
                     }
                 }

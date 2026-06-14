@@ -119,8 +119,8 @@ namespace Assets.Scripts.Services
 
                         _animationService.SwitchUnitAnimation(currentUnit, UnitAnimationType.Attack, true);
                         var isHit = _hitService.IsHit(
-                            targetUnit.Characterictics.DefendSkill,
-                            currentUnit.Characterictics.MeleeSkill,
+                            targetUnit.Characteristic.DefendSkill,
+                            currentUnit.Characteristic.MeleeSkill,
                             new Dictionary<HitModifierType, int>()
                         );
 
@@ -163,11 +163,11 @@ namespace Assets.Scripts.Services
 
             currentUnit.ActualActionPoints -= pointCost;
 
-            if (currentUnit.Characterictics.Side == SideType.UserSide && currentUnit.IsSelected)
+            if (currentUnit.Characteristic.Side == SideType.UserSide && currentUnit.IsSelected)
             {
                 _actionUIService.SetActionPoints(
                      currentValue: currentUnit.ActualActionPoints,
-                     maxValue: currentUnit.Characterictics.ActiveActionPoints
+                     maxValue: currentUnit.Characteristic.ActiveActionPoints
                  );
             }
         }
