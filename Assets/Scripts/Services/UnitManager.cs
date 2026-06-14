@@ -91,7 +91,7 @@ namespace Assets.Scripts.Services
         public void GenerateUnits()
         {
             GenerateUserUnits();
-            GenerateAiUnits();
+            GenerateEnemyUnits();
         }
 
         public void SetStartEquipment()
@@ -189,7 +189,7 @@ namespace Assets.Scripts.Services
             unit.EqupmentSlots.Add(fromSlot);
         }
 
-        private void GenerateAiUnits()
+        private void GenerateEnemyUnits()
         {
             var enemiesCounts = _roomSpawnService.GetEnemyUnitIdCountsPairs(
                 roomId: _gameGlobalStateManager.ActualRoomId,

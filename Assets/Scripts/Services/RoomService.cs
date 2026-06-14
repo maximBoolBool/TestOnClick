@@ -10,7 +10,7 @@ namespace Assets.Scripts.Services
 {
     public interface IRoomService
     {
-        bool TrySwitchNextRoom();
+        bool TrySwitchNextRoom(bool withSkip);
     }
 
     public class RoomService : IRoomService
@@ -24,18 +24,22 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
-        public bool TrySwitchNextRoom()
+        public bool TrySwitchNextRoom(bool withSkip)
         {
             var progressData = _progressDb.ProgressData
                 .Where(x => x.Type == ProgressDataType.OrderedRoomIds || x.Type == ProgressDataType.CurrentRoomOrder)
                 .ToArray();
 
             var roomIds = JsonConvert.DeserializeObject<int[]>(progressData.First(x => x.Type == ProgressDataType.OrderedRoomIds).Value);
-            var currentRoomOrderData = progressData.First(x => x.Type == ProgressDataType.CurrentRoomOrder).Value;
+            var currentRoomOrderData = progressData.FirstOrDefault(x => x.Type == ProgressDataType.CurrentRoomOrder);
 
-            var newRoomOrder = currentRoomOrderData != null ? int.Parse(currentRoomOrderData) + 1 : 0;
+            var newRoomOrder = currentRoomOrderData != null 
+                ? withSkip
+                    ? int.Parse(currentRoomOrderData.Value) + 1 
+                    : int.Parse(currentRoomOrderData.Value)
+                : 0;
 
-            if (newRoomOrder > roomIds.Length)
+            if (newRoomOrder > roomIds.Length - 1)
             {
                 return false;
             }
@@ -51,6 +55,11 @@ namespace Assets.Scripts.Services
             });
 
             var currentRoomId = roomIds[newRoomOrder];
+
+            if (newRoomOrder != 0)
+            {
+                _roomLoaderService.ClearRoom(AdvancedRoomLoader.LoadRoomSync($"Room{roomIds[newRoomOrder - 1]}"));
+            }
 
             _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
             _gameGlobalStateManager.ActualRoomId = currentRoomId;

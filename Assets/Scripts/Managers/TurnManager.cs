@@ -71,7 +71,7 @@ namespace Assets.Scripts.Managers
                 _locationService.WriteLocationInfo();
             }
 
-            _roomService.TrySwitchNextRoom();
+            _roomService.TrySwitchNextRoom(false);
 
             _unitManager.GenerateUnits();
             // Пока убираем
@@ -207,6 +207,12 @@ namespace Assets.Scripts.Managers
                 else if (sides.ContainsKey(SideType.EnemySide) && !sides[SideType.EnemySide])
                 {
                     Debug.Log("Все враги мертвы! Победа.");
+
+                    if (_roomService.TrySwitchNextRoom(true))
+                    {
+                        Debug.Log("Переход в следующую комнату");
+                        return;
+                    }
                 }
 
                 SceneManager.LoadScene("MainMenuScene");
