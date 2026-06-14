@@ -6,7 +6,7 @@ namespace Assets.Scripts.Managers
 
         int ActualRoomId { get; set; }
 
-        int ActualWaveId { get; set; }
+        int ActualWaveOrder { get; set; }
 
         void SwitchGameStatus(GameStatus gameStatus);
 
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Managers
 
         public int ActualRoomId { get; set; }
 
-        public int ActualWaveId { get; set; }
+        public int ActualWaveOrder { get; set; }
 
         public void SwitchGameStatus(GameStatus gameStatus)
         {

@@ -44,10 +44,10 @@ public class EnemyPanelService : IEnemyPanelService
 
         _nameText.text = unit.Name;
 
-        _healthPointSliderSlider.maxValue = unit.Characterictics.HealthPoints;
+        _healthPointSliderSlider.maxValue = unit.Characteristic.HealthPoints;
         _healthPointSliderSlider.value = unit.ActualHealthPoints;
 
-        _actionPointsSlider.maxValue = unit.Characterictics.ActiveActionPoints;
+        _actionPointsSlider.maxValue = unit.Characteristic.ActiveActionPoints;
         _actionPointsSlider.value = unit.ActualActionPoints;
 
         var worldPosition = unit.transform.position;

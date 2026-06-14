@@ -86,6 +86,26 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<ILocationService>()
+                .To<Services.LocationService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IRoomSpawnService>()
+                .To<RoomSpawnService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IGameGlobalStateManager>()
+                .To<GameGlobalStateManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IRoomService>()
+                .To<RoomService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<Camera>()
                 .WithId(Constants.Camera)
                 .FromInstance(_camera)
@@ -184,18 +204,8 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IGameGlobalStateManager>()
-                .To<GameGlobalStateManager>()
-                .AsSingle()
-                .NonLazy();
-
             Container.Bind<IGridService>()
                 .To<GridService>()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<IRoomSpawnService>()
-                .To<RoomSpawnService>()
                 .AsSingle()
                 .NonLazy();
 

@@ -45,7 +45,7 @@ namespace Assets.Scripts.Services
 
         public void HighlightTiles(bool highlight, List<Vector3Int> reachableTiles, Unit unit)
         {
-            if (unit.Characterictics.Side == SideType.EnemySide)
+            if (unit.Characteristic.Side == SideType.EnemySide)
             {
                 return;
             }

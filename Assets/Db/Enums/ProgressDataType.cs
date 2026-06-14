@@ -6,7 +6,9 @@
         RunResource = 1,
         CharacterUnlock = 2,
         CharactersCellCount = 3,
-        LastRoomId = 4,
-        LastLocation = 5,
+        CurrentLocation = 4,
+        LocationMaxRoomCount = 5,
+        CurrentRoomOrder = 6,
+        OrderedRoomIds = 7,
     }
 }

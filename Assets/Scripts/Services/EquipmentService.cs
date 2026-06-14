@@ -105,7 +105,7 @@ namespace Assets.Scripts.Services
                 GenerateCells();
                 var defaultUserUnit = _unitManager.Units
                     .OrderBy(x => x.Name)
-                    .FirstOrDefault(x => x.Characterictics.Side == SideType.UserSide)
+                    .FirstOrDefault(x => x.Characteristic.Side == SideType.UserSide)
                     ?? throw new System.Exception("Нет unit-ов для пользователя(");
                 _selectedUnit = defaultUserUnit;
                 _charecterNamePanelText.text = _selectedUnit.Name;
@@ -261,7 +261,7 @@ namespace Assets.Scripts.Services
                 ClearRunePanel(cell);
             }
 
-            foreach (var equipmentSlot in _selectedUnit.EqupmentSlots)
+            foreach (var equipmentSlot in _selectedUnit.EquipmentSlots)
             {
                 if (!equipmentSlot.IsEquipped)
                 {
@@ -293,7 +293,7 @@ namespace Assets.Scripts.Services
 
         public void ChangeCellBackGroundColor(CharacterEquipmentSlotType slotType, bool isSetActive)
         {
-            var selectedUnitSlots = _selectedUnit.EqupmentSlots
+            var selectedUnitSlots = _selectedUnit.EquipmentSlots
                 .Where(x => x.Equipment != null)
                 .Select(x => new { x.Order, x.Equipment });
 
@@ -386,7 +386,7 @@ namespace Assets.Scripts.Services
                     return;
                 }
 
-                var fromEquipmentSlot = _selectedUnit.EqupmentSlots
+                var fromEquipmentSlot = _selectedUnit.EquipmentSlots
                     .Where(x => x.Order == fromSlotInfo.Order)
                     .Where(x => x.Type == fromSlotInfo.EquipmentSetType)
                     .FirstOrDefault();
@@ -507,7 +507,7 @@ namespace Assets.Scripts.Services
                 return;
             }
 
-            var toEquipmentSlot = _selectedUnit.EqupmentSlots
+            var toEquipmentSlot = _selectedUnit.EquipmentSlots
                 .Where(x => x.Order == toSlotInfo.Order)
                 .Where(x => x.Type == toSlotInfo.EquipmentSetType)
                 .FirstOrDefault();
@@ -547,12 +547,12 @@ namespace Assets.Scripts.Services
             if (isSlotEmpty)
             {
                 var toSlotUnitInfo = _selectedUnit
-                    .EqupmentSlots
+                    .EquipmentSlots
                     .FirstOrDefault(x => x.Order == toSlotInfo.Order && x.Type == toSlotInfo.EquipmentSetType.Value);
 
                 if (toSlotUnitInfo == null)
                 {
-                    _selectedUnit.EqupmentSlots.Add(
+                    _selectedUnit.EquipmentSlots.Add(
                         new EquipmentSlot()
                         {
                             Type = toSlotInfo.EquipmentSetType.Value,
@@ -582,7 +582,7 @@ namespace Assets.Scripts.Services
 
         private void FromUnit(SlotInfo fromSlotInfo, SlotInfo toSlotInfo)
         {
-            var fromEquipmentSlot = _selectedUnit.EqupmentSlots
+            var fromEquipmentSlot = _selectedUnit.EquipmentSlots
                 .Where(x => x.Order == fromSlotInfo.Order)
                 .Where(x => x.Type == fromSlotInfo.EquipmentSetType)
                 .FirstOrDefault();
@@ -609,7 +609,7 @@ namespace Assets.Scripts.Services
 
         private void DrawCharecterButtons()
         {
-            var userUnits = _unitManager.Units.Where(x => x.Characterictics.Side == SideType.UserSide);
+            var userUnits = _unitManager.Units.Where(x => x.Characteristic.Side == SideType.UserSide);
 
             foreach (var unit in userUnits)
             {
@@ -656,7 +656,7 @@ namespace Assets.Scripts.Services
             {
                 _selectedUnit = _unitManager
                     .Units
-                    .FirstOrDefault(x => x.Name == newUnitName && x.Characterictics.Side == SideType.UserSide)
+                    .FirstOrDefault(x => x.Name == newUnitName && x.Characteristic.Side == SideType.UserSide)
                     ?? throw new System.Exception("Нет unit-ов для пользователя(");
 
                 _charecterNamePanelText.text = _selectedUnit.Name;

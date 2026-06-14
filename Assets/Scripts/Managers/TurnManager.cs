@@ -1,4 +1,3 @@
-using Assets.Db;
 using Assets.Db.Enums;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
@@ -8,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -35,10 +33,10 @@ namespace Assets.Scripts.Managers
         private List<Unit> units;
 
         [Inject(Id = Constants.TurnCountText)]
-        private TextMeshProUGUI _moveCounterText;
+        private readonly TextMeshProUGUI _moveCounterText;
 
         [Inject]
-        private IUnitManager _unitManager;
+        private readonly IUnitManager _unitManager;
 
         [Inject]
         private readonly IConditionService _conditionService;
@@ -56,36 +54,28 @@ namespace Assets.Scripts.Managers
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         [Inject]
-        private readonly IRoomLoaderService _roomLoaderService;
-
-        [Inject]
-        private readonly StaticDb _staticDb;
+        private readonly IRoomService _roomService;
 
         [Inject]
         private readonly ICameraService _cameraService;
+
+        [Inject]
+        private readonly ILocationService _locationService;
 
         private Coroutine _textAnimationCoroutine;
 
         public void SceneStart()
         {
-            var startLocation = _staticDb
-                .Locations
-                .Where(x => x.Type == StartConfiguration.LOCATION_TYPE)
-                .First();
+            if (_locationService.NeedGenerateLocationInfo())
+            {
+                _locationService.WriteLocationInfo();
+            }
 
-            var rooms = _staticDb
-                .Rooms
-                .Where(x => x.LocationType == StartConfiguration.LOCATION_TYPE)
-                .ToArray();
+            _roomService.TrySwitchNextRoom(false);
 
-            var roomsIds = rooms.Select(x => x.Id).ToArray();
-            var randomRoomId = roomsIds[UnityEngine.Random.Range(0, roomsIds.Length)];
-            _gameGlobalStateManager.ActualRoomId = randomRoomId;
-            _gameGlobalStateManager.ActualWaveId = 1;
-
-            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{_gameGlobalStateManager.ActualRoomId}"));
             _unitManager.GenerateUnits();
-            _unitManager.SetStartEquipment();
+            // Пока убираем
+            //_unitManager.SetStartEquipment();
             units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
@@ -116,7 +106,7 @@ namespace Assets.Scripts.Managers
 
         public void SkipTurn()
         {
-            if (units[currentUnitIndex].Characterictics.Side == SideType.UserSide)
+            if (units[currentUnitIndex].Characteristic.Side == SideType.UserSide)
             {
                 DeactivateUnit(units[currentUnitIndex]);
             }
@@ -135,7 +125,7 @@ namespace Assets.Scripts.Managers
 
             _cameraService.MoveCamera(unit.transform.position);
 
-            switch (unit.Characterictics.Side)
+            switch (unit.Characteristic.Side)
             {
                 case SideType.UserSide:
                     ActivateUserUnitIternal(unit);
@@ -154,12 +144,12 @@ namespace Assets.Scripts.Managers
         {
             _healthBarService.SetUnitHelthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
-                maxHealthPoints: unit.Characterictics.HealthPoints
+                maxHealthPoints: unit.Characteristic.HealthPoints
             );
             _actionUiService.ShowActions(unit);
             _actionUiService.SetActionPoints(
                 currentValue: unit.ActualActionPoints,
-                maxValue: unit.Characterictics.ActiveActionPoints
+                maxValue: unit.Characteristic.ActiveActionPoints
             );
             unit.IsSelected = true;
         }
@@ -197,7 +187,7 @@ namespace Assets.Scripts.Managers
         private void CheckForGameOver()
         {
             var sides = _unitManager.Units
-                .GroupBy(x => x.Characterictics.Side)
+                .GroupBy(x => x.Characteristic.Side)
                 .ToDictionary(
                     x => x.Key,
                     x => x.Where(y => !y.IsDead).Any()
@@ -217,6 +207,18 @@ namespace Assets.Scripts.Managers
                 else if (sides.ContainsKey(SideType.EnemySide) && !sides[SideType.EnemySide])
                 {
                     Debug.Log("Все враги мертвы! Победа.");
+
+                    if (_roomService.TrySwitchNextRoom(true))
+                    {
+                        Debug.Log("Переход в следующую комнату");
+
+                        _unitManager.GenerateWaveUnits(
+                            roomId: _gameGlobalStateManager.ActualRoomId,
+                            waveOrder: _gameGlobalStateManager.ActualWaveOrder,
+                            withDeleteActual: true
+                        );
+                        return;
+                    }
                 }
 
                 SceneManager.LoadScene("MainMenuScene");

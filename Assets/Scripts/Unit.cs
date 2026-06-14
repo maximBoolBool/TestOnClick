@@ -14,9 +14,9 @@ namespace Assets.Scripts
         public int ActualActionPoints { get; set; }
         public int ActualHealthPoints { get; set; }
         public bool IsSelected { get; set; }
-        public UnitCharacteristic Characterictics;
+        public UnitCharacteristic Characteristic;
         public List<BaseAction> Actions { get; set; } = new();
-        public List<EquipmentSlot> EqupmentSlots = new();
+        public List<EquipmentSlot> EquipmentSlots = new();
         public List<BaseCondition> GlobalConditions { get; set; } = new();
         public List<(BaseCondition Condition, int DisappearancesTurn)> DuratationConditions { get; set; } = new();
         // TODO: Consider adding validation - checking for values less than zero
@@ -31,7 +31,7 @@ namespace Assets.Scripts
             unit.ActualHealthPoints = entity.HealthPoints;
             unit.ActualActionPoints = entity.ActiveActionPoints;
 
-            unit.Characterictics = new UnitCharacteristic()
+            unit.Characteristic = new UnitCharacteristic()
             {
                 HealthPoints = entity.HealthPoints,
                 ActiveActionPoints = entity.ActiveActionPoints,

@@ -6,10 +6,11 @@ namespace Assets.Db.Models
     [Table("progress_data")]
     public class ProgressDataEntity
     {
-        [Column("id"), PrimaryKey, AutoIncrement]
+        // Удалить
+        [Column("id")]
         public int Id { get; set; }
 
-        [Column("type")]
+        [Column("type"), PrimaryKey]
         public ProgressDataType Type { get; set; }
 
         [Column("value")]

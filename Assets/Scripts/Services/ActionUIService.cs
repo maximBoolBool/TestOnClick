@@ -95,7 +95,7 @@ namespace Assets.Scripts.Services
 
             resultActions.AddRange(unit.Actions);
 
-            var equipmentActions = unit.EqupmentSlots
+            var equipmentActions = unit.EquipmentSlots
                 .Where(x => x.IsEquipped)
                 .Select(x => x.Equipment)
                 .OfType<BaseEquipment>()
