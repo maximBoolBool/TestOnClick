@@ -52,7 +52,7 @@ namespace Assets.Scripts.Services
         private readonly UnitFactory _factory;
 
         [Inject]
-        private readonly IRoomSpawnService rommSpawnService;
+        private readonly IRoomSpawnService _roomSpawnService;
 
         [Inject]
         private readonly IGridService _gridService;
@@ -191,7 +191,7 @@ namespace Assets.Scripts.Services
 
         private void GenerateAiUnits()
         {
-            var enemiesCounts = rommSpawnService.GetEnemyUnitIdCountsPairs(
+            var enemiesCounts = _roomSpawnService.GetEnemyUnitIdCountsPairs(
                 roomId: _gameGlobalStateManager.ActualRoomId,
                 waveOrder: _gameGlobalStateManager.ActualWaveId
             );

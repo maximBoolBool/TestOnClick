@@ -44,7 +44,7 @@ namespace Assets.Scripts.Services
                 roomIds.RemoveRange(selectedIndex, 1);
             }
 
-            _progressDb.Insert(new ProgressDataEntity[]
+            _progressDb.InsertOrUpdate(new ProgressDataEntity[]
             {
                 new()
                 {
@@ -58,15 +58,9 @@ namespace Assets.Scripts.Services
                     Type = Db.Enums.ProgressDataType.LocationMaxRoomCount,
                     Value = roomCount.ToString(),
                 },
-                new()
-                {
-                    Id = 3,
-                    Type = Db.Enums.ProgressDataType.CurrentRoomOrder,
-                    Value = StartRoomOrder.ToString(),
-                },
                 new() 
                 {
-                    Id = 4,
+                    Id = 3,
                     Type = Db.Enums.ProgressDataType.OrderedRoomIds,
                     Value = JsonConvert.SerializeObject(roomOrder),
                 },

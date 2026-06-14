@@ -24,7 +24,7 @@ namespace Assets.Db
             _connection.CreateTable<ProgressDataEntity>();
         }
 
-        public void Insert<T>(T[] data) where T : ProgressDataEntity
+        public void InsertOrUpdate<T>(T[] data) where T : ProgressDataEntity
         {
             if (data == null || data.Length == 0)
             {

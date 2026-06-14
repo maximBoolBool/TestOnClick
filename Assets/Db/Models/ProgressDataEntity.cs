@@ -6,6 +6,7 @@ namespace Assets.Db.Models
     [Table("progress_data")]
     public class ProgressDataEntity
     {
+        // Удалить
         [Column("id")]
         public int Id { get; set; }
 

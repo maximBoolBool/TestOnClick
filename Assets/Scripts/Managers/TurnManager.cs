@@ -1,4 +1,3 @@
-using Assets.Db;
 using Assets.Db.Enums;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
@@ -55,10 +54,7 @@ namespace Assets.Scripts.Managers
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         [Inject]
-        private readonly IRoomLoaderService _roomLoaderService;
-
-        [Inject]
-        private readonly StaticDb _staticDb;
+        private readonly IRoomService _roomService;
 
         [Inject]
         private readonly ICameraService _cameraService;
@@ -70,29 +66,16 @@ namespace Assets.Scripts.Managers
 
         public void SceneStart()
         {
-            var startLocation = _staticDb
-                .Locations
-                .Where(x => x.Type == StartConfiguration.LOCATION_TYPE)
-                .First();
-
-            var rooms = _staticDb
-                .Rooms
-                .Where(x => x.LocationType == StartConfiguration.LOCATION_TYPE)
-                .ToArray();
-
-            var roomsIds = rooms.Select(x => x.Id).ToArray();
-            var randomRoomId = roomsIds[UnityEngine.Random.Range(0, roomsIds.Length)];
-            _gameGlobalStateManager.ActualRoomId = randomRoomId;
-            _gameGlobalStateManager.ActualWaveId = 1;
-
             if (_locationService.NeedGenerateLocationInfo())
             {
                 _locationService.WriteLocationInfo();
             }
 
-            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{_gameGlobalStateManager.ActualRoomId}"));
+            _roomService.TrySwitchNextRoom();
+
             _unitManager.GenerateUnits();
-            _unitManager.SetStartEquipment();
+            // Пока убираем
+            //_unitManager.SetStartEquipment();
             units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
