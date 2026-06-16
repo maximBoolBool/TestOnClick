@@ -118,7 +118,8 @@ namespace Assets.Scripts.Managers
 
             if (unit.IsDead)
             {
-                SkipTurn();
+                DeactivateUnit(units[currentUnitIndex]);
+                return;
             }
 
             CheckForGameOver();
