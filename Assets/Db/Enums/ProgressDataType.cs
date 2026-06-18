@@ -10,5 +10,6 @@
         LocationMaxRoomCount = 5,
         CurrentRoomOrder = 6,
         OrderedRoomIds = 7,
+        RaceGold = 8,
     }
 }
