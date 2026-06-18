@@ -67,15 +67,6 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IGridService _gridService;
 
-        [Inject(Id = Constants.RedWarriorAnimatorController)]
-        private readonly AnimatorOverrideController _redWarriorAnimatorController;
-
-        [Inject(Id = Constants.BlueWarriorAnimatorController)]
-        private readonly AnimatorOverrideController _blueWarriorAnimatorController;
-
-        [Inject(Id = Constants.BlueMonkAnimatorController)]
-        private readonly AnimatorOverrideController _blueMonkAnimatorController;
-
         [Inject]
         private readonly StaticDb _staticDb;
 
@@ -217,6 +208,8 @@ namespace Assets.Scripts.Services
 
         #region Private Methondes
 
+
+
         private void ClearEnemiesunits()
         {
             var deleteUnits = _units.Where(x => x.Characteristic.Side == SideType.EnemySide).ToArray();
@@ -253,9 +246,13 @@ namespace Assets.Scripts.Services
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetComponent<Animator>();
-                    animator.runtimeAnimatorController = _redWarriorAnimatorController;
+                    animator.runtimeAnimatorController = unit.Name == "Monk"
+                        ? UnitAnimatorOverrideControllerLoader.LoadController("RedMonkAnimatorOverrideController")                       
+                        : UnitAnimatorOverrideControllerLoader.LoadController("RedWarriorAnimatorOverrideContoller");
                     _units.Add(unitItem);
                 }
+
+                i++;
             }
         }
 
@@ -272,7 +269,9 @@ namespace Assets.Scripts.Services
                 unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetComponent<Animator>();
-                animator.runtimeAnimatorController = unit.Name == "Monk" ? _blueMonkAnimatorController : _blueWarriorAnimatorController;
+                animator.runtimeAnimatorController = unit.Name == "Monk"
+                    ? UnitAnimatorOverrideControllerLoader.LoadController("BlueMonkAnimatorController") 
+                    : UnitAnimatorOverrideControllerLoader.LoadController("BlueWarriorAnimatorController");
 
                 _units.Add(unitItem);
                 i++;

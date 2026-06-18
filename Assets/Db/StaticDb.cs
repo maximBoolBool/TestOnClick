@@ -10,7 +10,7 @@ namespace Assets.Db
 
         public StaticDb(string dbPath)
         {
-            _connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadOnly);
+            _connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadOnly | SQLiteOpenFlags.FullMutex);
         }
 
         #region Tables

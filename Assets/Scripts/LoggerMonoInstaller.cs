@@ -57,15 +57,6 @@ namespace Assets.Scripts
         private GameObject _equipmentSlotPrefab;
 
         [SerializeField]
-        private AnimatorOverrideController _redWarriorAnimatorController;
-
-        [SerializeField]
-        private AnimatorOverrideController _blueWarriorAnimationController;
-
-        [SerializeField]
-        private AnimatorOverrideController _blueMonkAnimationController;
-
-        [SerializeField]
         private Camera _camera;
 
         public override void InstallBindings()
@@ -76,12 +67,12 @@ namespace Assets.Scripts
 
             _equipmentPanel.SetActive(false);
 
-            Container.Bind<StaticDb>()
+            Container.BindInterfacesAndSelfTo<StaticDb>()
                 .FromMethod(CreateStaticDb)
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<ProgressDb>()
+            Container.BindInterfacesAndSelfTo<ProgressDb>()
                 .FromMethod(CreateProgressDb)
                 .AsSingle()
                 .NonLazy();
@@ -109,21 +100,6 @@ namespace Assets.Scripts
             Container.Bind<Camera>()
                 .WithId(Constants.Camera)
                 .FromInstance(_camera)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.BlueMonkAnimatorController)
-                .FromInstance(_blueMonkAnimationController)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.BlueWarriorAnimatorController)
-                .FromInstance(_blueWarriorAnimationController)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.RedWarriorAnimatorController)
-                .FromInstance(_redWarriorAnimatorController)
                 .AsCached();
 
             Container.Bind<GameObject>()
