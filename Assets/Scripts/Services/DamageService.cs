@@ -1,4 +1,3 @@
-using Assets.Scripts;
 using Assets.UnitsCharacteristics;
 using Zenject;
 
@@ -10,30 +9,30 @@ namespace Assets.Scripts.Services
     }
 
     public class DamageService : IDamageService
-{
-    [Inject]
-    private readonly IHealthBarService _healthBarService;
-
-    public bool SetUnitDamage(Unit targetUnit, int damagePoints)
     {
-        var isKillDamage = damagePoints >= targetUnit.ActualHealthPoints;
+        [Inject]
+        private readonly IHealthBarService _healthBarService;
 
-        if (isKillDamage)
+        public bool SetUnitDamage(Unit targetUnit, int damagePoints)
         {
-            targetUnit.ActualHealthPoints = 0;
-        }
-        else
-        {
-            targetUnit.ActualHealthPoints -= damagePoints;
-        }
+            var isKillDamage = damagePoints >= targetUnit.ActualHealthPoints;
 
-        // Update the health bar UI if this is the currently selected player-controlled unit
-        if(targetUnit.IsSelected && targetUnit.Characteristic.Side == SideType.UserSide)
-        {
-            _healthBarService.SetUnitHelthPoints(targetUnit.ActualHealthPoints, targetUnit.Characteristic.HealthPoints);
-        }
+            if (isKillDamage)
+            {
+                targetUnit.ActualHealthPoints = 0;
+            }
+            else
+            {
+                targetUnit.ActualHealthPoints -= damagePoints;
+            }
 
-        return isKillDamage;
-    }
+            // Update the health bar UI if this is the currently selected player-controlled unit
+            if(targetUnit.IsSelected && targetUnit.Characteristic.Side == SideType.UserSide)
+            {
+                _healthBarService.SetUnitHelthPoints(targetUnit.ActualHealthPoints, targetUnit.Characteristic.HealthPoints);
+            }
+
+            return isKillDamage;
+        }
     }
 }

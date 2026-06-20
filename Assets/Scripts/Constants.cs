@@ -32,6 +32,7 @@ namespace Assets.Scripts
 
         public const string IsUnitMoving = "IsMoving";
         public const string UnitAttackTrigger = "AttackTrigger";
+        public const string UnitDeadTrigger = "DeadTrigger";
 
         #endregion
     }

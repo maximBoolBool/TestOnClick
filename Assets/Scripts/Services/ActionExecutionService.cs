@@ -118,19 +118,25 @@ namespace Assets.Scripts.Services
                     case ActionStepType.Damage:
 
                         _animationService.SwitchUnitAnimation(currentUnit, UnitAnimationType.Attack, true);
-                        var isHit = _hitService.IsHit(
+                        var haveHit = _hitService.IsHit(
                             targetUnit.Characteristic.DefendSkill,
                             currentUnit.Characteristic.MeleeSkill,
                             new Dictionary<HitModifierType, int>()
                         );
 
-                        if (isHit)
+                        if (haveHit)
                         {
                             var damageSetStep = step as ActionDamageStep;
-                            _damageService.SetUnitDamage(
+                            var isDead = _damageService.SetUnitDamage(
                                 targetUnit: targetUnit,
                                 damagePoints: random.Next(damageSetStep.MinDamageValue, damageSetStep.MaxDamageValue)
                             );
+
+                            if (isDead)
+                            {
+                                _animationService.SwitchUnitAnimation(targetUnit, UnitAnimationType.Dead, true);
+                            }
+
                             stepResults.TryAdd(step.Order, true);
                         }
                         else
