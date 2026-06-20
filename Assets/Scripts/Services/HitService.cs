@@ -10,6 +10,12 @@ namespace Assets.Scripts.Services
             int attckSkeel,
             Dictionary<HitModifierType, int> parametres
         );
+
+        int GetChanceToHit(
+            int defendSkeel,
+            int attckSkeel,
+            Dictionary<HitModifierType, int> parametres
+        );
     }
 
     public class HitService : IHitService
@@ -26,14 +32,28 @@ namespace Assets.Scripts.Services
             Dictionary<HitModifierType, int> parametres
         )
         {
-            var chance = attckSkill - defendSkill;
-            chance = Math.Clamp(chance, MinChanceToHit, MaxChanceToHit);
+            var chance = GetChanceToHit(
+                defendSkill: defendSkill,
+                attckSkill: attckSkill,
+                parametres: parametres
+            );
 
             var random = new Random();
             var roll = random.Next(MinRandomValue, MaxRandomValue);
 
             var result = roll <= chance;
             return result;
+        }
+    
+
+        public int GetChanceToHit(
+            int defendSkill,
+            int attckSkill,
+            Dictionary<HitModifierType, int> parametres
+        )
+        {
+            var chance = attckSkill - defendSkill;
+            return Math.Clamp(chance, MinChanceToHit, MaxChanceToHit);
         }
     }
 

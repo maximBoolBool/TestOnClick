@@ -8,7 +8,7 @@ namespace Assets.Scripts.Helpers
     {
         return new BaseAction[]
         {
-            new UnitTargetAction()
+            new EnemyUnitTargetAction()
             {
                 PointCost = 2,
                 Name = "Hit",

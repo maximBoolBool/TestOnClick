@@ -3,6 +3,7 @@ using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
+using Assets.Scripts.Services.BotStrategy;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -190,6 +191,16 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<IPathFinderService>()
+                .To<PathFinderService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IMoveService>()
+                .To<MoveService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<IDamageService>()
                 .To<DamageService>()
                 .AsSingle()
@@ -235,8 +246,28 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IAiTurnService>()
-                .To<AiTurnService>()
+            Container.Bind<ISharedBotStrategyService>()
+                .To<SharedBotStrategyService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IBotExecutionTurnService>()
+                .To<BotExecutionTurnService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IAggressiveStrategyBotService>()
+                .To<AggressiveStrategyBotService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IDefensiveStrategyBotService>()
+                .To<DefensiveStrategyBotService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<ISupportStrategyService>()
+                .To<SupportStrategyService>()
                 .AsSingle()
                 .NonLazy();
 

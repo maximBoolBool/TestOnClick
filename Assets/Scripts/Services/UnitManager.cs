@@ -8,6 +8,7 @@ using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Zenject;
 
@@ -208,8 +209,6 @@ namespace Assets.Scripts.Services
 
         #region Private Methondes
 
-
-
         private void ClearEnemiesunits()
         {
             var deleteUnits = _units.Where(x => x.Characteristic.Side == SideType.EnemySide).ToArray();
@@ -241,14 +240,21 @@ namespace Assets.Scripts.Services
 
                 for (var j = 0; j < count; j++)
                 {
+                    var isMonk = unit.Name == "Monk";
+
                     var generatePosition = new Vector3Int((i + j) * 3, (i + j) * 3, 0);
                     var unitItem = _factory.Create();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetComponent<Animator>();
-                    animator.runtimeAnimatorController = unit.Name == "Monk"
+                    animator.runtimeAnimatorController = isMonk
                         ? UnitAnimatorOverrideControllerLoader.LoadController("RedMonkAnimatorOverrideController")                       
                         : UnitAnimatorOverrideControllerLoader.LoadController("RedWarriorAnimatorOverrideContoller");
+                    unitItem.Actions = (isMonk
+                            ? BotActionHelper.GetEnemyMonkActions()
+                            : BotActionHelper.GetEnemyWarriorActions()
+                        )
+                        .ToList();
                     _units.Add(unitItem);
                 }
 
@@ -265,13 +271,21 @@ namespace Assets.Scripts.Services
             {
                 var generatePosition = new Vector3Int((i+1) * 2, (i+1) * 2, 0);
 
+                var isMonk = unit.Name == "Monk";
+
                 var unitItem = _factory.Create();
                 unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetComponent<Animator>();
-                animator.runtimeAnimatorController = unit.Name == "Monk"
+                animator.runtimeAnimatorController = isMonk
                     ? UnitAnimatorOverrideControllerLoader.LoadController("BlueMonkAnimatorController") 
                     : UnitAnimatorOverrideControllerLoader.LoadController("BlueWarriorAnimatorController");
+
+                unitItem.Actions = (isMonk
+                        ? BotActionHelper.GetEnemyMonkActions()
+                        : BotActionHelper.GetEnemyWarriorActions()
+                    )
+                    .ToList();
 
                 _units.Add(unitItem);
                 i++;

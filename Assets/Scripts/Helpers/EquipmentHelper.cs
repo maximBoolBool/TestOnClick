@@ -19,7 +19,7 @@ namespace Assets.Scripts.Helpers
                 Conditions = Array.Empty<BaseCondition>(),
                 Actions = new []
                 {
-                    new UnitTargetAction()
+                    new EnemyUnitTargetAction()
                     {
                         PointCost = 3,
                         Name = "Chop",
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Helpers
                 Conditions = Array.Empty<BaseCondition>(),
                 Actions = new []
                 {
-                    new UnitTargetAction()
+                    new EnemyUnitTargetAction()
                     {
                         PointCost = 2,
                         Name = "Slice",

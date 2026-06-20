@@ -1,3 +1,4 @@
+using Assets.Db.Enums;
 using Assets.Scripts.Models.Actions;
 using Assets.UnitsCharacteristics;
 using System;
@@ -10,7 +11,11 @@ namespace Assets.Scripts.Services
 {
     public interface IActionExecutionService
     {
-        void TryExecute(BaseAction action, Vector3Int? target);
+        void TryExecuteAction(
+            Unit executor,
+            BaseAction action,
+            Vector3Int? target
+        );
     }
 
     public class ActionExecutionService : IActionExecutionService
@@ -36,7 +41,8 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IAnimationService _animationService;
 
-        public void TryExecute(
+        public void TryExecuteAction(
+            Unit executor,
             BaseAction action,
             Vector3Int? target
         )
@@ -45,7 +51,7 @@ namespace Assets.Scripts.Services
             {
                 switch (action.Type)
                 {
-                    case ActionTargetType.UnitPeack:
+                    case ActionTargetType.OtherSideUnitPeacks:
                     case ActionTargetType.AreaPeack:
                         if (target == null)
                         {
@@ -53,13 +59,12 @@ namespace Assets.Scripts.Services
                             break;
                         }
 
-                        if (!_actionClickHandler.IsCanBeTarget(target.Value))
-                        {
-                            Debug.LogWarning("Tile can not be target");
-                            break;
-                        }
-
-                        ExecuteTargetActionIternal(action.Steps, target.Value, action.PointCost);
+                        ExecuteTargetActionIternal( 
+                            executor,
+                            action.Steps,
+                            target.Value,
+                            action.PointCost
+                        );
                         break;
                     case ActionTargetType.SelfPeak:
                     default:
@@ -77,17 +82,14 @@ namespace Assets.Scripts.Services
         }
 
         private void ExecuteTargetActionIternal(
+            Unit executor,
             BaseActionStep[] steps,
             Vector3Int target,
             int pointCost
         )
         {
-            var currentUnit = _unitManager.Units.FirstOrDefault(x => x.IsSelected);
-            if (currentUnit == null)
-            {
-                throw new InvalidOperationException("No unit is currently selected");
-            }
             var targetUnit = _unitManager.Units.FirstOrDefault(x => _gridService.ToGridCordinates(x) == target);
+
             if (targetUnit == null)
             {
                 Debug.LogWarning("No unit found at target position");
@@ -117,10 +119,10 @@ namespace Assets.Scripts.Services
                 {
                     case ActionStepType.Damage:
 
-                        _animationService.SwitchUnitAnimation(currentUnit, UnitAnimationType.Attack, true);
+                        _animationService.SwitchUnitAnimation(executor, UnitAnimationType.Attack, true);
                         var haveHit = _hitService.IsHit(
                             targetUnit.Characteristic.DefendSkill,
-                            currentUnit.Characteristic.MeleeSkill,
+                            executor.Characteristic.MeleeSkill,
                             new Dictionary<HitModifierType, int>()
                         );
 
@@ -167,30 +169,14 @@ namespace Assets.Scripts.Services
                 }
             }
 
-            currentUnit.ActualActionPoints -= pointCost;
+            executor.ActualActionPoints -= pointCost;
 
-            if (currentUnit.Characteristic.Side == SideType.UserSide && currentUnit.IsSelected)
+            if (executor.Characteristic.Side == SideType.UserSide && executor.IsSelected)
             {
                 _actionUIService.SetActionPoints(
-                     currentValue: currentUnit.ActualActionPoints,
-                     maxValue: currentUnit.Characteristic.ActiveActionPoints
+                     currentValue: executor.ActualActionPoints,
+                     maxValue: executor.Characteristic.ActiveActionPoints
                  );
-            }
-        }
-
-        private void ExecuteTargetActionIternal(
-            BaseActionStep[] steps
-        )
-        {
-            foreach (var step in steps.OrderBy(x => x.Order))
-            {
-                switch (step.Type)
-                {
-                    case ActionStepType.Damage:
-                        return;
-                    default:
-                        throw new NotImplementedException();
-                }
             }
         }
     }

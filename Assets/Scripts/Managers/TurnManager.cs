@@ -42,7 +42,7 @@ namespace Assets.Scripts.Managers
         private readonly IConditionService _conditionService;
 
         [Inject]
-        private readonly IAiTurnService _aiTurnService;
+        private readonly IBotExecutionTurnService _botExecutionTurnService;
 
         [Inject]
         private readonly IHealthBarService _healthBarService;
@@ -157,7 +157,7 @@ namespace Assets.Scripts.Managers
 
         private void ActivateEnemyUnitIternal(Unit unit)
         {
-            _aiTurnService.ExecuteAiTurn(unit);
+            _botExecutionTurnService.ExecuteBotTurn(unit);
         }
 
         public void DeactivateUnit(Unit unit)

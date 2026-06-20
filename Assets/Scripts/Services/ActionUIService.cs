@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using Assets.Scripts.Models.Actions;
-using Assets.Scripts;
 using Assets.Scripts.Models.Equipment;
 using Assets.Scripts.Helpers;
 

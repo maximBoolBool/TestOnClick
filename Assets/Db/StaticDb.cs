@@ -20,6 +20,10 @@ namespace Assets.Db
         public TableQuery<WaveEnemiesEntity> WaveEnemies => _connection.Table<WaveEnemiesEntity>();
         public TableQuery<WaveRoomEntity> WaveRooms => _connection.Table<WaveRoomEntity>();
         public TableQuery<LocationEntity> Locations => _connection.Table<LocationEntity>();
+        public TableQuery<SkillEntity> Skills => _connection.Table<SkillEntity>();
+        public TableQuery<UnitSkillEntity> UnitSkills => _connection.Table<UnitSkillEntity>();
+        public TableQuery<SkillStepEntity> SkillSteps => _connection.Table<SkillStepEntity>();
+        public TableQuery<StepEntity> Steps => _connection.Table<StepEntity>();
         #endregion
 
         public void Dispose()
