@@ -16,8 +16,6 @@ namespace Assets.Scripts.Services
 
     public class LocationService : ILocationService
     {
-        private const int StartRoomOrder = 0;
-
         [Inject]
         private readonly StaticDb _staticDb;
 
