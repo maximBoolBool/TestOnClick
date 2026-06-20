@@ -234,14 +234,14 @@ namespace Assets.Scripts.Services
 
             var units = GetUnitsData(enemiesCounts.Keys.ToArray());
 
-            var i = 0;
+            var i = 1;
             foreach (var unit in units)
             {
                 enemiesCounts.TryGetValue(unit.Id, out var count);
 
                 for (var j = 0; j < count; j++)
                 {
-                    var generatePosition = new Vector3Int((i + j + 1) * 3, (i + j + 1) * 3, 0);
+                    var generatePosition = new Vector3Int((i + j) * 3, (i + j) * 3, 0);
                     var unitItem = _factory.Create();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
@@ -252,7 +252,7 @@ namespace Assets.Scripts.Services
                     _units.Add(unitItem);
                 }
 
-                i++;
+                i += 2;
             }
         }
 
