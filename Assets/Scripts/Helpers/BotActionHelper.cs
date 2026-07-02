@@ -74,9 +74,10 @@ namespace Assets.Scripts.Helpers
                         {
                             BaseChanceToHit = 100,
                             Duration = 3,
-                            Target = Db.Enums.TargetType.ActionTarget,
+                            Target = Db.Enums.TargetType.ActionTarget,                            
                             Condition = new CharacteristicModifier()
                             {
+                                IsFolding = false,
                                 Modifications = new System.Collections.Generic.Dictionary<CharecteristicsModifier, (double Value, CharecteristicsModifierOperation Operation)>()
                                 {
                                     [CharecteristicsModifier.AttackSkill] = (Value: 10, Operation: CharecteristicsModifierOperation.ValueAdd),

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Helpers
 {
@@ -16,5 +17,7 @@ namespace Assets.Scripts.Helpers
             var deltaY = Mathf.Abs(targetPosition.y - currentPosition.y);
             return Mathf.Max(deltaX, deltaY) <= actionRange && !(deltaX == 0 && deltaY == 0);
         }
+
+        public static int GetGridDistante(Vector3Int start, Vector3Int end) => Math.Abs(start.x - end.x) + Math.Abs(start.y - end.y);
     }
 }

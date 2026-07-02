@@ -52,6 +52,7 @@ namespace Assets.Scripts.Services
                 switch (action.Type)
                 {
                     case ActionTargetType.OtherSideUnitPeacks:
+                    case ActionTargetType.SideUnitPeack:
                     case ActionTargetType.AreaPeack:
                         if (target == null)
                         {

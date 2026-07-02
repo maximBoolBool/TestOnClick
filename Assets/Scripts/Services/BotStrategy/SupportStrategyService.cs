@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Helpers;
 using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Models.BotTurnSteps;
+using Newtonsoft.Json.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,50 +39,41 @@ namespace Assets.Scripts.Services.BotStrategy
         private BaseBotCommand? GetBuffCommand(Unit unit)
         {
             var buffs = unit.Actions
-                .Where(x => x.Type == Db.Enums.ActionTargetType.SideUnitPeack)
-                .Cast<AlianceUnitTargetAction>()
-                .Where(x => _actionCostService.IsActionAvaliable(unit.ActualActionPoints, x.PointCost))
-                .ToArray();
+               .Where(x => x.Type == Db.Enums.ActionTargetType.SideUnitPeack)
+               .Cast<AlianceUnitTargetAction>();
 
-            if (buffs.Length == 0)
-            {
-                return null;                
-            }
+            var conditions = buffs.SelectMany(
+               action => action.Steps.Where(setp => setp.Type == Db.Enums.ActionStepType.EffectWithDuration)
+               .Cast<EffectWithDurationStep>()
+               .Select(x => new { Action = action, x.Condition })
+            );
 
-            var alianceUnitCordinates = _unitManager.Units
-                .Where(x => x.Characteristic.Side == unit.Characteristic.Side)
-                .Select(x => _gridService.ToGridCordinates(x));
-
-            var adjacentedActions = new List<(AlianceUnitTargetAction Action, Vector3Int[] Cordinates)>();
-
-            foreach (var action in buffs)
-            {
-                var aliancesAdjacentVectors = alianceUnitCordinates
-                    .Where(
-                        x => AdjacentHelper.IsAdjacent(
-                            _gridService.ToGridCordinates(unit),
-                            x,
-                            action.Range
-                        )
-                    );
-
-                if (aliancesAdjacentVectors.Count() != 0)
-                {
-                    adjacentedActions.Add((action, aliancesAdjacentVectors.ToArray()));
-                }
-            }
-
-            if (!adjacentedActions.Any())
+            if (!conditions.Any())
             {
                 return null;
             }
 
-            var (choosenAction, enemyCordinates) = adjacentedActions.First();
+            var condition = conditions.First();
+
+            var alianceUnits = _unitManager.Units.Where(x => x.Characteristic.Side == unit.Characteristic.Side);
+
+            //пока 1 бафф с 1 condition-ом поэтому пофиг            
+            var alianceUniteWithoutBuff = alianceUnits.Where(unit =>
+                unit.DuratationConditions.Any(x => x.Condition.Name != condition.Condition.Name)
+                && unit.GlobalConditions.Any(x => x.Name != condition.Condition.Name)
+            );
+
+            var currentUnitGridCordinate = _gridService.ToGridCordinates(unit);
+
+            var nearestAlianceCordinate = alianceUniteWithoutBuff
+                .Select(x => (Unit: x, GridCordinate: _gridService.ToGridCordinates(x)))
+                .OrderBy(x => AdjacentHelper.GetGridDistante(currentUnitGridCordinate, _gridService.ToGridCordinates(x.GridCordinate)))
+                .First();
 
             return new ExecuteActionBotCommand()
             {
-                TargetCordinate = enemyCordinates.First(),
-                Action = choosenAction
+                Action = condition.Action,
+                TargetCordinate = nearestAlianceCordinate.GridCordinate
             };
         }
 
@@ -94,13 +86,50 @@ namespace Assets.Scripts.Services.BotStrategy
 
         private BaseBotCommand? GoToAlianceCommand(Unit unit)
         {
-            var alianceUnits = _unitManager.Units.Where(x => x.Characteristic.Side == unit.Characteristic.Side);
-
             var buffs = unit.Actions
                 .Where(x => x.Type == Db.Enums.ActionTargetType.SideUnitPeack)
                 .Cast<AlianceUnitTargetAction>();
 
-            return null;
+             var conditions = buffs.SelectMany(
+                action => action.Steps.Where(setp => setp.Type == Db.Enums.ActionStepType.EffectWithDuration)
+                .Cast<EffectWithDurationStep>()
+                .Select(x => new { Action = action, x.Condition })
+             );
+
+            if (!conditions.Any())
+            {
+                return null;
+            }
+
+            var condition = conditions.First();
+
+            var alianceUnits = _unitManager.Units.Where(x => x.Characteristic.Side == unit.Characteristic.Side);
+
+            //пока 1 бафф с 1 condition-ом поэтому пофиг            
+            var alianceUniteWithoutBuff = alianceUnits.Where(unit =>
+                unit.DuratationConditions.Any(x => x.Condition.Name != condition.Condition.Name) 
+                && unit.GlobalConditions.Any(x => x.Name != condition.Condition.Name)
+            );
+
+            var currentUnitGridCordinate = _gridService.ToGridCordinates(unit);
+
+            var nearestAlianceCordinate = alianceUniteWithoutBuff
+                .Select(x => (Unit: x, GridCordinate: _gridService.ToGridCordinates(x)))
+                .OrderBy(x => AdjacentHelper.GetGridDistante(currentUnitGridCordinate, _gridService.ToGridCordinates(x.GridCordinate)))
+                .First();
+
+            var resultPostion = _sharedBotStrategyService.FindBestTileNearTarget(targetPos: nearestAlianceCordinate.GridCordinate, currentUnitGridCordinate, unit);
+
+            var path = _sharedBotStrategyService.FindPath(
+                start: currentUnitGridCordinate,
+                end: resultPostion,
+                currentUnit: unit
+            );
+
+            return new MoveBotCommand() 
+            {
+                Path = path,
+            };
         }
 
         private BaseBotCommand? GoToEnemyCommand(Unit unit)
@@ -202,14 +231,6 @@ namespace Assets.Scripts.Services.BotStrategy
                 TargetCordinate = enemyCordinates.First(),
                 Action = choosenAction
             };
-        }
-
-        private (AlianceUnitTargetAction, Vector3Int[])[] GetActionTargetPairs(AlianceUnitTargetAction[] buffActions, Unit[] units)
-        {
-            //Заменить на сревис
-            var woundedAliance = units.Where(unit => unit.Characteristic.HealthPoints > unit.ActualHealthPoints);
-
-            return Array.Empty<(AlianceUnitTargetAction, Vector3Int[])>();
         }
     }
 }

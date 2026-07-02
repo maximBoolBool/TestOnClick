@@ -50,17 +50,17 @@ namespace Assets.Scripts.Models.Conditions
 
     public enum CharecteristicsModifier
     {
-        HeakthPointMaxValue,
-        ActionPointMaxValue,
-        AttackSkill,
-        DeafendSkill
+        HeakthPointMaxValue = 0,
+        ActionPointMaxValue = 1,
+        AttackSkill = 2,
+        DeafendSkill = 3
     }
 
     public enum CharecteristicsModifierOperation
     {
-        ValueAdd,
-        ValueSubtract,
-        ValueMultiply,
-        ValueDivide,
+        ValueAdd = 0,
+        ValueSubtract = 1,
+        ValueMultiply = 2,
+        ValueDivide = 3,
     }
 }

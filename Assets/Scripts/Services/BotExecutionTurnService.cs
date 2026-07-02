@@ -75,8 +75,6 @@ namespace Assets.Scripts.Services
                         yield break;
                 }
             }
-
-            yield return null;
         }
 
         private BotStrategyType GetBotStrategyType(Unit unit)
