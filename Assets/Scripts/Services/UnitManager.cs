@@ -8,6 +8,7 @@ using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Zenject;
 
@@ -66,15 +67,6 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly IGridService _gridService;
-
-        [Inject(Id = Constants.RedWarriorAnimatorController)]
-        private readonly AnimatorOverrideController _redWarriorAnimatorController;
-
-        [Inject(Id = Constants.BlueWarriorAnimatorController)]
-        private readonly AnimatorOverrideController _blueWarriorAnimatorController;
-
-        [Inject(Id = Constants.BlueMonkAnimatorController)]
-        private readonly AnimatorOverrideController _blueMonkAnimatorController;
 
         [Inject]
         private readonly StaticDb _staticDb;
@@ -241,21 +233,32 @@ namespace Assets.Scripts.Services
 
             var units = GetUnitsData(enemiesCounts.Keys.ToArray());
 
-            var i = 0;
+            var i = 1;
             foreach (var unit in units)
             {
                 enemiesCounts.TryGetValue(unit.Id, out var count);
 
                 for (var j = 0; j < count; j++)
                 {
-                    var generatePosition = new Vector3Int((i + j + 1) * 3, (i + j + 1) * 3, 0);
+                    var isMonk = unit.Name == "Monk";
+
+                    var generatePosition = new Vector3Int((i + j) * 3, (i + j) * 3, 0);
                     var unitItem = _factory.Create();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetComponent<Animator>();
-                    animator.runtimeAnimatorController = _redWarriorAnimatorController;
+                    animator.runtimeAnimatorController = isMonk
+                        ? UnitAnimatorOverrideControllerLoader.LoadController("RedMonkAnimatorOverrideController")                       
+                        : UnitAnimatorOverrideControllerLoader.LoadController("RedWarriorAnimatorOverrideContoller");
+                    unitItem.Actions = (isMonk
+                            ? BotActionHelper.GetEnemyMonkActions()
+                            : BotActionHelper.GetEnemyWarriorActions()
+                        )
+                        .ToList();
                     _units.Add(unitItem);
                 }
+
+                i += 2;
             }
         }
 
@@ -268,11 +271,21 @@ namespace Assets.Scripts.Services
             {
                 var generatePosition = new Vector3Int((i+1) * 2, (i+1) * 2, 0);
 
+                var isMonk = unit.Name == "Monk";
+
                 var unitItem = _factory.Create();
                 unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetComponent<Animator>();
-                animator.runtimeAnimatorController = unit.Name == "Monk" ? _blueMonkAnimatorController : _blueWarriorAnimatorController;
+                animator.runtimeAnimatorController = isMonk
+                    ? UnitAnimatorOverrideControllerLoader.LoadController("BlueMonkAnimatorController") 
+                    : UnitAnimatorOverrideControllerLoader.LoadController("BlueWarriorAnimatorController");
+
+                unitItem.Actions = (isMonk
+                        ? BotActionHelper.GetEnemyMonkActions()
+                        : BotActionHelper.GetEnemyWarriorActions()
+                    )
+                    .ToList();
 
                 _units.Add(unitItem);
                 i++;

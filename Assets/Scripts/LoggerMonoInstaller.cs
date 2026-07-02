@@ -3,6 +3,7 @@ using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
+using Assets.Scripts.Services.BotStrategy;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -57,15 +58,6 @@ namespace Assets.Scripts
         private GameObject _equipmentSlotPrefab;
 
         [SerializeField]
-        private AnimatorOverrideController _redWarriorAnimatorController;
-
-        [SerializeField]
-        private AnimatorOverrideController _blueWarriorAnimationController;
-
-        [SerializeField]
-        private AnimatorOverrideController _blueMonkAnimationController;
-
-        [SerializeField]
         private Camera _camera;
 
         public override void InstallBindings()
@@ -76,12 +68,12 @@ namespace Assets.Scripts
 
             _equipmentPanel.SetActive(false);
 
-            Container.Bind<StaticDb>()
+            Container.BindInterfacesAndSelfTo<StaticDb>()
                 .FromMethod(CreateStaticDb)
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<ProgressDb>()
+            Container.BindInterfacesAndSelfTo<ProgressDb>()
                 .FromMethod(CreateProgressDb)
                 .AsSingle()
                 .NonLazy();
@@ -109,21 +101,6 @@ namespace Assets.Scripts
             Container.Bind<Camera>()
                 .WithId(Constants.Camera)
                 .FromInstance(_camera)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.BlueMonkAnimatorController)
-                .FromInstance(_blueMonkAnimationController)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.BlueWarriorAnimatorController)
-                .FromInstance(_blueWarriorAnimationController)
-                .AsCached();
-
-            Container.Bind<AnimatorOverrideController>()
-                .WithId(Constants.RedWarriorAnimatorController)
-                .FromInstance(_redWarriorAnimatorController)
                 .AsCached();
 
             Container.Bind<GameObject>()
@@ -214,6 +191,16 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<IPathFinderService>()
+                .To<PathFinderService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IMoveService>()
+                .To<MoveService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<IDamageService>()
                 .To<DamageService>()
                 .AsSingle()
@@ -259,8 +246,28 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IAiTurnService>()
-                .To<AiTurnService>()
+            Container.Bind<ISharedBotStrategyService>()
+                .To<SharedBotStrategyService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IBotExecutionTurnService>()
+                .To<BotExecutionTurnService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IAggressiveStrategyBotService>()
+                .To<AggressiveStrategyBotService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IDefensiveStrategyBotService>()
+                .To<DefensiveStrategyBotService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<ISupportStrategyService>()
+                .To<SupportStrategyService>()
                 .AsSingle()
                 .NonLazy();
 

@@ -1961,9 +1961,6 @@ MonoBehaviour:
   _enemyPanelInfo: {fileID: 1630311050}
   _equipmentPanel: {fileID: 54674720}
   _equipmentSlotPrefab: {fileID: 3965646127901669275, guid: 404edcfddb50339438c3656d19a35beb, type: 3}
-  _redWarriorAnimatorController: {fileID: 22100000, guid: 854a8a646b7f1bc44a7839d426e36cac, type: 2}
-  _blueWarriorAnimationController: {fileID: 22100000, guid: 6813d86477ec2f444937c0f79f33a80b, type: 2}
-  _blueMonkAnimationController: {fileID: 22100000, guid: b462eaefa83346040b4ba8188925fd65, type: 2}
   _camera: {fileID: 2087076154}
 --- !u!1 &941902014
 GameObject:
@@ -4638,7 +4635,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 1
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

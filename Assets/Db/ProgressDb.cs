@@ -10,7 +10,7 @@ namespace Assets.Db
 
         public ProgressDb(string connectionString)
         {
-            _connection = new SQLiteConnection(connectionString);
+            _connection = new SQLiteConnection(connectionString, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.FullMutex);
         }
 
         #region Tables

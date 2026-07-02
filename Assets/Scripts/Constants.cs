@@ -21,14 +21,6 @@ namespace Assets.Scripts
 
         #endregion
 
-        #region Animator Controllers
-
-        public const string RedWarriorAnimatorController = "RedWarriorAnimatorController";
-        public const string BlueWarriorAnimatorController = "BlueWarriorAnimatorController";
-        public const string BlueMonkAnimatorController = "BlueMonkAnimatorController";
-
-        #endregion
-
         #region Game Constants
 
         public const int Max_User_Units = 10;
@@ -40,6 +32,7 @@ namespace Assets.Scripts
 
         public const string IsUnitMoving = "IsMoving";
         public const string UnitAttackTrigger = "AttackTrigger";
+        public const string UnitDeadTrigger = "DeadTrigger";
 
         #endregion
     }

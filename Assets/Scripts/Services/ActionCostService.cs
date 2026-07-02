@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Assets.Scripts.Services
 {
     public interface IActionCostService
@@ -7,17 +5,17 @@ namespace Assets.Scripts.Services
     public bool IsActionAvaliable(int points, int pointCost);
 }
 
-public class ActionCostService : IActionCostService
-{
-    public bool IsActionAvaliable(int points, int pointCost)
+    public class ActionCostService : IActionCostService
     {
-        // НИ одно действие не должно быть бесплатным!!!!
-        if (pointCost == 0)
+        public bool IsActionAvaliable(int points, int pointCost)
         {
-            return false;
+            // НИ одно действие не должно быть бесплатным!!!!
+            if (pointCost == 0)
+            {
+                return false;
+            }
+            return points >= pointCost;
         }
-        return points >= pointCost;
-    }
     }
 }
      

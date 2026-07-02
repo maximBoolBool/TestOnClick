@@ -1241,11 +1241,11 @@ namespace Zenject
             {
                 var parent = parentContainers[i];
 
-                var distance = parent.GetContainerHeirarchyDistance(container, depth + 1);
+                var distante = parent.GetContainerHeirarchyDistance(container, depth + 1);
 
-                if (distance.HasValue && (!result.HasValue || distance.Value < result.Value))
+                if (distante.HasValue && (!result.HasValue || distante.Value < result.Value))
                 {
-                    result = distance;
+                    result = distante;
                 }
             }
 

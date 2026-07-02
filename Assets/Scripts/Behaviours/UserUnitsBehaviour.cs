@@ -1,5 +1,5 @@
+using Assets.Db.Enums;
 using Assets.Scripts.Managers;
-using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System.Collections;
@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using Zenject;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.Behaviours
 {
@@ -105,7 +106,8 @@ namespace Assets.Scripts.Behaviours
             {
                 if (selectedAction.Type == ActionTargetType.SelfPeak)
                 {
-                    _actionExecutionService.TryExecute(
+                    _actionExecutionService.TryExecuteAction(
+                        executor: selectedUnit,
                         action: selectedAction,
                         target: null
                     );
@@ -118,7 +120,15 @@ namespace Assets.Scripts.Behaviours
                 var mouseTilePos = _gridService.ToGridCordinates(worldPos);
                 _enemyPanelServic.HideUnitInfo();
                 isShowingUnitInfo = false;
-                _actionExecutionService.TryExecute(
+
+                if (!_actionClickHandler.IsCanBeTarget(mouseTilePos))
+                {
+                    Debug.LogWarning("Tile can not be target");
+                    return;
+                }
+
+                _actionExecutionService.TryExecuteAction(
+                    executor: selectedUnit,
                     action: selectedAction,
                     target: mouseTilePos
                 );
