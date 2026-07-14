@@ -61,7 +61,9 @@ namespace Assets.Scripts.Services
                 _roomLoaderService.ClearRoom(AdvancedRoomLoader.LoadRoomSync($"Room{roomIds[newRoomOrder - 1]}"));
             }
 
-            _roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
+            //PRT-9
+            _roomLoaderService.NewLoadRoom("Room_1_1");
+            //_roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
             _gameGlobalStateManager.ActualRoomId = currentRoomId;
             _gameGlobalStateManager.ActualWaveOrder = 1;            
 

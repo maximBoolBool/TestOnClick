@@ -25,7 +25,7 @@ namespace Assets.Scripts.Behaviours
         private bool _loadOnStart = true;
 
         [Inject]
-        private IRoomLoaderService _roomLoader;
+        private IRoomLoaderService _roomLoaderService;
 
         private void Start()
         {
@@ -47,13 +47,16 @@ namespace Assets.Scripts.Behaviours
                 return;
             }
 
-            if (_roomLoader == null)
+            if (_roomLoaderService == null)
             {
                 Debug.LogError("[RoomLoaderBehaviour] RoomLoaderService не инжектирован! Проверь Zenject.");
                 return;
             }
 
-            _roomLoader.LoadRoom(_roomLayout, _offset);
+            //PRT-9 убрать хардкод
+            _roomLoaderService.NewLoadRoom("Room_1");
+
+            //_roomLoader.LoadRoom(_roomLayout, _offset);
             Debug.Log($"[RoomLoaderBehaviour] Загружена комната: {_roomLayout.name}");
         }
 
@@ -63,10 +66,10 @@ namespace Assets.Scripts.Behaviours
         [ContextMenu("Clear Room")]
         public void ClearRoom()
         {
-            if (_roomLayout == null || _roomLoader == null)
+            if (_roomLayout == null || _roomLoaderService == null)
                 return;
 
-            _roomLoader.ClearRoom(_roomLayout, _offset);
+            _roomLoaderService.ClearRoom(_roomLayout, _offset);
             Debug.Log($"[RoomLoaderBehaviour] Комната очищена: {_roomLayout.name}");
         }
 

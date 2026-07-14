@@ -16,8 +16,8 @@ namespace Assets.Scripts.Services
     {
         private Dictionary<TileBase, int> movementCosts = new();
 
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
+        [Inject(Id = Constants.Grid)]
+        private readonly Grid _grid;
 
         [Inject]
         private readonly IGridService _gridService;
@@ -77,10 +77,12 @@ namespace Assets.Scripts.Services
 
         private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
         {
-            var tile = _groundTilemap.GetTile(pos);
-            int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            bool isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            //PRT-9
+            return 1;
+            //var tile = _groundTilemap.GetTile(pos);
+            //int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
+            //bool isDiagonal = direction.x != 0 && direction.y != 0;
+            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
 
         private int Heuristic(Vector3Int a, Vector3Int b)
@@ -90,17 +92,19 @@ namespace Assets.Scripts.Services
 
         private bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)
         {
-            if (pos == currentPosition)
-            {
-                return false;
-            }
-            var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
-            if (occupiedTiles.Contains(pos))
-            {
-                return false;
-            }
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
+            //PRT-9
+            return true;
+            //if (pos == currentPosition)
+            //{
+            //    return false;
+            //}
+            //var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
+            //if (occupiedTiles.Contains(pos))
+            //{
+            //    return false;
+            //}
+            //var tile = _grid.GetTile(pos);
+            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
 
         /*private List<(Vector3Int, int)> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)

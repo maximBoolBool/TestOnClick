@@ -33,9 +33,6 @@ namespace Assets.Scripts.Services.BotStrategy
         [Inject]
         private readonly IGridService _gridService;
 
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
-
         // Переделать под сервис
         private Dictionary<TileBase, int> movementCosts = new();
 
@@ -197,8 +194,9 @@ namespace Assets.Scripts.Services.BotStrategy
             {
                 return false;
             }
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
+
+            //PRT-9
+            return true;
         }
 
         private int GetPathCostTo(
@@ -248,10 +246,7 @@ namespace Assets.Scripts.Services.BotStrategy
 
         private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
         {
-            var tile = _groundTilemap.GetTile(pos);
-            int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            bool isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            return 1;
         }
 
 

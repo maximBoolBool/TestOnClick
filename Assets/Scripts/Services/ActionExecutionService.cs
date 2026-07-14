@@ -41,6 +41,9 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IAnimationService _animationService;
 
+        [Inject]
+        private readonly IUnitPanelBarService _unitPanelBarService;
+
         public void TryExecuteAction(
             Unit executor,
             BaseAction action,
@@ -174,10 +177,10 @@ namespace Assets.Scripts.Services
 
             if (executor.Characteristic.Side == SideType.UserSide && executor.IsSelected)
             {
-                _actionUIService.SetActionPoints(
-                     currentValue: executor.ActualActionPoints,
-                     maxValue: executor.Characteristic.ActiveActionPoints
-                 );
+                _unitPanelBarService.SetUnitActionPoints(
+                    actualActionPoint: executor.ActualActionPoints,
+                    maxActionPoint: executor.Characteristic.ActiveActionPoints
+                );
             }
         }
     }

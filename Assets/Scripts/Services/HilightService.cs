@@ -34,8 +34,8 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.HighlightTile)]
         private readonly TileBase _highlightTile;
 
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
+        [Inject(Id = Constants.Grid)]
+        private readonly Grid _grid;
 
         [Inject]
         private readonly IUnitManager _unitManager;
@@ -130,29 +130,33 @@ namespace Assets.Scripts.Services
 
         private bool IsWalkable(Unit unit, Vector3Int pos)
         {
-            if (pos == _gridService.ToGridCordinates(unit))
-            {
-                return false;
-            }
+            //PRT-9
+            return true;
+            //if (pos == _gridService.ToGridCordinates(unit))
+            //{
+            //    return false;
+            //}
 
-            var ocuppaitedTiles = _unitManager.Units
-                .Select(x => _gridService.ToGridCordinates(x))
-                .ToArray();
-            if (ocuppaitedTiles.Contains(pos))
-            {
-                return false;
-            }
+            //var ocuppaitedTiles = _unitManager.Units
+            //    .Select(x => _gridService.ToGridCordinates(x))
+            //    .ToArray();
+            //if (ocuppaitedTiles.Contains(pos))
+            //{
+            //    return false;
+            //}
 
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
+            //var tile = _grid.GetTile(pos);
+            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
 
         private int GetMovementCost(Vector3Int pos, Vector3Int direction)
         {
-            var tile = _groundTilemap.GetTile(pos);
-            var baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            var isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            //PRT-9
+            return 1;
+            //var tile = _grid.GetTile(pos);
+            //var baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
+            //var isDiagonal = direction.x != 0 && direction.y != 0;
+            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
     }
 }

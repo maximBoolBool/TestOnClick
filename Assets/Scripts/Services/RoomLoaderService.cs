@@ -1,5 +1,8 @@
 using Assets.Scripts.Data;
+using Assets.Scripts.Managers;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.Tilemaps;
 using Zenject;
 
@@ -10,67 +13,20 @@ namespace Assets.Scripts.Services
     /// </summary>
     public interface IRoomLoaderService
     {
-        void LoadRoom(RoomLayout layout, Vector3Int offset = default);
         void ClearRoom(RoomLayout layout, Vector3Int offset = default);
+        void NewLoadRoom(string roomKey);
     }
 
     public class RoomLoaderService : IRoomLoaderService
     {
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
-
+        [Inject]
+        private readonly IGridLayersManager _gridLayersManager;
+       
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
-        /// <summary>
-        /// Загрузить комнату на Tilemap
-        /// </summary>
-        /// <param name="layout">ScriptableObject с картой комнаты</param>
-        /// <param name="offset">Смещение комнаты (по умолчанию 0,0,0)</param>
-        public void LoadRoom(RoomLayout layout, Vector3Int offset = default)
-        {
-            if (layout == null)
-            {
-                Debug.LogError("[RoomLoader] Layout is null!");
-                return;
-            }
-
-            Debug.Log($"[RoomLoader] Загрузка комнаты (RoomId: {layout.RoomId}, Size: {layout.Width}x{layout.Height})");
-
-            // Получаем карту тайлов
-            var tileMap = layout.GetTileMap2D();
-
-            // Отрисовываем каждый тайл
-            for (int x = 0; x < layout.Width; x++)
-            {
-                for (int y = 0; y < layout.Height; y++)
-                {
-                    Vector3Int position = new Vector3Int(x, y, 0) + offset;
-                    TileType tileType = tileMap[x, y];
-
-                    // Выбираем тайл в зависимости от типа
-                    TileBase tile = GetTileForType(layout, tileType);
-
-                    if (tile != null)
-                    {
-                        // Стены рисуем на слое Highlight, пол - на Ground
-                        if (tileType == TileType.Wall)
-                        {
-                            _highlightTilemap?.SetTile(position, tile);
-                        }
-                        else
-                        {
-                            _groundTilemap.SetTile(position, tile);
-                        }
-                    }
-                }
-            }
-
-            // Визуализируем точки спавна (опционально)
-            DrawSpawnPoints(layout, offset);
-
-            Debug.Log($"[RoomLoader] Комната загружена успешно!");
-        }
+        [Inject(Id = Constants.Grid)]
+        private readonly Grid _grid;
 
         /// <summary>
         /// Очистить комнату с карты
@@ -84,7 +40,6 @@ namespace Assets.Scripts.Services
                 for (int y = 0; y < layout.Height; y++)
                 {
                     Vector3Int position = new Vector3Int(x, y, 0) + offset;
-                    _groundTilemap.SetTile(position, null);
                     _highlightTilemap?.SetTile(position, null);
                 }
             }
@@ -131,5 +86,37 @@ namespace Assets.Scripts.Services
                 }
             }
         }
+
+        public void NewLoadRoom(string roomKey)
+        {
+            UnloadCurrentRoom();
+
+            Addressables.InstantiateAsync(roomKey).Completed += OnRoomVisualLoaded;
+        }
+
+        private void OnRoomVisualLoaded(AsyncOperationHandle<GameObject> handle)
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                handle.Result.transform.position = Vector3.zero; // Сбрасываем позицию в 0,0,0
+                handle.Result.transform.SetParent(_grid.transform);
+                _gridLayersManager.SetRoomVisual(handle.Result);
+            }
+            else
+            {
+                Debug.LogError("Не удалось загрузить визуал комнаты через Addressables!");
+            }
+        }
+
+        private void UnloadCurrentRoom()
+        {
+            if (_gridLayersManager.RoomVisual != null)
+            {
+                // Очень важно! Addressables требует освобождать память именно через этот метод
+                Addressables.ReleaseInstance(_gridLayersManager.RoomVisual);
+                _gridLayersManager.SetRoomVisual(null);
+            }
+        }
+
     }
 }

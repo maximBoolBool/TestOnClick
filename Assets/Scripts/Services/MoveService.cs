@@ -17,8 +17,8 @@ namespace Assets.Scripts.Services
         private Dictionary<TileBase, int> movementCosts = new();
         public float moveSpeed = 3f;
 
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
+        [Inject(Id = Constants.Grid)]
+        private readonly Grid _grid;
 
         [Inject]
         private readonly IAnimationService _animationService;
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Services
                 int stepCost = GetMovementCost(step, dir);
                 unit.ActualActionPoints -= stepCost;
 
-                var worldTarget = _groundTilemap.GetCellCenterWorld(step);
+                var worldTarget = _grid.GetCellCenterWorld(step);
                 float distance = Vector3.Distance(unit.transform.position, worldTarget);
                 float duration = distance / moveSpeed;
                 float elapsed = 0;
@@ -63,10 +63,11 @@ namespace Assets.Scripts.Services
 
         private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
         {
-            var tile = _groundTilemap.GetTile(pos);
-            int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            bool isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            return 1;
+            //var tile = _grid.GetTile(pos);
+            //int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
+            //bool isDiagonal = direction.x != 0 && direction.y != 0;
+            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
     }
 }

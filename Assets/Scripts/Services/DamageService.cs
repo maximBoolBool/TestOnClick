@@ -11,7 +11,7 @@ namespace Assets.Scripts.Services
     public class DamageService : IDamageService
     {
         [Inject]
-        private readonly IHealthBarService _healthBarService;
+        private readonly IUnitPanelBarService _healthBarService;
 
         public bool SetUnitDamage(Unit targetUnit, int damagePoints)
         {
