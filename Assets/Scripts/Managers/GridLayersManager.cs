@@ -13,22 +13,31 @@ namespace Assets.Scripts.Managers
         GameObject? RoomVisual { get; }
         void LayerUp();
         void LayerDown();
+        bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer);
     }
 
     public class GridLayersManager : IGridLayersManager
     {
-        private RoomLayerType _maxVisualLayerType = RoomLayerType.GroundLayer4;
+        private RoomLayerType? _roomMaxLayer = null;
+        private RoomLayerType _actualLastLayer = RoomLayerType.GroundLayer4;
         private GameObject? _currentActiveRoomVisual;
         private readonly Dictionary<string, TilemapRenderer> _cachedLayerRenderers = new();
+        private readonly Dictionary<string, Tilemap> _cachedLayerTilemaps = new();
 
         public GameObject? RoomVisual => _currentActiveRoomVisual;
 
+        //Вызывать при старте сцены
         public void SetRoomVisual(GameObject? roomVisual)
         {
             _currentActiveRoomVisual = roomVisual;
             _cachedLayerRenderers.Clear();
+            _cachedLayerTilemaps.Clear();
 
-            if (_currentActiveRoomVisual == null) return;
+            if (_currentActiveRoomVisual == null)
+            {
+                _roomMaxLayer = null;
+                return;
+            }
 
             var renderers = _currentActiveRoomVisual.GetComponentsInChildren<TilemapRenderer>(true);
             foreach (var renderer in renderers)
@@ -36,18 +45,38 @@ namespace Assets.Scripts.Managers
                 _cachedLayerRenderers[renderer.gameObject.name] = renderer;
             }
 
-            SetLayerVisual(_maxVisualLayerType);
+            var tileMaps = _currentActiveRoomVisual.GetComponentsInChildren<Tilemap>(true);
+
+            foreach(var tileMap in tileMaps)
+            {
+                _cachedLayerTilemaps[tileMap.gameObject.name] = tileMap;
+            }
+
+            _roomMaxLayer = _currentActiveRoomVisual
+                .GetComponentsInChildren<Tilemap>(true)
+                .Where(x => x.GetUsedTilesCount() > 0)
+                .Select(x => RoomLayerTypeHelper.GetRoomLayerType(x.gameObject.name))
+                .OrderByDescending(x => x)
+                .First();
+            
+            SetLayerVisual(_roomMaxLayer.Value);
         }
 
         public void SetLayerVisual(RoomLayerType layer)
         {
-            if (layer == _maxVisualLayerType)
+            if (layer > _roomMaxLayer)
+            {
+                Debug.LogWarning($"пришла слой {layer} хотя максимальный это {_roomMaxLayer}");
+                return;
+            }
+
+            if (layer == _actualLastLayer)
             {
                 Debug.LogWarning("Layer already on");
                 return;
             }
 
-            _maxVisualLayerType = layer;
+            _actualLastLayer = layer;
 
             var visibleLayers = layer switch
             {
@@ -116,7 +145,7 @@ namespace Assets.Scripts.Managers
 
         public void LayerUp()
         {
-            var newLayer = _maxVisualLayerType switch
+            var newLayer = _actualLastLayer switch
             {
                 RoomLayerType.GroundLayer4 => RoomLayerType.GroundLayer4,
                 RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer4,
@@ -130,7 +159,7 @@ namespace Assets.Scripts.Managers
 
         public void LayerDown()
         {
-            var newLayer = _maxVisualLayerType switch
+            var newLayer = _actualLastLayer switch
             {
                 RoomLayerType.GroundLayer4 => RoomLayerType.GroundLayer3,
                 RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer2,
@@ -141,6 +170,17 @@ namespace Assets.Scripts.Managers
 
             SetLayerVisual(newLayer);
 
+        }
+
+        public bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer)
+        {
+            var layerName = layer.GetRoomLayerGridName();
+
+            _cachedLayerTilemaps.TryGetValue(layerName, out Tilemap tilemap);
+
+            var tile = tilemap!.GetTile(cordinte);
+
+            return tile != null;
         }
     }
 }

@@ -8,7 +8,6 @@ using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using Zenject;
 
@@ -73,6 +72,9 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
+
+        [Inject]
+        private readonly IGridLayerService _gridLayerService;
 
         public static UnitManager Instance {  get; private set; }
 
@@ -242,7 +244,7 @@ namespace Assets.Scripts.Services
                 {
                     var isMonk = unit.Name == "Monk";
 
-                    var generatePosition = new Vector3Int((i + j) * 3, (i + j) * 3, 0);
+                    var generatePosition = _gridLayerService.GetRoomCordinateFromGridCordinate(new Vector3Int((i + j) * 3, (i + j) * 3, 0));
                     var unitItem = _factory.Create();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
@@ -269,7 +271,7 @@ namespace Assets.Scripts.Services
             var i = 0;
             foreach (var unit in units)
             {
-                var generatePosition = new Vector3Int((i+1) * 2, (i+1) * 2, 0);
+                var generatePosition = _gridLayerService.GetRoomCordinateFromGridCordinate(new Vector3Int((i + 1) * 2, (i + 1) * 2, 0));
 
                 var isMonk = unit.Name == "Monk";
 

@@ -46,5 +46,11 @@ namespace Assets.Scripts
         public const string UnitDeadTrigger = "DeadTrigger";
 
         #endregion
+
+        #region
+
+        public const int LayerGapTile = 1;
+
+        #endregion
     }
 }

@@ -91,7 +91,14 @@ namespace Assets.Scripts.Services
         {
             UnloadCurrentRoom();
 
-            Addressables.InstantiateAsync(roomKey).Completed += OnRoomVisualLoaded;
+            // Запускаем асинхронную операцию
+            var handle = Addressables.InstantiateAsync(roomKey);
+
+            // Блокируем главный поток до завершения загрузки и инстанцирования
+            GameObject roomInstance = handle.WaitForCompletion();
+
+            // Вызываем обработчик вручную, передавая уже завершенный хэндл
+            OnRoomVisualLoaded(handle);
         }
 
         private void OnRoomVisualLoaded(AsyncOperationHandle<GameObject> handle)

@@ -60,9 +60,6 @@ namespace Assets.Scripts.Managers
         private readonly ICameraService _cameraService;
 
         [Inject]
-        private readonly ILocationService _locationService;
-
-        [Inject]
         private readonly IUIAnimationService _uiAnimationService;
 
         private Coroutine _textAnimationCoroutine;

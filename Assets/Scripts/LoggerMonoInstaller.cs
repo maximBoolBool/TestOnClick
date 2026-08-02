@@ -242,6 +242,11 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<IGridLayerService>()
+                .To<GridLayerService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<IUnitManager>()
                 .To<UnitManager>()
                 .AsSingle()
@@ -349,6 +354,11 @@ namespace Assets.Scripts
 
             Container.Bind<IRoomLoaderService>()
                 .To<RoomLoaderService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IGameSceneStartManager>()
+                .To<GameSceneStartManager>()
                 .AsSingle()
                 .NonLazy();
 
