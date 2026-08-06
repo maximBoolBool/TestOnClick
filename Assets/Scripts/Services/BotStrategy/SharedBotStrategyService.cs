@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services.BotStrategy
@@ -33,8 +32,8 @@ namespace Assets.Scripts.Services.BotStrategy
         [Inject]
         private readonly IGridService _gridService;
 
-        // Переделать под сервис
-        private Dictionary<TileBase, int> movementCosts = new();
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
 
         public Unit FindNearestEnemyOnGrid(Unit currentUnit)
         {
@@ -119,7 +118,7 @@ namespace Assets.Scripts.Services.BotStrategy
                     Vector3Int neighbor = pos + dir;
                     if (!costs.ContainsKey(neighbor) && IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
                     {
-                        int tileCost = GetMovementCost(neighbor, dir);
+                        int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
                         if (newCost <= currentUnit.ActualActionPoints)
                         {
@@ -170,7 +169,7 @@ namespace Assets.Scripts.Services.BotStrategy
                     {
                         continue;
                     }
-                    int tentativeGCost = gCost[current] + GetMovementCost(neighbor, dir);
+                    int tentativeGCost = gCost[current] + _movementCostService.GetMovementCost(neighbor, dir);
                     if (!gCost.ContainsKey(neighbor) || tentativeGCost < gCost[neighbor])
                     {
                         cameFrom[neighbor] = current;
@@ -232,7 +231,7 @@ namespace Assets.Scripts.Services.BotStrategy
                     {
                         continue;
                     }
-                    int moveCost = GetMovementCost(neighbor, dir);
+                    int moveCost = _movementCostService.GetMovementCost(neighbor, dir);
                     int newCost = cost + moveCost;
                     if (newCost <= actualActionPoints)
                     {
@@ -243,12 +242,6 @@ namespace Assets.Scripts.Services.BotStrategy
             }
             return int.MaxValue;
         }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
-        {
-            return 1;
-        }
-
 
         private List<Vector3Int> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)
         {

@@ -25,6 +25,9 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IUnitManager _unitManager;
 
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
+
         public (Vector3Int, int)[] FindPath(Vector3Int start, Vector3Int end, Unit currentUnit)
         {
             var pathResult = new List<Vector3Int>();
@@ -62,7 +65,7 @@ namespace Assets.Scripts.Services
                     {
                         continue;
                     }
-                    int tentativeGCost = gCost[current] + GetMovementCost(neighbor, dir);
+                    int tentativeGCost = gCost[current] + _movementCostService.GetMovementCost(neighbor, dir);
                     if (!gCost.ContainsKey(neighbor) || tentativeGCost < gCost[neighbor])
                     {
                         cameFrom[neighbor] = current;
@@ -73,16 +76,6 @@ namespace Assets.Scripts.Services
                 }
             }
             return Array.Empty<(Vector3Int, int)>();
-        }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
-        {
-            //PRT-9
-            return 1;
-            //var tile = _groundTilemap.GetTile(pos);
-            //int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            //bool isDiagonal = direction.x != 0 && direction.y != 0;
-            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
 
         private int Heuristic(Vector3Int a, Vector3Int b)

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
@@ -13,8 +12,6 @@ namespace Assets.Scripts.Services
 
     public class MoveService : IMoveService
     {
-        // Переделать под сервис
-        private Dictionary<TileBase, int> movementCosts = new();
         public float moveSpeed = 3f;
 
         [Inject(Id = Constants.Grid)]
@@ -22,6 +19,9 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly IAnimationService _animationService;
+
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
 
         public IEnumerator MovePath(Unit unit, Vector3Int[] path)
         {
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Services
                 Vector3Int step = path[i];
                 Vector3Int prevStep = path[i - 1];
                 Vector3Int dir = step - prevStep;
-                int stepCost = GetMovementCost(step, dir);
+                int stepCost = _movementCostService.GetMovementCost(step, dir);
                 unit.ActualActionPoints -= stepCost;
 
                 var worldTarget = _grid.GetCellCenterWorld(step);
@@ -59,15 +59,6 @@ namespace Assets.Scripts.Services
 
             // Выключаем анимацию движения
             _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
-        }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
-        {
-            return 1;
-            //var tile = _grid.GetTile(pos);
-            //int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            //bool isDiagonal = direction.x != 0 && direction.y != 0;
-            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
     }
 }

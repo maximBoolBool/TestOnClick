@@ -1,7 +1,5 @@
-using Assets.Scripts;
 using Assets.UnitsCharacteristics;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
@@ -26,22 +24,17 @@ namespace Assets.Scripts.Services
 
     public class HiligthService : IHilightService
     {
-        private Dictionary<TileBase, int> movementCosts = new();
-
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
         [Inject(Id = Constants.HighlightTile)]
         private readonly TileBase _highlightTile;
 
-        [Inject(Id = Constants.Grid)]
-        private readonly Grid _grid;
-
-        [Inject]
-        private readonly IUnitManager _unitManager;
-
         [Inject]
         private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
 
         public void HighlightTiles(bool highlight, List<Vector3Int> reachableTiles, Unit unit)
         {
@@ -108,7 +101,7 @@ namespace Assets.Scripts.Services
                     Vector3Int neighbor = pos + dir;
                     if (!costs.ContainsKey(neighbor) && IsWalkable(unit, neighbor))
                     {
-                        int tileCost = GetMovementCost(neighbor, dir);
+                        int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
                         if (newCost <= unit.ActualActionPoints)
                         {
@@ -147,16 +140,6 @@ namespace Assets.Scripts.Services
 
             //var tile = _grid.GetTile(pos);
             //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-        }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction)
-        {
-            //PRT-9
-            return 1;
-            //var tile = _grid.GetTile(pos);
-            //var baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            //var isDiagonal = direction.x != 0 && direction.y != 0;
-            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
         }
     }
 }

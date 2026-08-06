@@ -62,6 +62,9 @@ namespace Assets.Scripts.Behaviours
         [Inject]
         private readonly IUnitPanelBarService _unitPanelBarService;
 
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
+
         private List<Vector3Int> reachableTiles = new();
         private List<Vector3Int> path = new();
         private Vector3Int lastHoveredTile;
@@ -240,7 +243,7 @@ namespace Assets.Scripts.Behaviours
                     {
                         continue;
                     }
-                    int tentativeGCost = gCost[current] + GetMovementCost(neighbor, dir);
+                    int tentativeGCost = gCost[current] + _movementCostService.GetMovementCost(neighbor, dir);
                     if (!gCost.ContainsKey(neighbor) || tentativeGCost < gCost[neighbor])
                     {
                         cameFrom[neighbor] = current;
@@ -264,7 +267,7 @@ namespace Assets.Scripts.Behaviours
                 var prevStep = path[i - 1];
                 var dir = step - prevStep;
 
-                var stepCost = GetMovementCost(step, dir);
+                var stepCost = _movementCostService.GetMovementCost(step, dir);
 
                 unit.ActualActionPoints -= stepCost;
 
@@ -339,16 +342,6 @@ namespace Assets.Scripts.Behaviours
             var tile = _groundTilemap.GetTile(pos);
             return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
             */
-        }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction = default)
-        {
-            //PRT-9
-            return 1;
-            /*var tile = _groundTilemap.GetTile(pos);
-            int baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            bool isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;*/
         }
     }
 }

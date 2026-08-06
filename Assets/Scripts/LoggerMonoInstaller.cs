@@ -129,6 +129,11 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<IMovementCostService>()
+                .To<MovementCostService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<ILocationService>()
                 .To<Services.LocationService>()
                 .AsSingle()
