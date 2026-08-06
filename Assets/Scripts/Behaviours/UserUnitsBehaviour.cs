@@ -239,7 +239,7 @@ namespace Assets.Scripts.Behaviours
                 foreach (Vector3Int dir in directions)
                 {
                     Vector3Int neighbor = current + dir;
-                    if (closed.Contains(neighbor) || !IsWalkable(unit, neighbor))
+                    if (closed.Contains(neighbor) || !_movementCostService.IsWalkable(unit, neighbor))
                     {
                         continue;
                     }
@@ -321,27 +321,6 @@ namespace Assets.Scripts.Behaviours
             }
             path.Reverse();
             return path;
-        }
-
-        private bool IsWalkable(Unit unit, Vector3Int pos)
-        {
-            //PRT-9
-            return true;
-            /*
-            if (pos == _gridService.ToGridCordinates(unit))
-            {
-                return false;
-            }
-            var ocuppaitedTiles = _unitManager.Units
-                .Select(x => _gridService.ToGridCordinates(x))
-                .ToArray();
-            if (ocuppaitedTiles.Contains(pos))
-            {
-                return false;
-            }
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-            */
         }
     }
 }

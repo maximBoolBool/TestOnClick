@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
@@ -61,7 +60,7 @@ namespace Assets.Scripts.Services
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = current + dir;
-                    if (closed.Contains(neighbor) || !IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
+                    if (closed.Contains(neighbor) || !_movementCostService.IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
                     {
                         continue;
                     }
@@ -82,34 +81,5 @@ namespace Assets.Scripts.Services
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
-
-        private bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)
-        {
-            //PRT-9
-            return true;
-            //if (pos == currentPosition)
-            //{
-            //    return false;
-            //}
-            //var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
-            //if (occupiedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-        }
-
-        /*private List<(Vector3Int, int)> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)
-        {
-            var path = new List<Vector3Int> { current };
-            while (cameFrom.ContainsKey(current))
-            {
-                current = cameFrom[current];
-                path.Add(current);
-            }
-            path.Reverse();
-            return path;
-        }*/
     }
 }

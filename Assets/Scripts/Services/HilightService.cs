@@ -80,7 +80,7 @@ namespace Assets.Scripts.Services
                     continue;
                 }
 
-                if (IsWalkable(unit, pos))
+                if (_movementCostService.IsWalkable(unit, pos))
                 {
                     newReachableTiles.Add(pos);
                 }
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Services
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = pos + dir;
-                    if (!costs.ContainsKey(neighbor) && IsWalkable(unit, neighbor))
+                    if (!costs.ContainsKey(neighbor) && _movementCostService.IsWalkable(unit, neighbor))
                     {
                         int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
@@ -119,27 +119,6 @@ namespace Assets.Scripts.Services
             );
 
             return newReachableTiles;
-        }
-
-        private bool IsWalkable(Unit unit, Vector3Int pos)
-        {
-            //PRT-9
-            return true;
-            //if (pos == _gridService.ToGridCordinates(unit))
-            //{
-            //    return false;
-            //}
-
-            //var ocuppaitedTiles = _unitManager.Units
-            //    .Select(x => _gridService.ToGridCordinates(x))
-            //    .ToArray();
-            //if (ocuppaitedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
     }
 }
