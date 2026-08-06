@@ -13,13 +13,8 @@ using Zenject;
 
 namespace Assets.Scripts.Behaviours
 {
-    // ¬ынести в общий сервис movementCosts/IsWalkable/GetMovementCost
     public class UserUnitsBehaviour : MonoBehaviour
     {
-        // перейти на сервис
-        [SerializeField]
-        private Dictionary<TileBase, int> movementCosts = new();
-
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
@@ -31,9 +26,6 @@ namespace Assets.Scripts.Behaviours
 
         [Inject]
         private readonly IUnitManager _unitManager;
-
-        [Inject]
-        private readonly IActionUIService _actionUIService;
 
         [Inject]
         private readonly IActionClickHandler _actionClickHandler;
