@@ -19,9 +19,6 @@ namespace Assets.Scripts
         private Unit _unitPrefab;
 
         [SerializeField]
-        private Tilemap _groundTilemap;
-
-        [SerializeField]
         private Tilemap _highlighTilemap;
 
         [SerializeField]
@@ -31,19 +28,22 @@ namespace Assets.Scripts
         private TileBase _hoverTile;
 
         [SerializeField]
-        private GameObject _slidersGameObject;
+        private GameObject _healthBarSliderGO;
+
+        [SerializeField]
+        private TextMeshProUGUI _healthBarText;
+
+        [SerializeField]
+        private GameObject _actionPointsBarSliderGO;
+
+        [SerializeField]
+        private TextMeshProUGUI _actionPointsBarText;
 
         [SerializeField]
         private GameObject _actionButtonPanel;
 
         [SerializeField]
         private GameObject _actionButtonPrefab;
-
-        [SerializeField]
-        private TextMeshProUGUI _healthBarText;
-
-        [SerializeField]
-        private TextMeshProUGUI _actionPointText;
 
         [SerializeField]
         private TextMeshProUGUI _moveCounterText;
@@ -60,9 +60,69 @@ namespace Assets.Scripts
         [SerializeField]
         private Camera _camera;
 
+        [SerializeField]
+        private GameObject _topCloudVeil;
+
+        [SerializeField]
+        private GameObject _bottomCloudVeil;
+
+        [SerializeField]
+        private GameObject _leftCloudVeil;
+
+        [SerializeField]
+        private GameObject _rightCloudVeil;
+
+        [SerializeField]
+        private Grid _grid;
+
+        [SerializeField]
+        private GameObject _unitInfoPanelIcon;
+
         public override void InstallBindings()
         {
-            var slider = _slidersGameObject.GetComponent<Slider>();
+            Container.Bind<GameObject>()
+                .WithId(Constants.UnitInformationPanelIcon)
+                .FromInstance(_unitInfoPanelIcon)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<IGridLayersManager>()
+                .To<GridLayersManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<Grid>()
+                .WithId(Constants.Grid)
+                .FromInstance(_grid)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.TopVeilCloudPart)
+                .FromInstance(_topCloudVeil)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.BottomVeilCloudPart)
+                .FromInstance(_bottomCloudVeil)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.LeftVeilCloudPart)
+                .FromInstance(_leftCloudVeil)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.RightVeilCloudPart)
+                .FromInstance(_rightCloudVeil)
+                .AsCached()
+                .NonLazy();
+
+            var healthBarSlider = _healthBarSliderGO.GetComponent<Slider>();
+            var actionPointsBarSlider = _actionPointsBarSliderGO.GetComponent<Slider>();
 
             _enemyPanelInfo.SetActive(false);
 
@@ -75,6 +135,11 @@ namespace Assets.Scripts
 
             Container.BindInterfacesAndSelfTo<ProgressDb>()
                 .FromMethod(CreateProgressDb)
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IMovementCostService>()
+                .To<MovementCostService>()
                 .AsSingle()
                 .NonLazy();
 
@@ -103,6 +168,11 @@ namespace Assets.Scripts
                 .FromInstance(_camera)
                 .AsCached();
 
+            Container.Bind<IUIAnimationService>()
+                .To<UIAnimationService>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<GameObject>()
                 .WithId(Constants.EquipemntSlotPrefab)
                 .FromInstance(_equipmentSlotPrefab)
@@ -123,19 +193,19 @@ namespace Assets.Scripts
                 .FromInstance(_moveCounterText)
                 .AsCached();
 
-            Container.Bind<TextMeshProUGUI>()
-                .WithId(Constants.ActionPointText)
-                .FromInstance(_actionPointText)
+            Container.Bind<Slider>()
+                .WithId(Constants.HealthBarSlider)
+                .FromInstance(healthBarSlider)
                 .AsCached();
 
             Container.Bind<Slider>()
-                .WithId(Constants.HealthBarSlider)
-                .FromInstance(slider)
-                .AsSingle();
+                .WithId(Constants.ActionPointsBarSlider)
+                .FromInstance(actionPointsBarSlider)
+                .AsCached();
 
-            Container.Bind<Tilemap>()
-                .WithId(Constants.GroundTilemap)
-                .FromInstance(_groundTilemap)
+            Container.Bind<TextMeshProUGUI>()
+                .WithId(Constants.ActionPointsBarText)
+                .FromInstance(_actionPointsBarText)
                 .AsCached();
 
             Container.Bind<Tilemap>()
@@ -176,13 +246,18 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IHealthBarService>()
-                .To<HealthBarService>()
+            Container.Bind<IUnitPanelBarService>()
+                .To<UnitPanelBarService>()
                 .AsSingle()
                 .NonLazy();
 
             Container.Bind<IGridService>()
                 .To<GridService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IGridLayerService>()
+                .To<GridLayerService>()
                 .AsSingle()
                 .NonLazy();
 
@@ -293,6 +368,11 @@ namespace Assets.Scripts
 
             Container.Bind<IRoomLoaderService>()
                 .To<RoomLoaderService>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IGameSceneStartManager>()
+                .To<GameSceneStartManager>()
                 .AsSingle()
                 .NonLazy();
 

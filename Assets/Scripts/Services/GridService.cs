@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services
@@ -16,8 +15,8 @@ namespace Assets.Scripts.Services
 
     public class GridService : IGridService
     {
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
+        [Inject(Id = Constants.Grid)]
+        private readonly Grid _grid;
 
         public Vector3Int ToGridCordinates(Unit unit)
         {
@@ -31,12 +30,12 @@ namespace Assets.Scripts.Services
 
         public Vector3Int[] ToGridCordinates(Vector3[] positions)
         {
-            return positions.Select(p => _groundTilemap.WorldToCell(p)).ToArray();
+            return positions.Select(p => _grid.WorldToCell(p)).ToArray();
         }
 
         public Vector3[] FromGridCordinates(Vector3Int[] positions)
         {
-            return positions.Select(p => _groundTilemap.GetCellCenterWorld(p)).ToArray();
+            return positions.Select(p => _grid.GetCellCenterWorld(p)).ToArray();
         }
 
         public Vector3 FromGridCordinates(Vector3Int position)

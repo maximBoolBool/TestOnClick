@@ -20,5 +20,10 @@ namespace Assets.Db.Models
 
         [Column("location_type")]
         public LocationType LocationType { get; set; }
+
+        //PRT-9 Сделать как добавим РАЗНОЕ количество "этажей в команты"
+        /*public RoomLayerType MaxRoomLayre {  get; set; }
+
+        public RoomLayerType MinRoomlayre { get; set; }*/
     }
 }

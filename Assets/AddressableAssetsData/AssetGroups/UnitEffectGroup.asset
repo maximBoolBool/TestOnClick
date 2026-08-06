@@ -14,12 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: UnitEffectGroup
   m_GUID: 172169a31edca684da4a89608ff85c3a
-  m_SerializeEntries:
-  - m_GUID: 04b82ef16e6a95d49a5e674dd26c70fc
-    m_Address: Assets/Animations/EffectAnimatyions/BaseWEffectAnimationController.controller
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 45dc52ef89bfdaf40a66a5eb7731269b, type: 2}
   m_SchemaSet:

@@ -45,7 +45,7 @@ namespace Assets.Scripts.Managers
         private readonly IBotExecutionTurnService _botExecutionTurnService;
 
         [Inject]
-        private readonly IHealthBarService _healthBarService;
+        private readonly IUnitPanelBarService _unitPanelBarService;
 
         [Inject]
         private readonly IActionUIService _actionUiService;
@@ -60,17 +60,14 @@ namespace Assets.Scripts.Managers
         private readonly ICameraService _cameraService;
 
         [Inject]
-        private readonly ILocationService _locationService;
+        private readonly IUIAnimationService _uiAnimationService;
 
         private Coroutine _textAnimationCoroutine;
 
         public void SceneStart()
         {
-            if (_locationService.NeedGenerateLocationInfo())
-            {
-                _locationService.WriteLocationInfo();
-            }
-
+            _uiAnimationService.ShakeCamera();
+            _uiAnimationService.MoveVeils();
             _roomService.TrySwitchNextRoom(false);
 
             _unitManager.GenerateUnits();
@@ -143,15 +140,20 @@ namespace Assets.Scripts.Managers
 
         private void ActivateUserUnitIternal(Unit unit)
         {
-            _healthBarService.SetUnitHelthPoints(
+            _uiAnimationService.SwitchPanelUnitIcon($"Blue{unit.Name}");
+
+            _unitPanelBarService.SetUnitHealthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
                 maxHealthPoints: unit.Characteristic.HealthPoints
             );
+
             _actionUiService.ShowActions(unit);
-            _actionUiService.SetActionPoints(
-                currentValue: unit.ActualActionPoints,
-                maxValue: unit.Characteristic.ActiveActionPoints
+
+            _unitPanelBarService.SetUnitActionPoints(
+                actualActionPoint: unit.ActualActionPoints,
+                maxActionPoint: unit.Characteristic.ActiveActionPoints
             );
+             
             unit.IsSelected = true;
         }
 

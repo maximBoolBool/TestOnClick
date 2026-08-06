@@ -16,10 +16,6 @@ namespace Assets.Scripts.Services
 
         void HideActions();
 
-        void SetActionPoints(int currentValue, int maxValue);
-
-        void HideActionPointCostText();
-
         BaseAction[] GetUnitActions(Unit unit);
     }
 
@@ -31,9 +27,9 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.ActionButtonPrefab)]
         private readonly GameObject _actionButtonPrefab;
 
-        [Inject(Id = Constants.ActionPointText)]
-        private readonly TextMeshProUGUI _actionPointsText;
-
+        [Inject]
+        private readonly IUnitPanelBarService _unitPanelBarService;
+         
         [Inject]
         private readonly IActionClickHandler _actionClickHandler;
 
@@ -76,16 +72,6 @@ namespace Assets.Scripts.Services
                 }
             }
             _spawnedButtons.Clear();
-        }
-
-        public void SetActionPoints(int currentValue, int maxValue)
-        {
-            _actionPointsText.text = $"{currentValue}/{maxValue}";
-        }
-
-        public void HideActionPointCostText()
-        {
-            _actionPointsText.text = string.Empty;
         }
 
         public BaseAction[] GetUnitActions(Unit unit)

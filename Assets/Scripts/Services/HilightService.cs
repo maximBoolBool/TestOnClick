@@ -1,7 +1,5 @@
-using Assets.Scripts;
 using Assets.UnitsCharacteristics;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
@@ -26,22 +24,17 @@ namespace Assets.Scripts.Services
 
     public class HiligthService : IHilightService
     {
-        private Dictionary<TileBase, int> movementCosts = new();
-
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
         [Inject(Id = Constants.HighlightTile)]
         private readonly TileBase _highlightTile;
 
-        [Inject(Id = Constants.GroundTilemap)]
-        private readonly Tilemap _groundTilemap;
-
-        [Inject]
-        private readonly IUnitManager _unitManager;
-
         [Inject]
         private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IMovementCostService _movementCostService;
 
         public void HighlightTiles(bool highlight, List<Vector3Int> reachableTiles, Unit unit)
         {
@@ -108,7 +101,7 @@ namespace Assets.Scripts.Services
                     Vector3Int neighbor = pos + dir;
                     if (!costs.ContainsKey(neighbor) && IsWalkable(unit, neighbor))
                     {
-                        int tileCost = GetMovementCost(neighbor, dir);
+                        int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
                         if (newCost <= unit.ActualActionPoints)
                         {
@@ -130,29 +123,23 @@ namespace Assets.Scripts.Services
 
         private bool IsWalkable(Unit unit, Vector3Int pos)
         {
-            if (pos == _gridService.ToGridCordinates(unit))
-            {
-                return false;
-            }
+            //PRT-9
+            return true;
+            //if (pos == _gridService.ToGridCordinates(unit))
+            //{
+            //    return false;
+            //}
 
-            var ocuppaitedTiles = _unitManager.Units
-                .Select(x => _gridService.ToGridCordinates(x))
-                .ToArray();
-            if (ocuppaitedTiles.Contains(pos))
-            {
-                return false;
-            }
+            //var ocuppaitedTiles = _unitManager.Units
+            //    .Select(x => _gridService.ToGridCordinates(x))
+            //    .ToArray();
+            //if (ocuppaitedTiles.Contains(pos))
+            //{
+            //    return false;
+            //}
 
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-        }
-
-        private int GetMovementCost(Vector3Int pos, Vector3Int direction)
-        {
-            var tile = _groundTilemap.GetTile(pos);
-            var baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            var isDiagonal = direction.x != 0 && direction.y != 0;
-            return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            //var tile = _grid.GetTile(pos);
+            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
     }
 }
