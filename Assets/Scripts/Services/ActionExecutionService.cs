@@ -30,9 +30,6 @@ namespace Assets.Scripts.Services
         private readonly IUnitManager _unitManager;
 
         [Inject]
-        private readonly IActionUIService _actionUIService;
-
-        [Inject]
         private readonly IActionClickHandler _actionClickHandler;
 
         [Inject]

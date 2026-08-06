@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Managers;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using Zenject;
 
 namespace Assets.Scripts.Services
 {
@@ -13,6 +18,19 @@ namespace Assets.Scripts.Services
 
     public class MovementCostService : IMovementCostService
     {
+        private static Dictionary<TileBase, int> movementCosts = new();
+
+        [Inject]
+        private readonly IUnitManager _unitManager;
+
+        [Inject]
+        private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IGridLayerService _gridLayerService;
+
+        [Inject]
+        private readonly IGridLayersManager _gridLayersManager;
 
         public int GetMovementCost(Vector3Int pos, Vector3Int direction)
         {
@@ -26,40 +44,27 @@ namespace Assets.Scripts.Services
 
         public bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)
         {
-            //PRT-9
-            return true;
-            //if (pos == currentPosition)
-            //{
-            //    return false;
-            //}
-            //var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
-            //if (occupiedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
+            if (pos == currentPosition)
+            {
+                return false;
+            }
+
+            var currentLayer = _gridLayerService.GetCordinateRoomLayerType(currentPosition);
+
+            var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
+            if (occupiedTiles.Contains(pos))
+            {
+                return false;
+            }
+
+            var tile = _gridLayersManager.GetTileOnLayer(pos, currentLayer);
+            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
 
         public bool IsWalkable(Unit unit, Vector3Int pos)
         {
-            //PRT-9
-            return true;
-            //if (pos == _gridService.ToGridCordinates(unit))
-            //{
-            //    return false;
-            //}
-
-            //var ocuppaitedTiles = _unitManager.Units
-            //    .Select(x => _gridService.ToGridCordinates(x))
-            //    .ToArray();
-            //if (ocuppaitedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
+            var gridCordinate = _gridService.ToGridCordinates(unit);
+            return IsWalkable(pos, gridCordinate);
         }
     }
 }

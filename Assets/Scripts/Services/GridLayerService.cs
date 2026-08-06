@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Enums;
 using Assets.Scripts.Managers;
+using System;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -10,6 +12,8 @@ namespace Assets.Scripts.Services
         Vector3Int GetRoomCordinateFromGridCordinate(Vector3Int cordinate);
 
         Vector3Int GetRoomCordinateFromGlobalCordinate(Vector3 cordinate);
+
+        RoomLayerType GetCordinateRoomLayerType(Vector3Int cordinate);
     }
 
     public class GridLayerService : IGridLayerService
@@ -60,6 +64,19 @@ namespace Assets.Scripts.Services
             }
 
             return new Vector3Int(cordinate.x, cordinate.y + hightGap, cordinate.z);
+        }
+
+        public RoomLayerType GetCordinateRoomLayerType(Vector3Int cordinate) 
+        {
+            foreach(var layer in _roomLayerTypes.OrderByDescending(x => x))
+            {
+                if (_gridLayersManager.HasTileOnLayer(cordinate, layer))
+                {
+                    return layer;
+                }
+            }
+
+            throw new Exception();
         }
     }
 }

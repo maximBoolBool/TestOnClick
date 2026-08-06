@@ -14,6 +14,7 @@ namespace Assets.Scripts.Managers
         void LayerUp();
         void LayerDown();
         bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer);
+        TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer);
     }
 
     public class GridLayersManager : IGridLayersManager
@@ -174,13 +175,15 @@ namespace Assets.Scripts.Managers
 
         public bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer)
         {
+            return GetTileOnLayer(cordinte, layer) != null;
+        }
+
+        public TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer)
+        {
             var layerName = layer.GetRoomLayerGridName();
-
             _cachedLayerTilemaps.TryGetValue(layerName, out Tilemap tilemap);
-
-            var tile = tilemap!.GetTile(cordinte);
-
-            return tile != null;
+            var tile = tilemap!.GetTile(cordinate);
+            return tile;
         }
     }
 }
