@@ -30,7 +30,7 @@ namespace Assets.Scripts.Services
             RoomLayerType.GroundLayer1,
             RoomLayerType.GroundLayer2,
             RoomLayerType.GroundLayer3,
-            RoomLayerType.GroundLayer4
+            RoomLayerType.CliffLayer4,
         };
 
         public Vector3Int GetRoomCordinateFromGlobalCordinate(Vector3 cordinate)

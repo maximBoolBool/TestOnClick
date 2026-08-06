@@ -2,12 +2,16 @@
 {
     public enum RoomLayerType
     {
-        GroundLayer4 = 24,
-        GroundLayer3 = 23,
-        GroundLayer2 = 22,
-        GroundLayer1 = 21,
-        WaterTilemap = 11,
-        BaseWaterLayer = 10,
+        GroundLayer4 = 59,
+        CliffLayer4 = 50,
+        GroundLayer3 = 49,
+        CliffLayer3 = 40,
+        GroundLayer2 = 39,
+        CliffLayer2 = 30,
+        GroundLayer1 = 29,
+        CliffLayer1 = 20,
+        WaterTilemap = 10,
+        BaseWaterLayer = 0,
     }
 
     public static class RoomLayerTypeExtension
@@ -17,10 +21,16 @@
         {
             return type switch
             {
+                RoomLayerType.CliffLayer4 => "ClifTilemapLevel4",
+                RoomLayerType.CliffLayer3 => "ClifTilemapLevel3",
+                RoomLayerType.CliffLayer2 => "ClifTilemapLevel2",
+                RoomLayerType.CliffLayer1 => "ClifTilemapLevel1",
+
                 RoomLayerType.GroundLayer4 => "GroundTilemapLevel4",
                 RoomLayerType.GroundLayer3 => "GroundTilemapLevel3",
                 RoomLayerType.GroundLayer2 => "GroundTilemapLevel2",
                 RoomLayerType.GroundLayer1 => "GroundTilemapLevel1",
+
                 RoomLayerType.WaterTilemap => "WaterTilemap",
                 RoomLayerType.BaseWaterLayer => "WaterBaseTilemap",
                 _ => throw new System.NotImplementedException()
@@ -46,10 +56,16 @@
         {
             return gridName switch
             {
+                "ClifTilemapLevel4" => RoomLayerType.GroundLayer4,
+                "ClifTilemapLevel3" => RoomLayerType.GroundLayer3,
+                "ClifTilemapLevel2" => RoomLayerType.GroundLayer2,
+                "ClifTilemapLevel1" => RoomLayerType.GroundLayer1,
+
                 "GroundTilemapLevel4" => RoomLayerType.GroundLayer4,
                 "GroundTilemapLevel3" => RoomLayerType.GroundLayer3,
                 "GroundTilemapLevel2" => RoomLayerType.GroundLayer2,
                 "GroundTilemapLevel1" => RoomLayerType.GroundLayer1,
+
                 "WaterTilemap" => RoomLayerType.WaterTilemap,
                 "WaterBaseTilemap" => RoomLayerType.BaseWaterLayer,
                 _ => throw new System.ArgumentOutOfRangeException(nameof(gridName), $"Unknown grid name: {gridName}")

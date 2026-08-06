@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: RoomGroup
   m_GUID: 318a3bc67100ad14185e0c56781cdf2c
   m_SerializeEntries:
-  - m_GUID: 35b545489d31813469207d64e324460e
+  - m_GUID: 5f1d2065d89db154cb613d6eef0420bd
     m_Address: Room_1_1
     m_ReadOnly: 0
     m_SerializedLabels: []

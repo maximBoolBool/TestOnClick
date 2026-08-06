@@ -84,30 +84,40 @@ namespace Assets.Scripts.Managers
                 RoomLayerType.GroundLayer4 => new[]
                 {
                     RoomLayerType.GroundLayer4,
+                    RoomLayerType.CliffLayer4,
                     RoomLayerType.GroundLayer3,
+                    RoomLayerType.CliffLayer3,
                     RoomLayerType.GroundLayer2,
+                    RoomLayerType.CliffLayer2,
                     RoomLayerType.GroundLayer1,
+                    RoomLayerType.CliffLayer1,
                     RoomLayerType.WaterTilemap,
                     RoomLayerType.BaseWaterLayer,
                 },
                 RoomLayerType.GroundLayer3 => new[]
                 {
                     RoomLayerType.GroundLayer3,
+                    RoomLayerType.CliffLayer3,
                     RoomLayerType.GroundLayer2,
+                    RoomLayerType.CliffLayer2,
                     RoomLayerType.GroundLayer1,
+                    RoomLayerType.CliffLayer1,
                     RoomLayerType.WaterTilemap,
                     RoomLayerType.BaseWaterLayer,
                 },
                 RoomLayerType.GroundLayer2 => new[]
                 {
                     RoomLayerType.GroundLayer2,
+                    RoomLayerType.CliffLayer2,
                     RoomLayerType.GroundLayer1,
+                    RoomLayerType.CliffLayer1,
                     RoomLayerType.WaterTilemap,
                     RoomLayerType.BaseWaterLayer,
                 },
                 RoomLayerType.GroundLayer1 => new[]
                 {
                     RoomLayerType.GroundLayer1,
+                    RoomLayerType.CliffLayer1,
                     RoomLayerType.WaterTilemap,
                     RoomLayerType.BaseWaterLayer,
                 },
