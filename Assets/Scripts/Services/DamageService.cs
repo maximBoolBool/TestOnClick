@@ -29,7 +29,7 @@ namespace Assets.Scripts.Services
             // Update the health bar UI if this is the currently selected player-controlled unit
             if(targetUnit.IsSelected && targetUnit.Characteristic.Side == SideType.UserSide)
             {
-                _healthBarService.SetUnitHelthPoints(targetUnit.ActualHealthPoints, targetUnit.Characteristic.HealthPoints);
+                _healthBarService.SetUnitHealthPoints(targetUnit.ActualHealthPoints, targetUnit.Characteristic.HealthPoints);
             }
 
             return isKillDamage;

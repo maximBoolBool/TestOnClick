@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: f44e177878309904e8e18e276c406786
   m_SerializeEntries:
   - m_GUID: 024fedf7707097245afd87cd3ea44d71
-    m_Address: Assets/UnitIcons/BlueUnits/BlueMonk.png
+    m_Address: BlueMonk
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a85095e6853f290428edc9ed50bba0dc
-    m_Address: Assets/UnitIcons/BlueUnits/BlueWarrior.png
+    m_Address: BlueWarrior
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

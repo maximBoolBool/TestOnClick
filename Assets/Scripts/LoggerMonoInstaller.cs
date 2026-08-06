@@ -75,8 +75,17 @@ namespace Assets.Scripts
         [SerializeField]
         private Grid _grid;
 
+        [SerializeField]
+        private GameObject _unitInfoPanelIcon;
+
         public override void InstallBindings()
         {
+            Container.Bind<GameObject>()
+                .WithId(Constants.UnitInformationPanelIcon)
+                .FromInstance(_unitInfoPanelIcon)
+                .AsCached()
+                .NonLazy();
+
             Container.Bind<IGridLayersManager>()
                 .To<GridLayersManager>()
                 .AsSingle()

@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEditor.AddressableAssets.BuildReportVisualizer;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 using Zenject;
-using DG.Tweening;
 
 namespace Assets.Scripts.Services
 {
@@ -9,6 +12,8 @@ namespace Assets.Scripts.Services
         void ShakeCamera();
 
         void MoveVeils();
+
+        void SwitchPanelUnitIcon(string unitName);    
     }
 
     class UIAnimationService : IUIAnimationService
@@ -28,9 +33,15 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.RightVeilCloudPart)]
         private readonly GameObject _rightCloudVeil;
 
+        [Inject(Id = Constants.UnitInformationPanelIcon)]
+        private readonly GameObject _unitInformationPanelIcon;
+
         private float targetOrthoSize = 4f;
         private float veilsVectorMove = 700f;
         private float duration = 7f;
+        private const float fadeMinValue = 0;
+        private const float fadeMaxValue = 1;
+        private const float fadeDuration = 1f;
 
         public void MoveVeils()
         {
@@ -58,6 +69,23 @@ namespace Assets.Scripts.Services
         {
             return;
             _camera.DOShakePosition(0.5f, 0.5f, 10, 90, false);
+        }
+
+        public void SwitchPanelUnitIcon(string unitName)
+        {
+            var iconImage = _unitInformationPanelIcon.GetComponent<Image>();
+
+            var sequence = DOTween.Sequence();
+
+            sequence.Append(iconImage.DOFade(fadeMinValue, fadeDuration));
+
+            sequence.AppendCallback(() => 
+            { 
+                var sprite = Addressables.LoadAssetAsync<Sprite>(unitName).WaitForCompletion();
+                iconImage.sprite = sprite;
+            });
+
+            sequence.Append(iconImage.DOFade(fadeMaxValue, fadeDuration));
         }
     }
 }

@@ -140,10 +140,13 @@ namespace Assets.Scripts.Managers
 
         private void ActivateUserUnitIternal(Unit unit)
         {
-            _unitPanelBarService.SetUnitHelthPoints(
+            _uiAnimationService.SwitchPanelUnitIcon($"Blue{unit.Name}");
+
+            _unitPanelBarService.SetUnitHealthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
                 maxHealthPoints: unit.Characteristic.HealthPoints
             );
+
             _actionUiService.ShowActions(unit);
 
             _unitPanelBarService.SetUnitActionPoints(

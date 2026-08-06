@@ -3,7 +3,6 @@ namespace Assets.Scripts
     public static class Constants
     {
         #region Zenject Game Object Ids
-
         public const string Grid = "Grid";
         public const string HighlightTilemap = "Highlight";
         public const string HighlightTile = "HighlightTile";
@@ -18,6 +17,7 @@ namespace Assets.Scripts
 
         public const string HealthBarSlider = "HealthBarSlider";
         public const string HealthBarText = "HealthBarText";
+        public const string UnitInformationPanelIcon = "UnitInformationPanelIcon";
 
         public const string ActionPointsBarSlider = "ActionPointsBarSlider";
         public const string ActionPointsBarText = "ActionPointsBarText";

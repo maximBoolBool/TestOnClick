@@ -6,7 +6,7 @@ namespace Assets.Scripts.Services
 {
     public interface IUnitPanelBarService
     {
-        void SetUnitHelthPoints(int actualHealthPoints, int maxHealthPoints);
+        void SetUnitHealthPoints(int actualHealthPoints, int maxHealthPoints);
 
         void SetUnitActionPoints(int actualActionPoint, int maxActionPoint);
     }
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Services
             _actionPointsBarText = actionPointsBarText;
         }
 
-        public void SetUnitHelthPoints(int actualHealthPoints, int maxHealthPoints)
+        public void SetUnitHealthPoints(int actualHealthPoints, int maxHealthPoints)
         {
             UpdateBarIternal(
                 actualPoints: actualHealthPoints,
