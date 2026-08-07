@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Enums
+﻿using System;
+
+namespace Assets.Scripts.Enums
 {
     public enum RoomLayerType
     {
@@ -16,7 +18,6 @@
 
     public static class RoomLayerTypeExtension
     {
-
         public static string GetRoomLayerGridName(this RoomLayerType type)
         {
             return type switch
@@ -46,6 +47,27 @@
                 RoomLayerType.GroundLayer2 => RoomLayerType.GroundLayer3,
                 RoomLayerType.GroundLayer1 => RoomLayerType.GroundLayer2,
                 _ => throw new System.NotImplementedException()
+            };
+        }
+
+        public static RoomLayerType[] GetLayerWalkableToCheck(this RoomLayerType layer)
+        {
+            return layer switch
+            {
+                RoomLayerType.GroundLayer1 => new[] {RoomLayerType.GroundLayer2, RoomLayerType.CliffLayer2},
+                RoomLayerType.GroundLayer2 => new[] {RoomLayerType.GroundLayer3, RoomLayerType.CliffLayer3},
+                RoomLayerType.GroundLayer3 => new[] {RoomLayerType.GroundLayer4, RoomLayerType.CliffLayer4},
+                RoomLayerType.GroundLayer4 => Array.Empty<RoomLayerType>(),
+
+                RoomLayerType.WaterTilemap => Array.Empty<RoomLayerType>(),
+                RoomLayerType.BaseWaterLayer => Array.Empty<RoomLayerType>(),
+
+                RoomLayerType.CliffLayer4 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer3 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer2 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer1 => throw new NotImplementedException(),
+
+                _ => throw new NotImplementedException(),
             };
         }
     }

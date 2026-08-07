@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Managers;
+﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Managers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,6 +54,13 @@ namespace Assets.Scripts.Services
 
             var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
             if (occupiedTiles.Contains(pos))
+            {
+                return false;
+            }
+
+            var layersToCheck = currentLayer.GetLayerWalkableToCheck();
+
+            if (layersToCheck.Any(x => _gridLayersManager.HasTileOnLayer(pos, x)))
             {
                 return false;
             }

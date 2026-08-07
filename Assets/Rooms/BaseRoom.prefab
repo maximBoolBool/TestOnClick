@@ -182,7 +182,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 11
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -336,7 +336,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -357,9 +357,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: GroundTilemapLevel1
       objectReference: {fileID: 0}
+    - target: {fileID: 2379030931793652433, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2852064351389710699, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_Name
       value: ClifTilemapLevel1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4622383372052324442, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 8149660658405833869, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -427,9 +435,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: GroundTilemapLevel2
       objectReference: {fileID: 0}
+    - target: {fileID: 2379030931793652433, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 2852064351389710699, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_Name
       value: ClifTilemapLevel2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4622383372052324442, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 39
       objectReference: {fileID: 0}
     - target: {fileID: 8149660658405833869, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -497,9 +513,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: GroundTilemapLevel4
       objectReference: {fileID: 0}
+    - target: {fileID: 2379030931793652433, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2852064351389710699, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_Name
       value: ClifTilemapLevel4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4622383372052324442, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 59
       objectReference: {fileID: 0}
     - target: {fileID: 8149660658405833869, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -567,9 +591,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: GroundTilemapLevel3
       objectReference: {fileID: 0}
+    - target: {fileID: 2379030931793652433, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 2852064351389710699, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_Name
       value: ClifTilemapLevel3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4622383372052324442, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 49
       objectReference: {fileID: 0}
     - target: {fileID: 8149660658405833869, guid: bddba5a6f75f0ef4f8ac8ee6973cc19b, type: 3}
       propertyPath: m_LocalPosition.x

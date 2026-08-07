@@ -76,7 +76,7 @@ namespace Assets.Scripts.Services
                 }
             }
 
-            throw new Exception();
+            return RoomLayerType.GroundLayer1;
         }
     }
 }
