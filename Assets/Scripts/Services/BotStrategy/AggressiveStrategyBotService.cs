@@ -115,6 +115,11 @@ namespace Assets.Scripts.Services.BotStrategy
             );
             var path = _sharedBotStrategyService.FindPath(_gridService.ToGridCordinates(unit), bestTile, unit);
 
+            if(path.Length == 0)
+            {
+                return null;
+            }
+
             return new MoveBotCommand() { Path = path };
         }
     }

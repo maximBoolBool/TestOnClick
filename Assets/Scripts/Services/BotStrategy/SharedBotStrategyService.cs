@@ -133,6 +133,10 @@ namespace Assets.Scripts.Services.BotStrategy
 
         public Vector3Int[] FindPath(Vector3Int start, Vector3Int end, Unit currentUnit)
         {
+            if (start == end) {
+                return Array.Empty<Vector3Int>();
+            }
+
             var pathResult = new List<Vector3Int>();
             var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
             var gCost = new Dictionary<Vector3Int, int>();
