@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Enums;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,10 +29,10 @@ namespace Assets.Scripts.Services
         private readonly IGridService _gridService;
 
         [Inject]
-        private readonly IGridLayerService _gridLayerService;
+        private readonly IGridLayersManager _gridLayersManager;
 
         [Inject]
-        private readonly IGridLayersManager _gridLayersManager;
+        private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         public int GetMovementCost(Vector3Int pos, Vector3Int direction)
         {
@@ -50,7 +51,7 @@ namespace Assets.Scripts.Services
                 return false;
             }
 
-            var currentLayer = _gridLayerService.GetCordinateRoomLayerType(currentPosition);
+            var currentLayer = _gridLayersManager.GetCordinateRoomLayerType(currentPosition);
 
             var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
             if (occupiedTiles.Contains(pos))
@@ -60,7 +61,9 @@ namespace Assets.Scripts.Services
 
             var layersToCheck = currentLayer.GetLayerWalkableToCheck();
 
-            if (layersToCheck.Any(x => _gridLayersManager.HasTileOnLayer(pos, x)))
+            var tilesToIgnore = _gameGlobalStateManager.GetIgnoreCordinatestoLayer(currentLayer);
+
+            if (!tilesToIgnore.Contains(pos) && layersToCheck.Any(x => _gridLayersManager.HasTileOnLayer(pos, x)))
             {
                 return false;
             }

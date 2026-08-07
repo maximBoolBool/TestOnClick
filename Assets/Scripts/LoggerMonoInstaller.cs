@@ -2,6 +2,7 @@ using Assets.Db;
 using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Services;
 using Assets.Scripts.Services.BotStrategy;
 using System.IO;

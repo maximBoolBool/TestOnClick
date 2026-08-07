@@ -53,8 +53,7 @@ namespace Assets.Scripts.Services
             foreach (var pos in reachableTiles)
             {
                 _highlightTilemap.SetTile(pos, _highlightTile);
-            }
-            ;
+            }            
         }
 
         public List<Vector3Int> HilightReachebleTiles(Unit unit, List<Vector3Int> reachableTiles)
@@ -86,15 +85,15 @@ namespace Assets.Scripts.Services
                 }
 
                 Vector3Int[] directions = {
-                new(1, 0, 0),
-                new(-1, 0, 0),
-                new(0, 1, 0),
-                new(0, -1, 0),
-                new(1, 1, 0),
-                new(-1, 1, 0),
-                new(1, -1, 0),
-                new(-1, -1, 0)
-            };
+                    new(1, 0, 0),
+                    new(-1, 0, 0),
+                    new(0, 1, 0),
+                    new(0, -1, 0),
+                    new(1, 1, 0),
+                    new(-1, 1, 0),
+                    new(1, -1, 0),
+                    new(-1, -1, 0)
+                };
 
                 foreach (var dir in directions)
                 {

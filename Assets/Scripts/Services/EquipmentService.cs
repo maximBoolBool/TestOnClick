@@ -2,6 +2,7 @@ using Assets.Scripts;
 using Assets.Scripts.Behaviours;
 using Assets.Scripts.Helpers;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Equipment;
 using Assets.Scripts.Models.Slot;
 using Assets.UnitsCharacteristics;

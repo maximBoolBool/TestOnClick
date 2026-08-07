@@ -1,31 +1,56 @@
 ﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Tilemaps;
+using Zenject;
 
 namespace Assets.Scripts.Managers
 {
     public interface IGridLayersManager
     {
-        public void SetRoomVisual(GameObject roomVisual);
-        public void SetLayerVisual(RoomLayerType layer);
+        Vector3Int GetRoomCordinateFromGridCordinate(Vector3Int cordinate);
+        Vector3Int GetRoomCordinateFromGlobalCordinate(Vector3 cordinate);
+        RoomLayerType GetCordinateRoomLayerType(Vector3Int cordinate);        
+        void SetRoomVisual(GameObject roomVisual);
+        bool TrySetLayerVisual(RoomLayerType layer);
         GameObject? RoomVisual { get; }
-        void LayerUp();
-        void LayerDown();
         bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer);
         TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer);
+        Vector3Int[] GetCordinatesToIgnoreSpriteRool(RoomLayerType layer);
+        RoomLayerType ActualLayer { get; }
     }
 
     public class GridLayersManager : IGridLayersManager
     {
         private RoomLayerType? _roomMaxLayer = null;
-        private RoomLayerType _actualLastLayer = RoomLayerType.GroundLayer4;
+        private RoomLayerType _actualLayer = RoomLayerType.GroundLayer4;
         private GameObject? _currentActiveRoomVisual;
         private readonly Dictionary<string, TilemapRenderer> _cachedLayerRenderers = new();
         private readonly Dictionary<string, Tilemap> _cachedLayerTilemaps = new();
+        private HashSet<Vector3Int> _cordinatesToShadow = new();
+
+        public RoomLayerType ActualLayer => _actualLayer;
 
         public GameObject? RoomVisual => _currentActiveRoomVisual;
+
+        [Inject(Id = Constants.HighlightTilemap)]
+        private readonly Tilemap _highlightTilemap;
+
+        [Inject]
+        private readonly IGridService _gridService;
+
+        //Порядоек важен
+        private static readonly RoomLayerType[] _roomLayerTypes = new RoomLayerType[]
+        {
+            RoomLayerType.GroundLayer1,
+            RoomLayerType.GroundLayer2,
+            RoomLayerType.GroundLayer3,
+            RoomLayerType.GroundLayer4,
+        };
 
         //Вызывать при старте сцены
         public void SetRoomVisual(GameObject? roomVisual)
@@ -60,24 +85,24 @@ namespace Assets.Scripts.Managers
                 .OrderByDescending(x => x)
                 .First();
             
-            SetLayerVisual(_roomMaxLayer.Value);
+            TrySetLayerVisual(_roomMaxLayer.Value);
         }
 
-        public void SetLayerVisual(RoomLayerType layer)
+        public bool TrySetLayerVisual(RoomLayerType layer)
         {
             if (layer > _roomMaxLayer)
             {
                 Debug.LogWarning($"пришла слой {layer} хотя максимальный это {_roomMaxLayer}");
-                return;
+                return false;
             }
 
-            if (layer == _actualLastLayer)
+            if (layer == _actualLayer)
             {
                 Debug.LogWarning("Layer already on");
-                return;
+                return false;
             }
 
-            _actualLastLayer = layer;
+            _actualLayer = layer;
 
             var visibleLayers = layer switch
             {
@@ -132,6 +157,68 @@ namespace Assets.Scripts.Managers
             };
 
             SetVisualLayers(visibleLayers);
+            ClearShadowTiles();
+            SetShadowTiles(layer);
+            return true;
+        }
+
+        public bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer)
+        {
+            return GetTileOnLayer(cordinte, layer) != null;
+        }
+
+        public TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer)
+        {
+            var layerName = layer.GetRoomLayerGridName();
+            _cachedLayerTilemaps.TryGetValue(layerName, out Tilemap tilemap);
+            var tile = tilemap!.GetTile(cordinate);
+            return tile;
+        }
+
+        public Vector3Int GetRoomCordinateFromGlobalCordinate(Vector3 cordinate)
+        {
+            return GetRoomCordinateFromGridCordinate(_gridService.ToGridCordinates(cordinate));
+        }
+
+        public Vector3Int GetRoomCordinateFromGridCordinate(Vector3Int cordinate)
+        {
+            var hightGap = 0;
+            var i = 0;
+
+            while (true)
+            {
+                var nextLayer = _roomLayerTypes[i].GetLayerOver();
+
+                if (nextLayer == null)
+                {
+                    break;
+                }
+
+                var hasTile = HasTileOnLayer(new Vector3Int(cordinate.x, cordinate.y + hightGap, cordinate.z), nextLayer.Value);
+
+                if (!hasTile)
+                {
+                    break;
+                }
+
+                hightGap++;
+                i++;
+            }
+
+            return new Vector3Int(cordinate.x, cordinate.y + hightGap, cordinate.z);
+        }
+
+        public RoomLayerType GetCordinateRoomLayerType(Vector3Int cordinate)
+        {
+            foreach (var layer in _roomLayerTypes.OrderByDescending(x => x))
+            {
+                if (HasTileOnLayer(cordinate, layer))
+                {
+                    return layer;
+                }
+            }
+
+            return RoomLayerType.GroundLayer1;
         }
 
         private void SetVisualLayers(RoomLayerType[] visibleLayers)
@@ -154,46 +241,82 @@ namespace Assets.Scripts.Managers
             }
         }
 
-        public void LayerUp()
+        public Vector3Int[] GetCordinatesToIgnoreSpriteRool(RoomLayerType layer)
         {
-            var newLayer = _actualLastLayer switch
+            var shadowLayers = layer.GetLayerShadowLayers();
+
+            var result = new HashSet<Vector3Int>();
+
+            foreach (var shadowLayer in shadowLayers)
             {
-                RoomLayerType.GroundLayer4 => RoomLayerType.GroundLayer4,
-                RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer4,
-                RoomLayerType.GroundLayer2 => RoomLayerType.GroundLayer3,
-                RoomLayerType.GroundLayer1 => RoomLayerType.GroundLayer2,
-                RoomLayerType.BaseWaterLayer => RoomLayerType.GroundLayer2
-            }; 
+                _cachedLayerTilemaps.TryGetValue(shadowLayer.GetRoomLayerGridName(), out Tilemap tilemap);
+                tilemap.CompressBounds();
 
-            SetLayerVisual(newLayer);
-        }
+                foreach (Vector3Int position in tilemap.cellBounds.allPositionsWithin)
+                {
+                    if (tilemap.HasTile(position))
+                    {
+                        result.Add(position);
+                    }
+                }
+            }
 
-        public void LayerDown()
-        {
-            var newLayer = _actualLastLayer switch
+            if (result.Count == 0)
             {
-                RoomLayerType.GroundLayer4 => RoomLayerType.GroundLayer3,
-                RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer2,
-                RoomLayerType.GroundLayer2 => RoomLayerType.GroundLayer1,
-                RoomLayerType.GroundLayer1 => RoomLayerType.GroundLayer1,
-                RoomLayerType.BaseWaterLayer => RoomLayerType.GroundLayer1
-            };
+                return Array.Empty<Vector3Int>();
+            }
 
-            SetLayerVisual(newLayer);
-
+            return result
+                .Where(x => !result.Any(z => z.x == x.x && z.y > x.y))
+                .Distinct()
+                .ToArray();
         }
 
-        public bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer)
+        private void SetShadowTiles(RoomLayerType actualLayer)
         {
-            return GetTileOnLayer(cordinte, layer) != null;
+            var shadowLayers = actualLayer.GetLayerShadowLayers();
+
+            foreach (var layer in shadowLayers)
+            {
+                _cachedLayerTilemaps.TryGetValue(layer.GetRoomLayerGridName(), out Tilemap tilemap);
+                tilemap.CompressBounds();
+
+                foreach (Vector3Int position in tilemap.cellBounds.allPositionsWithin)
+                {
+                    if (tilemap.HasTile(position))
+                    {
+                        _cordinatesToShadow.Add(position);
+                    }
+                }
+            }
+
+            if (!_cordinatesToShadow.Any())
+            {
+                return;
+            }
+            // Находим координаты Y тех точек, у которых при том же X нет точки выше (z.y > x.y)
+            var cordinatesToIgnor = _cordinatesToShadow
+                .Where(x => !_cordinatesToShadow.Any(z => z.x == x.x && z.y > x.y))
+                .Distinct()
+                .ToArray();
+
+            _cordinatesToShadow = _cordinatesToShadow.Where(x => !cordinatesToIgnor.Contains(x)).ToHashSet();
+
+            var shadowTile = Addressables.LoadAssetAsync<Tile>("ShadowTile").WaitForCompletion();
+
+            foreach (var cordinate in _cordinatesToShadow)
+            {
+                _highlightTilemap.SetTile(cordinate, shadowTile);
+            }
         }
 
-        public TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer)
+        private void ClearShadowTiles()
         {
-            var layerName = layer.GetRoomLayerGridName();
-            _cachedLayerTilemaps.TryGetValue(layerName, out Tilemap tilemap);
-            var tile = tilemap!.GetTile(cordinate);
-            return tile;
+            foreach (var cordinate in _cordinatesToShadow)
+            {
+                _highlightTilemap.SetTile(cordinate, null);
+            }
+            _cordinatesToShadow.Clear();
         }
     }
 }

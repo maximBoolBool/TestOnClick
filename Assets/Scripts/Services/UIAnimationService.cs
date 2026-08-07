@@ -1,5 +1,4 @@
 ﻿using DG.Tweening;
-using UnityEditor.AddressableAssets.BuildReportVisualizer;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
@@ -36,28 +35,28 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.UnitInformationPanelIcon)]
         private readonly GameObject _unitInformationPanelIcon;
 
-        private float targetOrthoSize = 4f;
-        private float veilsVectorMove = 700f;
-        private float duration = 7f;
-        private const float fadeMinValue = 0;
-        private const float fadeMaxValue = 1;
-        private const float fadeDuration = 1f;
+        private const float TARGET_ORTHO_SIZE = 4f;
+        private const float VEILS_VECTOR_MOVE = 1200f;
+        private const float ANIMATION_DURATION = 10f;
+        private const float FADE_MIN_VALUE = 0;
+        private const float FADE_MAX_VALUE = 1;
+        private const float FADE_DURATION = 1f;
 
         public void MoveVeils()
         {
             Sequence sceneOpenSequence = DOTween.Sequence();
 
-            sceneOpenSequence.Append(_camera.DOOrthoSize(targetOrthoSize, duration).SetEase(Ease.OutCubic));
+            sceneOpenSequence.Append(_camera.DOOrthoSize(TARGET_ORTHO_SIZE, ANIMATION_DURATION).SetEase(Ease.OutCubic));
 
-            var leftCloudTarget = _leftCloudVeil.transform.position + new Vector3(-veilsVectorMove, 0f, 0f);
-            var rightCloudTarget = _rightCloudVeil.transform.position + new Vector3(veilsVectorMove, 0f, 0f);
-            var topCloudTarget = _topCloudVeil.transform.position + new Vector3(0f, veilsVectorMove, 0f);
-            var bottomCloudTarget = _bottomCloudVeil.transform.position + new Vector3(0f, -veilsVectorMove, 0f);
+            var leftCloudTarget = _leftCloudVeil.transform.position + new Vector3(-VEILS_VECTOR_MOVE, 0f, 0f);
+            var rightCloudTarget = _rightCloudVeil.transform.position + new Vector3(VEILS_VECTOR_MOVE, 0f, 0f);
+            var topCloudTarget = _topCloudVeil.transform.position + new Vector3(0f, VEILS_VECTOR_MOVE, 0f);
+            var bottomCloudTarget = _bottomCloudVeil.transform.position + new Vector3(0f, -VEILS_VECTOR_MOVE, 0f);
 
-            sceneOpenSequence.Join(_leftCloudVeil.transform.DOMove(leftCloudTarget, duration).SetEase(Ease.OutCubic));
-            sceneOpenSequence.Join(_rightCloudVeil.transform.DOMove(rightCloudTarget, duration).SetEase(Ease.OutCubic));
-            sceneOpenSequence.Join(_topCloudVeil.transform.DOMove(topCloudTarget, duration).SetEase(Ease.OutCubic));
-            sceneOpenSequence.Join(_bottomCloudVeil.transform.DOMove(bottomCloudTarget, duration).SetEase(Ease.OutCubic));
+            sceneOpenSequence.Join(_leftCloudVeil.transform.DOMove(leftCloudTarget, ANIMATION_DURATION).SetEase(Ease.OutCubic));
+            sceneOpenSequence.Join(_rightCloudVeil.transform.DOMove(rightCloudTarget, ANIMATION_DURATION).SetEase(Ease.OutCubic));
+            sceneOpenSequence.Join(_topCloudVeil.transform.DOMove(topCloudTarget, ANIMATION_DURATION).SetEase(Ease.OutCubic));
+            sceneOpenSequence.Join(_bottomCloudVeil.transform.DOMove(bottomCloudTarget, ANIMATION_DURATION).SetEase(Ease.OutCubic));
 
             sceneOpenSequence.OnComplete(() =>
             {
@@ -77,7 +76,7 @@ namespace Assets.Scripts.Services
 
             var sequence = DOTween.Sequence();
 
-            sequence.Append(iconImage.DOFade(fadeMinValue, fadeDuration));
+            sequence.Append(iconImage.DOFade(FADE_MIN_VALUE, FADE_DURATION));
 
             sequence.AppendCallback(() => 
             { 
@@ -85,7 +84,7 @@ namespace Assets.Scripts.Services
                 iconImage.sprite = sprite;
             });
 
-            sequence.Append(iconImage.DOFade(fadeMaxValue, fadeDuration));
+            sequence.Append(iconImage.DOFade(FADE_MAX_VALUE, FADE_DURATION));
         }
     }
 }

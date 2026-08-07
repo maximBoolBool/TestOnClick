@@ -5,7 +5,7 @@ namespace Assets.Scripts.Services
 {
     class UnitAnimatorOverrideControllerLoader
     {
-        public static AnimatorOverrideController LoadController(string key)
+        public static AnimatorOverrideController LoadAnimatorController(string key)
         {
             var controller = Addressables.LoadAssetAsync<AnimatorOverrideController>(key).WaitForCompletion();
 

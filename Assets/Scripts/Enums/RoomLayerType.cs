@@ -38,7 +38,7 @@ namespace Assets.Scripts.Enums
             };
         }
 
-        public static RoomLayerType? GetNextLayer(this RoomLayerType type)
+        public static RoomLayerType? GetLayerOver(this RoomLayerType type)
         {
             return type switch
             {
@@ -46,7 +46,19 @@ namespace Assets.Scripts.Enums
                 RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer4,
                 RoomLayerType.GroundLayer2 => RoomLayerType.GroundLayer3,
                 RoomLayerType.GroundLayer1 => RoomLayerType.GroundLayer2,
-                _ => throw new System.NotImplementedException()
+                _ => throw new NotImplementedException()
+            };
+        }
+
+        public static RoomLayerType? GetLayerUnder(this RoomLayerType type)
+        {
+            return type switch
+            {
+                RoomLayerType.GroundLayer4 => RoomLayerType.GroundLayer3,
+                RoomLayerType.GroundLayer3 => RoomLayerType.GroundLayer2,
+                RoomLayerType.GroundLayer2 => RoomLayerType.GroundLayer1,
+                RoomLayerType.GroundLayer1 => null,
+                _ => throw new NotImplementedException()
             };
         }
 
@@ -67,6 +79,26 @@ namespace Assets.Scripts.Enums
                 RoomLayerType.CliffLayer2 => throw new NotImplementedException(),
                 RoomLayerType.CliffLayer1 => throw new NotImplementedException(),
 
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static RoomLayerType[] GetLayerShadowLayers(this RoomLayerType layer)
+        {
+            return layer switch
+            {
+                RoomLayerType.GroundLayer1 => new[] { RoomLayerType.CliffLayer2, RoomLayerType.GroundLayer2 },
+                RoomLayerType.GroundLayer2 => new[] { RoomLayerType.CliffLayer3, RoomLayerType.GroundLayer3 },
+                RoomLayerType.GroundLayer3 => new[] { RoomLayerType.CliffLayer4, RoomLayerType.GroundLayer4 },
+                RoomLayerType.GroundLayer4 => Array.Empty<RoomLayerType>(),
+
+                RoomLayerType.WaterTilemap => Array.Empty<RoomLayerType>(),
+                RoomLayerType.BaseWaterLayer => Array.Empty<RoomLayerType>(),
+                
+                RoomLayerType.CliffLayer4 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer3 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer2 => throw new NotImplementedException(),
+                RoomLayerType.CliffLayer1 => throw new NotImplementedException(),
                 _ => throw new NotImplementedException(),
             };
         }

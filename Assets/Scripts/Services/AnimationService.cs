@@ -1,3 +1,4 @@
+using Assets.Scripts.Helpers;
 using UnityEngine;
 
 namespace Assets.Scripts.Services
@@ -11,7 +12,7 @@ namespace Assets.Scripts.Services
     {
         public void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive)
         {
-            var unitAnimator = unit.GetComponent<Animator>();
+            var unitAnimator = unit.GetUnitAnimator().GetComponent<Animator>();
 
             switch (type)
             {

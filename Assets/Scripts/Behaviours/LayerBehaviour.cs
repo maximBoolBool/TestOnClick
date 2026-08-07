@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Managers;
+﻿using Assets.Scripts.Services;
 using UnityEngine;
 using Zenject;
 
@@ -7,16 +7,16 @@ namespace Assets.Scripts.Behaviours
     public class LayerBehaviour : MonoBehaviour
     {
         [Inject]
-        private readonly IGridLayersManager _gridLayersManager;
+        private readonly IGridLayerService _gridLayersService;
 
         public void OnLayerUp()
         {
-            _gridLayersManager.LayerUp();
+            _gridLayersService.LayerUp();
         }
 
         public void OnLayerDown() 
         {
-            _gridLayersManager.LayerDown();
+            _gridLayersService.LayerDown();
         }
     }
 }

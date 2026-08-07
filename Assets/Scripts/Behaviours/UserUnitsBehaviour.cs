@@ -1,5 +1,6 @@
 using Assets.Db.Enums;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System.Collections;

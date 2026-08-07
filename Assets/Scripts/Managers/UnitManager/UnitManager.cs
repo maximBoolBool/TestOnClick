@@ -1,17 +1,19 @@
 ﻿using Assets.Db;
 using Assets.Db.Models;
+using Assets.Scripts.Enums;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Helpers;
-using Assets.Scripts.Managers;
 using Assets.Scripts.Models.Equipment;
+using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Zenject;
 
-namespace Assets.Scripts.Services
+namespace Assets.Scripts.Managers.UnitManager
 {
     public interface IUnitManager
     {
@@ -46,6 +48,8 @@ namespace Assets.Scripts.Services
             bool withDeleteActual
         );
 
+        void SwitchUnitVisual(RoomLayerType actualLayer, RoomLayerType? previousLayer);
+
         List<Unit> Units { get; }
 
         List<(ISlotEquipment Equipment, int Order)> SharedEquipment { get; }
@@ -53,13 +57,18 @@ namespace Assets.Scripts.Services
         Unit? GetActualUserUnit { get; }
     }
 
-    public class UnitManager : IUnitManager
+    public partial class UnitManager : IUnitManager
     {
+        #region Manager States
+
         private readonly List<Unit> _units = new();
         private List<(ISlotEquipment Equipment, int Order)> _sharedEquipments = new();
+        private readonly Dictionary<Guid, RoomLayerType> _unitSessionIds = new();
+
+        #endregion
 
         [Inject]
-        private readonly UnitFactory _factory;
+        private readonly UnitFactory _unitFactory;
 
         [Inject]
         private readonly IRoomSpawnService _roomSpawnService;
@@ -74,7 +83,7 @@ namespace Assets.Scripts.Services
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         [Inject]
-        private readonly IGridLayerService _gridLayerService;
+        private readonly IGridLayersManager _gridLayersManager;
 
         public static UnitManager Instance {  get; private set; }
 
@@ -82,6 +91,8 @@ namespace Assets.Scripts.Services
         {
             Instance = this;
         }
+
+        #region Public Unit Properties
 
         public List<Unit> Units => _units;
 
@@ -91,6 +102,8 @@ namespace Assets.Scripts.Services
             .Where(x => x.IsSelected)
             .Where(x => x.Characteristic.Side == SideType.UserSide)
             .FirstOrDefault();
+
+        #endregion
 
         public void GenerateUnits()
         {
@@ -244,19 +257,28 @@ namespace Assets.Scripts.Services
                 {
                     var isMonk = unit.Name == "Monk";
 
-                    var generatePosition = _gridLayerService.GetRoomCordinateFromGridCordinate(new Vector3Int((i + j) * 3, (i + j) * 3, 0));
-                    var unitItem = _factory.Create();
+                    var generatePosition = _gridLayersManager.GetRoomCordinateFromGridCordinate(new Vector3Int((i + j) * 3, (i + j) * 3, 0));
+                    var unitItem = _unitFactory.Create();
+                    unitItem.UnitSessionId = Guid.NewGuid();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
-                    var animator = unitItem.GetComponent<Animator>();
+                    var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                     animator.runtimeAnimatorController = isMonk
-                        ? UnitAnimatorOverrideControllerLoader.LoadController("RedMonkAnimatorOverrideController")                       
-                        : UnitAnimatorOverrideControllerLoader.LoadController("RedWarriorAnimatorOverrideContoller");
+                        ? UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedMonkAnimatorOverrideController")                       
+                        : UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedWarriorAnimatorOverrideContoller");
                     unitItem.Actions = (isMonk
                             ? BotActionHelper.GetEnemyMonkActions()
                             : BotActionHelper.GetEnemyWarriorActions()
                         )
                         .ToList();
+
+                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = LoadUnitIcon(unit.Name, SideType.EnemySide);
+
+                    unitItem.SwitchUnitVisual(UnitVisualType.Animation);
+
+                    var unitLayer = _gridLayersManager.GetCordinateRoomLayerType(generatePosition);
+                    _unitSessionIds.TryAdd(unitItem.UnitSessionId, unitLayer);
+
                     _units.Add(unitItem);
                 }
 
@@ -271,17 +293,22 @@ namespace Assets.Scripts.Services
             var i = 0;
             foreach (var unit in units)
             {
-                var generatePosition = _gridLayerService.GetRoomCordinateFromGridCordinate(new Vector3Int((i + 1) * 2, (i + 1) * 2, 0));
+                var generatePosition = _gridLayersManager.GetRoomCordinateFromGridCordinate(new Vector3Int((i + 1) * 2, (i + 1) * 2, 0));
 
                 var isMonk = unit.Name == "Monk";
 
-                var unitItem = _factory.Create();
+                var unitItem = _unitFactory.Create();
+                unitItem.UnitSessionId = Guid.NewGuid();
                 unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
+
+                var unitLayer = _gridLayersManager.GetCordinateRoomLayerType(generatePosition);
+                _unitSessionIds.TryAdd(unitItem.UnitSessionId, unitLayer);
+
                 unitItem.SetCharacterictics(unit);
-                var animator = unitItem.GetComponent<Animator>();
+                var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                 animator.runtimeAnimatorController = isMonk
-                    ? UnitAnimatorOverrideControllerLoader.LoadController("BlueMonkAnimatorController") 
-                    : UnitAnimatorOverrideControllerLoader.LoadController("BlueWarriorAnimatorController");
+                    ? UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueMonkAnimatorController") 
+                    : UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueWarriorAnimatorController");
 
                 unitItem.Actions = (isMonk
                         ? BotActionHelper.GetEnemyMonkActions()
@@ -289,12 +316,16 @@ namespace Assets.Scripts.Services
                     )
                     .ToList();
 
+                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = LoadUnitIcon(unit.Name, SideType.UserSide);
+
+                unitItem.SwitchUnitVisual(UnitVisualType.Animation);
+
                 _units.Add(unitItem);
                 i++;
             }
         }
 
-        private int[] GetUserUnitIds()
+        private static int[] GetUserUnitIds()
         {
             return new[]{ 1, 2}; 
         }
@@ -302,6 +333,60 @@ namespace Assets.Scripts.Services
         private UnitEntity[] GetUnitsData(int[] ids)
         {
             return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
+        }
+
+        private static Sprite LoadUnitIcon(string unitName, SideType side)
+        {
+            var sidePrefix = side switch
+            {
+                SideType.UserSide => "Blue",
+                SideType.EnemySide => "Red",
+                _ => throw new InvalidOperationException($"Unknown side type: {side}")
+            };
+        
+            return Addressables.LoadAssetAsync<Sprite>($"{sidePrefix}{unitName}").WaitForCompletion();
+        }
+
+        public void SwitchUnitVisual(RoomLayerType actualLayer, RoomLayerType? previousLayer)
+        {
+            var unitsInActualLayer = _unitSessionIds
+                .Where(x => x.Value == actualLayer)
+                .Select(x => _units.FirstOrDefault(u => u.UnitSessionId == x.Key))
+                .Where(u => u != null)
+                .ToArray();
+
+            foreach (var unit in unitsInActualLayer)
+            {
+                unit.SwitchUnitVisual(UnitVisualType.Animation);
+            }
+
+            if (previousLayer == null)
+            {
+                return;
+            }
+
+            var needCheckLayerCross = previousLayer != null && actualLayer > previousLayer;
+
+            var unitsInPreviousLayer = _unitSessionIds
+                .Where(x => x.Value == previousLayer)
+                .Select(x => _units.FirstOrDefault(u => u.UnitSessionId == x.Key))
+                .Where(u => u != null)
+                .Where(x => needCheckLayerCross
+                    ? NeedChangeUnitAnimationType(x.gameObject.transform.position, actualLayer)
+                    : true
+                )
+                .ToArray();
+
+            foreach (var unit in unitsInPreviousLayer)
+            {
+                unit.SwitchUnitVisual(UnitVisualType.Icon);
+            }
+        }
+
+        private bool NeedChangeUnitAnimationType(Vector3 cordinate, RoomLayerType checkLayer)
+        {
+            var gridCordinate = _gridService.ToGridCordinates(cordinate);
+            return _gridLayersManager.HasTileOnLayer(gridCordinate, checkLayer);
         }
 
         #endregion

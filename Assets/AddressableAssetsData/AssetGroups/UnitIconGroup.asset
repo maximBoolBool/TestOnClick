@@ -21,7 +21,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6244a8cd885c04143a7afecf7607f6e9
-    m_Address: Assets/UnitIcons/RedUnits/RedWarrior.png
+    m_Address: RedWarrior
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -30,8 +30,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6a17b96a97d80f4bb99c7d9ac5c928e
+    m_Address: UpArrowIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fe7022f1608d8e4488a1e93b677859de
-    m_Address: Assets/UnitIcons/RedUnits/RedMonk.png
+    m_Address: RedMonk
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

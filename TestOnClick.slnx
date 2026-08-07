@@ -1,4 +1,4 @@
-﻿<Solution>
+<Solution>
   <Project Path="Zenject.csproj" />
   <Project Path="Zenject-IntegrationTests-Editor.csproj" />
   <Project Path="Zenject-ReflectionBaking-Editor.csproj" />

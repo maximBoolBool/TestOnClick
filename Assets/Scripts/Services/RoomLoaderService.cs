@@ -28,6 +28,9 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.Grid)]
         private readonly Grid _grid;
 
+        [Inject]
+        private readonly IGameGlobalStateManager _gameGlobalStateManager;
+
         /// <summary>
         /// Очистить комнату с карты
         /// </summary>
@@ -45,46 +48,6 @@ namespace Assets.Scripts.Services
             }
 
             Debug.Log($"[RoomLoader] Комната очищена");
-        }
-
-        /// <summary>
-        /// Получить TileBase для типа тайла
-        /// </summary>
-        private TileBase GetTileForType(RoomLayout layout, TileType tileType)
-        {
-            return tileType switch
-            {
-                TileType.Floor => layout.FloorTile,
-                TileType.Wall => layout.WallTile,
-                TileType.Water => layout.WaterTile,
-                TileType.Pit => layout.FloorTile, // Яма использует пол как базу
-                _ => null
-            };
-        }
-
-        /// <summary>
-        /// Визуализировать точки спавна (для отладки)
-        /// </summary>
-        private void DrawSpawnPoints(RoomLayout layout, Vector3Int offset)
-        {
-            // Рисуем гизмо для точек спавна (видны только в редакторе)
-            if (layout.PlayerSpawnPoints != null)
-            {
-                foreach (var point in layout.PlayerSpawnPoints)
-                {
-                    Vector3Int pos = new Vector3Int(point.x, point.y, 0) + offset;
-                    Debug.Log($"[RoomLoader] 🟦 Player spawn at: {pos}");
-                }
-            }
-
-            if (layout.EnemySpawnPoints != null)
-            {
-                foreach (var point in layout.EnemySpawnPoints)
-                {
-                    Vector3Int pos = new Vector3Int(point.x, point.y, 0) + offset;
-                    Debug.Log($"[RoomLoader] 🟥 Enemy spawn at: {pos}");
-                }
-            }
         }
 
         public void NewLoadRoom(string roomKey)
@@ -108,6 +71,7 @@ namespace Assets.Scripts.Services
                 handle.Result.transform.position = Vector3.zero; // Сбрасываем позицию в 0,0,0
                 handle.Result.transform.SetParent(_grid.transform);
                 _gridLayersManager.SetRoomVisual(handle.Result);
+                _gameGlobalStateManager.InitignoreCordinates();
             }
             else
             {

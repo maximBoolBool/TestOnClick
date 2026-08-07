@@ -5,18 +5,20 @@ using Assets.Db.Models;
 using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Models.Slot;
+using System;
 
 namespace Assets.Scripts
 {
     public class Unit : MonoBehaviour
     {
+        public Guid UnitSessionId { get; set; }
         public string Name { get; set; }
         public int ActualActionPoints { get; set; }
         public int ActualHealthPoints { get; set; }
         public bool IsSelected { get; set; }
-        public UnitCharacteristic Characteristic;
+        public UnitCharacteristic Characteristic { get; set; }
         public List<BaseAction> Actions { get; set; } = new();
-        public List<EquipmentSlot> EquipmentSlots = new();
+        public List<EquipmentSlot> EquipmentSlots { get; set; } = new();
         public List<BaseCondition> GlobalConditions { get; set; } = new();
         public List<(BaseCondition Condition, int DisappearancesTurn)> DuratationConditions { get; set; } = new();
         // TODO: Consider adding validation - checking for values less than zero
