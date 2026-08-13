@@ -44,6 +44,21 @@ namespace Assets.Scripts.Services
 
             for (int i = 1; i < path.Length; i++)
             {
+                var newDirection = path[i] - path[i - 1];
+
+                if (newDirection.x != direction.x)
+                {
+                    direction = newDirection;
+                    _animationService.SwitchUnitAnimation(
+                        unit,
+                        new MoveAnimation
+                        {
+                            IsActive = true,
+                            Direction = direction
+                        }
+                    );
+                }
+
                 Vector3Int step = path[i];
                 Vector3Int prevStep = path[i - 1];
                 Vector3Int dir = step - prevStep;

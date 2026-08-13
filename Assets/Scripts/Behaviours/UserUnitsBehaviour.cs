@@ -266,6 +266,21 @@ namespace Assets.Scripts.Behaviours
             _hilightService.HighlightTiles(false, reachableTiles, unit);
             for (var i = 1; i < path.Count; i++)
             {
+                var newDirection = path[i] - path[i - 1];
+
+                if(newDirection.x != direction.x)
+                {
+                    direction = newDirection;
+                    _animationService.SwitchUnitAnimation(
+                        unit,
+                        new MoveAnimation
+                        {
+                            IsActive = true,
+                            Direction = direction
+                        }
+                    );
+                }
+
                 var step = path[i];
                 var prevStep = path[i - 1];
                 var dir = step - prevStep;
