@@ -1,6 +1,7 @@
 using Assets.Db.Enums;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.UnitManager;
+using Assets.Scripts.Models.Animations;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
 using System.Collections;
@@ -250,7 +251,7 @@ namespace Assets.Scripts.Behaviours
 
         IEnumerator MovePath(Unit unit)
         {
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, true);
+            _animationService.SwitchUnitAnimation(unit, new MoveAnimation { IsActive = true });
 
             isUnitMoving = true;
             _hilightService.HighlightTiles(false, reachableTiles, unit);
@@ -280,7 +281,7 @@ namespace Assets.Scripts.Behaviours
             }
 
             isUnitMoving = false;
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
+            _animationService.SwitchUnitAnimation(unit, new MoveAnimation { IsActive = false });
 
             if (unit.Characteristic.Side == SideType.UserSide)
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Models.Animations;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Zenject;
@@ -31,7 +32,7 @@ namespace Assets.Scripts.Services
             }
 
             // Включаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, true);
+            _animationService.SwitchUnitAnimation(unit, new MoveAnimation() { IsActive = true });
 
             for (int i = 1; i < path.Length; i++)
             {
@@ -58,7 +59,7 @@ namespace Assets.Scripts.Services
             }
 
             // Выключаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
+            _animationService.SwitchUnitAnimation(unit, new MoveAnimation() { IsActive = false });
         }
     }
 }

@@ -1,6 +1,7 @@
 using Assets.Db.Enums;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Actions;
+using Assets.Scripts.Models.Animations;
 using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
@@ -121,7 +122,7 @@ namespace Assets.Scripts.Services
                 {
                     case ActionStepType.Damage:
 
-                        _animationService.SwitchUnitAnimation(executor, UnitAnimationType.Attack, true);
+                        _animationService.SwitchUnitAnimation(executor, new AttackAnimation());
                         var haveHit = _hitService.IsHit(
                             targetUnit.Characteristic.DefendSkill,
                             executor.Characteristic.MeleeSkill,
@@ -138,7 +139,7 @@ namespace Assets.Scripts.Services
 
                             if (isDead)
                             {
-                                _animationService.SwitchUnitAnimation(targetUnit, UnitAnimationType.Dead, true);
+                                _animationService.SwitchUnitAnimation(targetUnit, new DeadAnimation());
                             }
 
                             stepResults.TryAdd(step.Order, true);

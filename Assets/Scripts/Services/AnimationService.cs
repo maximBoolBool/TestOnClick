@@ -1,42 +1,36 @@
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Models.Animations;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Services
 {
     public interface IAnimationService
     {
-        void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive);
+        void SwitchUnitAnimation(Unit unit, BaseAnimation animation);
     }
 
     public class AnimationService : IAnimationService
     {
-        public void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive)
+        public void SwitchUnitAnimation(Unit unit, BaseAnimation animation)
         {
             var unitAnimator = unit.GetUnitAnimator().GetComponent<Animator>();
 
-            switch (type)
+            switch (animation)
             {
-                case UnitAnimationType.Attack:
+                case AttackAnimation attackAnimation:
                     unitAnimator.SetTrigger(Constants.UnitAttackTrigger);
                     break;
-                case UnitAnimationType.Move:
-                    unitAnimator.SetBool(Constants.IsUnitMoving, isActive);
+                case MoveAnimation moveAnimation:
+                    unitAnimator.SetBool(Constants.IsUnitMoving, moveAnimation.IsActive);
                     break;
-                case UnitAnimationType.Dead:
+                case DeadAnimation deadAnimation:
                     unitAnimator.SetTrigger(Constants.UnitDeadTrigger);
                     break;
-                case UnitAnimationType.Idle:
+                case IdleAnimation idleAnimation:
                 default:
-                    throw new System.Exception();
+                    throw new Exception();
             }
         }
-    }
-
-    public enum UnitAnimationType
-    {
-        Idle = 0,
-        Attack = 1,
-        Move = 2,
-        Dead = 3,
     }
 }
