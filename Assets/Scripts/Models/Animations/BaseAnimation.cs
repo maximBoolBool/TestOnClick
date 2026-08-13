@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Enums;
+using UnityEngine;
 
 namespace Assets.Scripts.Models.Animations
 {
@@ -21,6 +22,7 @@ namespace Assets.Scripts.Models.Animations
     {
         public override UnitAnimationType Type => UnitAnimationType.Move;
 
+        public Vector3Int? Direction { get; set; }
         public bool IsActive { get; set; }
     }
 

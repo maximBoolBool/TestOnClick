@@ -251,7 +251,16 @@ namespace Assets.Scripts.Behaviours
 
         IEnumerator MovePath(Unit unit)
         {
-            _animationService.SwitchUnitAnimation(unit, new MoveAnimation { IsActive = true });
+            var direction = path[1] - path[0];
+
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation 
+                {
+                    IsActive = true,
+                    Direction = direction
+                }
+            );
 
             isUnitMoving = true;
             _hilightService.HighlightTiles(false, reachableTiles, unit);
@@ -281,7 +290,14 @@ namespace Assets.Scripts.Behaviours
             }
 
             isUnitMoving = false;
-            _animationService.SwitchUnitAnimation(unit, new MoveAnimation { IsActive = false });
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation 
+                { 
+                    IsActive = false,
+                    Direction = null
+                }
+            );
 
             if (unit.Characteristic.Side == SideType.UserSide)
             {

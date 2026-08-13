@@ -22,6 +22,20 @@ namespace Assets.Scripts.Services
                     unitAnimator.SetTrigger(Constants.UnitAttackTrigger);
                     break;
                 case MoveAnimation moveAnimation:
+                    if (moveAnimation.Direction.HasValue)
+                    {
+                        var spriteRender = unit.GetUnitAnimator().GetComponent<SpriteRenderer>();
+
+                        if (moveAnimation.Direction.Value.x < 0)
+                        {
+                            spriteRender.flipX = true;
+                        }
+                        else if(moveAnimation.Direction.Value.x > 0)
+                        {
+                            spriteRender.flipX = false;
+                        }
+                    }
+
                     unitAnimator.SetBool(Constants.IsUnitMoving, moveAnimation.IsActive);
                     break;
                 case DeadAnimation deadAnimation:

@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Models.Animations;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services
@@ -31,8 +30,17 @@ namespace Assets.Scripts.Services
                 yield break;
             }
 
+            var direction = path[1] - path[0];
+
             // Включаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, new MoveAnimation() { IsActive = true });
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation()
+                {
+                    IsActive = true,
+                    Direction = direction
+                }
+            );
 
             for (int i = 1; i < path.Length; i++)
             {
@@ -59,7 +67,14 @@ namespace Assets.Scripts.Services
             }
 
             // Выключаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, new MoveAnimation() { IsActive = false });
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation() 
+                {
+                    IsActive = false,
+                    Direction = null
+                }
+            );
         }
     }
 }
