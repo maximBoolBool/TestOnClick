@@ -1,8 +1,10 @@
 ﻿using Assets.Scripts.Enums;
 using Assets.Scripts.Services;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Tilemaps;
@@ -15,8 +17,8 @@ namespace Assets.Scripts.Managers
         Vector3Int GetRoomCordinateFromGridCordinate(Vector3Int cordinate);
         Vector3Int GetRoomCordinateFromGlobalCordinate(Vector3 cordinate);
         RoomLayerType GetCordinateRoomLayerType(Vector3Int cordinate);        
-        void SetRoomVisual(GameObject roomVisual);
-        bool TrySetLayerVisual(RoomLayerType layer);
+        UniTask SetRoomVisualAsync(GameObject roomVisual);
+        UniTask<bool> TrySetLayerVisualAsync(RoomLayerType layer);
         GameObject? RoomVisual { get; }
         bool HasTileOnLayer(Vector3Int cordinte, RoomLayerType layer);
         TileBase? GetTileOnLayer(Vector3Int cordinate, RoomLayerType layer);
@@ -53,7 +55,7 @@ namespace Assets.Scripts.Managers
         };
 
         //Вызывать при старте сцены
-        public void SetRoomVisual(GameObject? roomVisual)
+        public async UniTask SetRoomVisualAsync(GameObject? roomVisual)
         {
             _currentActiveRoomVisual = roomVisual;
             _cachedLayerRenderers.Clear();
@@ -85,10 +87,10 @@ namespace Assets.Scripts.Managers
                 .OrderByDescending(x => x)
                 .First();
             
-            TrySetLayerVisual(_roomMaxLayer.Value);
+            await TrySetLayerVisualAsync(_roomMaxLayer.Value);
         }
 
-        public bool TrySetLayerVisual(RoomLayerType layer)
+        public async UniTask<bool> TrySetLayerVisualAsync(RoomLayerType layer)
         {
             if (layer > _roomMaxLayer)
             {
@@ -158,7 +160,7 @@ namespace Assets.Scripts.Managers
 
             SetVisualLayers(visibleLayers);
             ClearShadowTiles();
-            SetShadowTiles(layer);
+            await SetShadowTilesAsync(layer);
             return true;
         }
 
@@ -272,7 +274,7 @@ namespace Assets.Scripts.Managers
                 .ToArray();
         }
 
-        private void SetShadowTiles(RoomLayerType actualLayer)
+        private async UniTask SetShadowTilesAsync(RoomLayerType actualLayer)
         {
             var shadowLayers = actualLayer.GetLayerShadowLayers();
 
@@ -302,7 +304,7 @@ namespace Assets.Scripts.Managers
 
             _cordinatesToShadow = _cordinatesToShadow.Where(x => !cordinatesToIgnor.Contains(x)).ToHashSet();
 
-            var shadowTile = Addressables.LoadAssetAsync<Tile>("ShadowTile").WaitForCompletion();
+            var shadowTile = await Addressables.LoadAssetAsync<Tile>("ShadowTile");
 
             foreach (var cordinate in _cordinatesToShadow)
             {

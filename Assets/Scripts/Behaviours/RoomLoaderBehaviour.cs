@@ -54,7 +54,7 @@ namespace Assets.Scripts.Behaviours
             }
 
             //PRT-9 убрать хардкод
-            _roomLoaderService.NewLoadRoom("Room_1_1");
+            _roomLoaderService.NewLoadRoomAsync("Room_1_1");
 
             //_roomLoader.LoadRoom(_roomLayout, _offset);
             Debug.Log($"[RoomLoaderBehaviour] Загружена комната: {_roomLayout.name}");

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
@@ -9,10 +10,10 @@ namespace Assets.Scripts.Services
     public interface IUIAnimationService
     {
         void ShakeCamera();
-
+            
         void MoveVeils();
 
-        void SwitchPanelUnitIcon(string unitName);    
+        UniTaskVoid SwitchPanelUnitIconAsync(string unitName);    
     }
 
     class UIAnimationService : IUIAnimationService
@@ -70,7 +71,7 @@ namespace Assets.Scripts.Services
             _camera.DOShakePosition(0.5f, 0.5f, 10, 90, false);
         }
 
-        public void SwitchPanelUnitIcon(string unitName)
+        public async UniTaskVoid SwitchPanelUnitIconAsync(string unitName)
         {
             var iconImage = _unitInformationPanelIcon.GetComponent<Image>();
 
@@ -78,9 +79,9 @@ namespace Assets.Scripts.Services
 
             sequence.Append(iconImage.DOFade(FADE_MIN_VALUE, FADE_DURATION));
 
-            sequence.AppendCallback(() => 
+            sequence.AppendCallback(async () => 
             { 
-                var sprite = Addressables.LoadAssetAsync<Sprite>(unitName).WaitForCompletion();
+                var sprite = await Addressables.LoadAssetAsync<Sprite>(unitName);
                 iconImage.sprite = sprite;
             });
 

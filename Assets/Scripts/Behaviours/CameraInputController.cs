@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Services;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Threading.Tasks;
 using Unity.Mathematics;
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Behaviours
             _isDragging = false;
         }
 
-        private async Task DragLoopAsync()
+        private async UniTask DragLoopAsync()
         {
             while (_isDragging && _mainCamera != null)
             {

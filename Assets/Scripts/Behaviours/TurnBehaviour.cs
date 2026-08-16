@@ -1,4 +1,5 @@
 using Assets.Scripts.Managers;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -9,14 +10,14 @@ namespace Assets.Scripts.Behaviours
         [Inject]
         private readonly ITurnManager _turnManager;
 
-        void Start()
+        public async UniTaskVoid Start()
         {
-            _turnManager.SceneStart();
+            await _turnManager.SceneStart();
         }
 
         public void TurnSkipHandler()
         {
-            _turnManager.SkipTurn();
+             _turnManager.SkipTurnAsync().Forget();
         }
     }
 }

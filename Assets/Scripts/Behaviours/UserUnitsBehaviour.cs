@@ -4,9 +4,10 @@ using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Animations;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -67,7 +68,7 @@ namespace Assets.Scripts.Behaviours
         private bool isShowingUnitInfo = false;
         private const float moveSpeed = 3f;
 
-        private void Update()
+        private async UniTaskVoid Update()
         {
             if (_gameGlobalStateManager.SelectedUnit == null)
             {
@@ -168,7 +169,7 @@ namespace Assets.Scripts.Behaviours
                             _enemyPanelServic.HideUnitInfo();
                             isShowingUnitInfo = false;
                             FindPath(_gridService.ToGridCordinates(selectedUnit), mouseTilePos, selectedUnit);
-                            StartCoroutine(MovePath(selectedUnit));
+                            await MovePathAsync(selectedUnit);
                         }
                     }
                     if (Mouse.current.rightButton.wasPressedThisFrame)
@@ -249,13 +250,22 @@ namespace Assets.Scripts.Behaviours
             }
         }
 
-        IEnumerator MovePath(Unit unit)
+        public async UniTask MovePathAsync(Unit unit, CancellationToken cancellationToken = default)
         {
+            // Если токен не передан извне, берем токен отмены при OnDestroy у Monobehaviour/Unit
+            if (cancellationToken == default)
+            {
+                cancellationToken = this.GetCancellationTokenOnDestroy();
+            }
+
+            if (path == null || path.Count < 2)
+                return;
+
             var direction = path[1] - path[0];
 
             _animationService.SwitchUnitAnimation(
                 unit,
-                new MoveAnimation 
+                new MoveAnimation
                 {
                     IsActive = true,
                     Direction = direction
@@ -264,11 +274,12 @@ namespace Assets.Scripts.Behaviours
 
             isUnitMoving = true;
             _hilightService.HighlightTiles(false, reachableTiles, unit);
+
             for (var i = 1; i < path.Count; i++)
             {
                 var newDirection = path[i] - path[i - 1];
 
-                if(newDirection.x != direction.x)
+                if (newDirection.x != direction.x)
                 {
                     direction = newDirection;
                     _animationService.SwitchUnitAnimation(
@@ -290,25 +301,29 @@ namespace Assets.Scripts.Behaviours
                 unit.ActualActionPoints -= stepCost;
 
                 var worldTarget = _gridService.FromGridCordinates(step);
-            
+
                 var distance = Vector3.Distance(unit.transform.position, worldTarget);
                 var duration = distance / moveSpeed;
                 var elapsed = 0f;
                 var startPos = unit.transform.position;
+
                 while (elapsed < duration)
                 {
                     unit.transform.position = Vector3.Lerp(startPos, worldTarget, elapsed / duration);
                     elapsed += Time.deltaTime;
-                    yield return null;
+
+                    // Вместо yield return null используем UniTask.Yield
+                    await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
                 }
+
                 unit.transform.position = worldTarget;
             }
 
             isUnitMoving = false;
             _animationService.SwitchUnitAnimation(
                 unit,
-                new MoveAnimation 
-                { 
+                new MoveAnimation
+                {
                     IsActive = false,
                     Direction = null
                 }
@@ -318,8 +333,8 @@ namespace Assets.Scripts.Behaviours
             {
                 if (unit.ActualActionPoints <= 0)
                 {
-                    _turnManager.DeactivateUnit(unit);
-                    yield break;
+                    await _turnManager.DeactivateUnitAsync(unit);
+                    return; // Заменено с yield break
                 }
             }
 
@@ -331,12 +346,15 @@ namespace Assets.Scripts.Behaviours
             reachableTiles = _hilightService.HilightReachebleTiles(unit, reachableTiles);
         }
 
-        private int Heuristic(Vector3Int a, Vector3Int b)
+        private static int Heuristic(Vector3Int a, Vector3Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        private List<Vector3Int> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)
+        private static List<Vector3Int> ReconstructPath(
+            Dictionary<Vector3Int, Vector3Int> cameFrom,
+            Vector3Int current
+        )
         {
             List<Vector3Int> path = new() { current };
             while (cameFrom.ContainsKey(current))

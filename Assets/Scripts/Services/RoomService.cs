@@ -2,6 +2,7 @@
 using Assets.Db.Enums;
 using Assets.Db.Models;
 using Assets.Scripts.Managers;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
 using Zenject;
@@ -10,7 +11,7 @@ namespace Assets.Scripts.Services
 {
     public interface IRoomService
     {
-        bool TrySwitchNextRoom(bool withSkip);
+        UniTask<bool> TrySwitchNextRoom(bool withSkip);
     }
 
     public class RoomService : IRoomService
@@ -24,7 +25,7 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
-        public bool TrySwitchNextRoom(bool withSkip)
+        public async UniTask<bool> TrySwitchNextRoom(bool withSkip)
         {
             var progressData = _progressDb.ProgressData
                 .Where(x => x.Type == ProgressDataType.OrderedRoomIds || x.Type == ProgressDataType.CurrentRoomOrder)
@@ -58,11 +59,11 @@ namespace Assets.Scripts.Services
 
             if (newRoomOrder != 0)
             {
-                _roomLoaderService.ClearRoom(AdvancedRoomLoader.LoadRoomSync($"Room{roomIds[newRoomOrder - 1]}"));
+                _roomLoaderService.ClearRoom(AdvancedRoomLoader.LoadRoomAsync($"Room{roomIds[newRoomOrder - 1]}"));
             }
 
             //PRT-9
-            _roomLoaderService.NewLoadRoom("Room_1_1");
+            await _roomLoaderService.NewLoadRoomAsync("Room_1_1");
             //_roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
             _gameGlobalStateManager.ActualRoomId = currentRoomId;
             _gameGlobalStateManager.ActualWaveOrder = 1;            

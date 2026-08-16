@@ -1,10 +1,9 @@
-using Assets.Db.Enums;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -16,15 +15,15 @@ namespace Assets.Scripts.Managers
 {
     public interface ITurnManager
     {
-        public void SceneStart();
+        UniTask SceneStart();
 
-        public void EndTurn();
+        UniTask EndTurnAsync();
 
-        public void SkipTurn();
+        UniTask SkipTurnAsync();
 
-        public void ActivateUnit(Unit unit);
+        UniTask ActivateUnitAsync(Unit unit);
 
-        public void DeactivateUnit(Unit unit);
+        UniTask DeactivateUnitAsync(Unit unit);
     }
 
     public class TurnManager : ITurnManager
@@ -63,15 +62,13 @@ namespace Assets.Scripts.Managers
         [Inject]
         private readonly IUIAnimationService _uiAnimationService;
 
-        private Coroutine _textAnimationCoroutine;
-
-        public void SceneStart()
+        public async UniTask SceneStart()
         {
             _uiAnimationService.ShakeCamera();
             _uiAnimationService.MoveVeils();
-            _roomService.TrySwitchNextRoom(false);
+            await _roomService.TrySwitchNextRoom(false);
 
-            _unitManager.GenerateUnits();
+            await _unitManager.GenerateUnits();
             // Пока убираем
             //_unitManager.SetStartEquipment();
             units = _unitManager.Units;
@@ -82,11 +79,11 @@ namespace Assets.Scripts.Managers
             {
                 turnCount = 1;
                 UpdateMoveCounterDisplay();
-                ActivateUnit(units[currentUnitIndex]);
+                await ActivateUnitAsync(units[currentUnitIndex]);
             }
         }
 
-        public void EndTurn()
+        public async UniTask EndTurnAsync()
         {
             currentUnitIndex = (currentUnitIndex + 1) % units.Count;
 
@@ -99,28 +96,28 @@ namespace Assets.Scripts.Managers
 
             }
 
-            ActivateUnit(units[currentUnitIndex]);
+            await ActivateUnitAsync(units[currentUnitIndex]);
         }
 
-        public void SkipTurn()
+        public async UniTask SkipTurnAsync()
         {
             if (units[currentUnitIndex].Characteristic.Side == SideType.UserSide)
             {
-                DeactivateUnit(units[currentUnitIndex]);
+                await DeactivateUnitAsync(units[currentUnitIndex]);
             }
         }
 
-        public void ActivateUnit(Unit unit)
+        public async UniTask ActivateUnitAsync(Unit unit)
         {
             _conditionService.ExecuteConditionEffect(unit, ConditionEffectStartType.OnTurnStart);
 
             if (unit.IsDead)
             {
-                DeactivateUnit(units[currentUnitIndex]);
+                await DeactivateUnitAsync(units[currentUnitIndex]);
                 return;
             }
 
-            CheckForGameOver();
+            await CheckForGameOverAsync();
 
             _cameraService.MoveCamera(unit.transform.position);
 
@@ -131,7 +128,7 @@ namespace Assets.Scripts.Managers
                     break;
                 case SideType.EnemySide:
                     Debug.Log("Ai turn start");
-                    ActivateEnemyUnitIternal(unit);
+                    ActivateEnemyUnitIternalAsync(unit).Forget();
                     Debug.Log("Ai turn start");
                     break;
                 default:
@@ -141,7 +138,7 @@ namespace Assets.Scripts.Managers
 
         private void ActivateUserUnitIternal(Unit unit)
         {
-            _uiAnimationService.SwitchPanelUnitIcon($"Blue{unit.Name}");
+            _uiAnimationService.SwitchPanelUnitIconAsync($"Blue{unit.Name}");
 
             _unitPanelBarService.SetUnitHealthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
@@ -158,43 +155,31 @@ namespace Assets.Scripts.Managers
             unit.IsSelected = true;
         }
 
-        private void ActivateEnemyUnitIternal(Unit unit)
+        private async UniTask ActivateEnemyUnitIternalAsync(Unit unit)
         {
-            _botExecutionTurnService.ExecuteBotTurn(unit);
+            await _botExecutionTurnService.ExecuteBotTurnAsync(unit);
         }
 
-        public void DeactivateUnit(Unit unit)
+        public async UniTask DeactivateUnitAsync(Unit unit)
         {
             _actionUiService.HideActions();
             unit.IsSelected = false;
             _gameGlobalStateManager.SelectedUnit = null;
-            EndTurn();
+            await EndTurnAsync();
         }
 
         private void UpdateMoveCounterDisplay()
         {
-            if (_moveCounterText != null)
-            {
-                if (_textAnimationCoroutine != null)
-                {
-                    _moveCounterText.StopCoroutine(_textAnimationCoroutine);
-                }
-
-                _textAnimationCoroutine = _moveCounterText.StartCoroutine(SetTurnText($"Turn: {turnCount}"));
-            }
-            else
-            {
-                Debug.LogWarning("MoveCounterText не назначен в инспекторе!");
-            }
+            SetTurnTextAsync($"Turn: {turnCount}").Forget();
         }
 
-        private void CheckForGameOver()
+        private async UniTask CheckForGameOverAsync()
         {
             var sides = _unitManager.Units
                 .GroupBy(x => x.Characteristic.Side)
                 .ToDictionary(
                     x => x.Key,
-                    x => x.Where(y => !y.IsDead).Any()
+                    x => x.Any(y => !y.IsDead)
                 );
 
             foreach (var side in sides)
@@ -212,11 +197,11 @@ namespace Assets.Scripts.Managers
                 {
                     Debug.Log("Все враги мертвы! Победа.");
 
-                    if (_roomService.TrySwitchNextRoom(true))
+                    if (await _roomService.TrySwitchNextRoom(true))
                     {
                         Debug.Log("Переход в следующую комнату");
 
-                        _unitManager.GenerateWaveUnits(
+                        await _unitManager.GenerateWaveUnits(
                             roomId: _gameGlobalStateManager.ActualRoomId,
                             waveOrder: _gameGlobalStateManager.ActualWaveOrder,
                             withDeleteActual: true
@@ -230,7 +215,7 @@ namespace Assets.Scripts.Managers
             }
         }
 
-        IEnumerator SetTurnText(string fullText)
+        private async UniTask SetTurnTextAsync(string fullText)
         {
             string currentText = "";
 
@@ -238,14 +223,8 @@ namespace Assets.Scripts.Managers
             {
                 currentText += fullText[i];
                 _moveCounterText.text = currentText;
-
-                yield return new WaitForSeconds(0.1f);
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }
         }
     }
-}
-
-public static class StartConfiguration
-{
-    public const LocationType LOCATION_TYPE = LocationType.Forest;
 }

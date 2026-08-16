@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.Models.Animations;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -7,7 +7,7 @@ namespace Assets.Scripts.Services
 {
     public interface IMoveService
     {
-        IEnumerator MovePath(Unit unit, Vector3Int[] path);
+        UniTask MovePathAsync(Unit unit, Vector3Int[] path);
     }
 
     public class MoveService : IMoveService
@@ -23,13 +23,13 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IMovementCostService _movementCostService;
 
-        public IEnumerator MovePath(Unit unit, Vector3Int[] path)
+        public async UniTask MovePathAsync(Unit unit, Vector3Int[] path)
         {
             if (path.Length <= 1)
             {
-                yield break;
+                return;
             }
-
+            
             var direction = path[1] - path[0];
 
             // Включаем анимацию движения
@@ -75,7 +75,6 @@ namespace Assets.Scripts.Services
                 {
                     unit.transform.position = Vector3.Lerp(startPos, worldTarget, elapsed / duration);
                     elapsed += Time.deltaTime;
-                    yield return null;
                 }
 
                 unit.transform.position = worldTarget;

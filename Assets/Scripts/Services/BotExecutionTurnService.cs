@@ -3,7 +3,8 @@ using Assets.Scripts.Managers;
 using Assets.Scripts.Models.BotTurnSteps;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services.BotStrategy;
-using System.Collections;
+using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -11,7 +12,7 @@ namespace Assets.Scripts.Services
 {
     public interface IBotExecutionTurnService
     {
-        public void ExecuteBotTurn(Unit unit);
+        UniTask ExecuteBotTurnAsync(Unit unit);
     }
 
     public class BotExecutionTurnService : IBotExecutionTurnService
@@ -37,19 +38,19 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IActionExecutionService _executeActionService;
 
-        public void ExecuteBotTurn(Unit unit)
+        public async UniTask ExecuteBotTurnAsync(Unit unit)
         {
-            unit.StartCoroutine(ExecuteBotTurnCoroutine(unit));
+            await ExecuteBotTurnIternalAsync(unit);
         }
 
-        private IEnumerator ExecuteBotTurnCoroutine(Unit unit)
+        private async UniTask ExecuteBotTurnIternalAsync(Unit unit)
         {
             var strategyService = GetStrategyService(GetBotStrategyType(unit));
 
             if (unit.ActualActionPoints <= 0 || unit.IsDead)
             {
-                DeselectUnit(unit);
-                yield break;
+                await DeselectUnitAsync(unit);
+                return;
             }
 
             while (true)
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Services
                 switch (step)
                 {
                     case MoveBotCommand moveBotCommand:
-                        yield return _moveService.MovePath(unit, moveBotCommand.Path);
+                        await _moveService.MovePathAsync(unit, moveBotCommand.Path);
                         break;
                     case ExecuteActionBotCommand executeActionBotCommand:
                         // Переработать
@@ -68,16 +69,16 @@ namespace Assets.Scripts.Services
                             executeActionBotCommand.Action,
                             executeActionBotCommand.TargetCordinate
                         );
-                        yield return new WaitForSeconds(1f);
+                        await UniTask.Delay(TimeSpan.FromSeconds(1f));
                         break;
                     case SkipBotCommand _:
-                        DeselectUnit(unit);
-                        yield break;
+                        await DeselectUnitAsync(unit);
+                        return;
                 }
             }
         }
 
-        private BotStrategyType GetBotStrategyType(Unit unit)
+        private static BotStrategyType GetBotStrategyType(Unit unit)
         {
             if(unit.Name == "Warrior")
             {
@@ -103,11 +104,11 @@ namespace Assets.Scripts.Services
             };
         }
 
-        private void DeselectUnit(Unit unit)
+        private async UniTask DeselectUnitAsync(Unit unit)
         {
             _conditionService.ExecuteConditionEffect(unit, ConditionEffectStartType.OnTurnEnd);
             _conditionService.ActualizeUnitConditions(unit);
-            _turnManager.EndTurn();
+            await _turnManager.EndTurnAsync();
         }
     }
 }

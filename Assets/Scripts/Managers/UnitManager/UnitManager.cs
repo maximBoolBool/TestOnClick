@@ -6,6 +6,7 @@ using Assets.Scripts.Helpers;
 using Assets.Scripts.Models.Equipment;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Assets.Scripts.Managers.UnitManager
 {
     public interface IUnitManager
     {
-        void GenerateUnits();
+        UniTask GenerateUnits();
 
         void RefreshUnitsActionPoints();
 
@@ -42,7 +43,7 @@ namespace Assets.Scripts.Managers.UnitManager
             CharacterEquipmentSlotType slotType
         );
 
-        void GenerateWaveUnits(
+        UniTask GenerateWaveUnits(
             int roomId,
             int waveOrder,
             bool withDeleteActual
@@ -105,10 +106,10 @@ namespace Assets.Scripts.Managers.UnitManager
 
         #endregion
 
-        public void GenerateUnits()
+        public async UniTask GenerateUnits()
         {
-            GenerateUserUnits();
-            GenerateEnemyUnits(
+            await GenerateUserUnits();
+            await GenerateEnemyUnitsAsync(
                 roomId: _gameGlobalStateManager.ActualRoomId,
                 waveOrder: _gameGlobalStateManager.ActualWaveOrder
             );
@@ -205,7 +206,7 @@ namespace Assets.Scripts.Managers.UnitManager
             unit.EquipmentSlots.Add(fromSlot);
         }
 
-        public void GenerateWaveUnits(
+        public async UniTask GenerateWaveUnits(
             int roomId,
             int waveOrder,
             bool withDeleteActual
@@ -216,7 +217,7 @@ namespace Assets.Scripts.Managers.UnitManager
                 ClearEnemiesunits();
             }
 
-            GenerateEnemyUnits(
+            await GenerateEnemyUnitsAsync(
                 roomId: roomId,
                 waveOrder: waveOrder
             );
@@ -239,7 +240,7 @@ namespace Assets.Scripts.Managers.UnitManager
             }
         }
 
-        private void GenerateEnemyUnits(int roomId, int waveOrder)
+        private async UniTask GenerateEnemyUnitsAsync(int roomId, int waveOrder)
         {
             var enemiesCounts = _roomSpawnService.GetEnemyUnitIdCountsPairs(
                 roomId: roomId,
@@ -264,15 +265,15 @@ namespace Assets.Scripts.Managers.UnitManager
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                     animator.runtimeAnimatorController = isMonk
-                        ? UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedMonkAnimatorOverrideController")                       
-                        : UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedWarriorAnimatorOverrideContoller");
+                        ? await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedMonkAnimatorOverrideController")                       
+                        : await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedWarriorAnimatorOverrideContoller");
                     unitItem.Actions = (isMonk
                             ? BotActionHelper.GetEnemyMonkActions()
                             : BotActionHelper.GetEnemyWarriorActions()
                         )
                         .ToList();
 
-                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = LoadUnitIcon(unit.Name, SideType.EnemySide);
+                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await LoadUnitIconAsync(unit.Name, SideType.EnemySide);
 
                     unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -286,7 +287,7 @@ namespace Assets.Scripts.Managers.UnitManager
             }
         }
 
-        private void GenerateUserUnits()
+        private async UniTask GenerateUserUnits()
         {
             var units = GetUnitsData(GetUserUnitIds());
 
@@ -307,8 +308,8 @@ namespace Assets.Scripts.Managers.UnitManager
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                 animator.runtimeAnimatorController = isMonk
-                    ? UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueMonkAnimatorController") 
-                    : UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueWarriorAnimatorController");
+                    ? await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueMonkAnimatorController") 
+                    : await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueWarriorAnimatorController");
 
                 unitItem.Actions = (isMonk
                         ? BotActionHelper.GetEnemyMonkActions()
@@ -316,7 +317,7 @@ namespace Assets.Scripts.Managers.UnitManager
                     )
                     .ToList();
 
-                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = LoadUnitIcon(unit.Name, SideType.UserSide);
+                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await LoadUnitIconAsync(unit.Name, SideType.UserSide);
 
                 unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -335,7 +336,7 @@ namespace Assets.Scripts.Managers.UnitManager
             return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
         }
 
-        private static Sprite LoadUnitIcon(string unitName, SideType side)
+        private static async UniTask<Sprite> LoadUnitIconAsync(string unitName, SideType side)
         {
             var sidePrefix = side switch
             {
@@ -344,7 +345,7 @@ namespace Assets.Scripts.Managers.UnitManager
                 _ => throw new InvalidOperationException($"Unknown side type: {side}")
             };
         
-            return Addressables.LoadAssetAsync<Sprite>($"{sidePrefix}{unitName}").WaitForCompletion();
+            return await Addressables.LoadAssetAsync<Sprite>($"{sidePrefix}{unitName}");
         }
 
         public void SwitchUnitVisual(RoomLayerType actualLayer, RoomLayerType? previousLayer)
@@ -371,9 +372,7 @@ namespace Assets.Scripts.Managers.UnitManager
                 .Where(x => x.Value == previousLayer)
                 .Select(x => _units.FirstOrDefault(u => u.UnitSessionId == x.Key))
                 .Where(u => u != null)
-                .Where(x => needCheckLayerCross
-                    ? NeedChangeUnitAnimationType(x.gameObject.transform.position, actualLayer)
-                    : true
+                .Where(x => !needCheckLayerCross || NeedChangeUnitAnimationType(x.gameObject.transform.position, actualLayer)
                 )
                 .ToArray();
 

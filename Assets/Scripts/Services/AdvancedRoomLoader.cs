@@ -4,10 +4,10 @@ using UnityEngine.AddressableAssets;
 
 namespace Assets.Scripts.Services
 {
-    class AdvancedRoomLoader
+    static class AdvancedRoomLoader
     {
         // Асинхронная загрузка, чтобы игра не зависала во время чтения файла
-        public static RoomLayout LoadRoomSync(string roomKey)
+        public static RoomLayout LoadRoomAsync(string roomKey)
         {
             // Вызываем асинхронный метод, но заставляем игру остановиться и дождаться результата
             RoomLayout room = Addressables.LoadAssetAsync<RoomLayout>(roomKey).WaitForCompletion();

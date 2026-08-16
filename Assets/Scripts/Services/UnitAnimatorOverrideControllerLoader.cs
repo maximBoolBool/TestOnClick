@@ -1,13 +1,14 @@
-﻿using UnityEngine;
+﻿using Cysharp.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Assets.Scripts.Services
 {
     class UnitAnimatorOverrideControllerLoader
     {
-        public static AnimatorOverrideController LoadAnimatorController(string key)
+        public static async UniTask<AnimatorOverrideController> LoadAnimatorController(string key)
         {
-            var controller = Addressables.LoadAssetAsync<AnimatorOverrideController>(key).WaitForCompletion();
+            var controller = await Addressables.LoadAssetAsync<AnimatorOverrideController>(key).ToUniTask();
 
             if (controller == null)
             {
