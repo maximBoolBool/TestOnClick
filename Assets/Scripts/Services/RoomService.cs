@@ -56,12 +56,7 @@ namespace Assets.Scripts.Services
             });
 
             var currentRoomId = roomIds[newRoomOrder];
-
-            if (newRoomOrder != 0)
-            {
-                _roomLoaderService.ClearRoom(AdvancedRoomLoader.LoadRoomAsync($"Room{roomIds[newRoomOrder - 1]}"));
-            }
-
+ 
             //PRT-9
             await _roomLoaderService.NewLoadRoomAsync("Room_1_1");
             //_roomLoaderService.LoadRoom(AdvancedRoomLoader.LoadRoomSync($"Room{currentRoomId}"));
