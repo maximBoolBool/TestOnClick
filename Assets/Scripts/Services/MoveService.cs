@@ -73,8 +73,11 @@ namespace Assets.Scripts.Services
 
                 while (elapsed < duration)
                 {
-                    unit.transform.position = Vector3.Lerp(startPos, worldTarget, elapsed / duration);
                     elapsed += Time.deltaTime;
+                    float t = elapsed / duration;
+                    unit.transform.position = Vector3.Lerp(startPos, worldTarget, t);
+
+                    await UniTask.Yield(PlayerLoopTiming.Update);
                 }
 
                 unit.transform.position = worldTarget;
