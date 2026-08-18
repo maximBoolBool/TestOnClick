@@ -39,7 +39,7 @@ namespace Assets.Scripts.Managers
         private readonly IUnitManager _unitManager;
 
         [Inject]
-        private readonly IConditionService _conditionService;
+        private readonly IUnitConditionService _conditionService;
 
         [Inject]
         private readonly IBotExecutionTurnService _botExecutionTurnService;

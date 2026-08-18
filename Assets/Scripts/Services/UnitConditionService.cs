@@ -1,4 +1,3 @@
-using Assets.Scripts;
 using Assets.Scripts.Models.Conditions;
 using System;
 using System.Collections.Generic;
@@ -7,14 +6,14 @@ using Zenject;
 
 namespace Assets.Scripts.Services
 {
-    public interface IConditionService
+    public interface IUnitConditionService
 {
     void ExecuteConditionEffect(Unit unit, ConditionEffectStartType type);
 
     void ActualizeUnitConditions(Unit unit);
 }
 
-public class ConditionService : IConditionService
+public class UnitConditionService : IUnitConditionService
 {
     [Inject]
     private readonly IDamageService _damageService;

@@ -29,7 +29,7 @@ namespace Assets.Scripts.Services
         private readonly ITurnManager _turnManager;
 
         [Inject]
-        private readonly IConditionService _conditionService;
+        private readonly IUnitConditionService _conditionService;
 
         [Inject]
         private readonly IMoveService _moveService;

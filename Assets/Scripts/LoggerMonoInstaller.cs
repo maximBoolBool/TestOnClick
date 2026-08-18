@@ -307,8 +307,8 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IConditionService>()
-                .To<ConditionService>()
+            Container.Bind<IUnitConditionService>()
+                .To<UnitConditionService>()
                 .AsSingle()
                 .NonLazy();
 
