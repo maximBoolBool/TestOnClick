@@ -32,15 +32,26 @@ namespace Assets.Scripts.Managers
         [Inject(Id = Constants.TurnCountText)]
         private readonly TextMeshProUGUI _moveCounterText;
 
-        [Inject] private readonly IUnitManager _unitManager;
-        [Inject] private readonly IUnitConditionService _conditionService;
-        [Inject] private readonly IBotExecutionTurnService _botExecutionTurnService;
-        [Inject] private readonly IUnitPanelBarService _unitPanelBarService;
-        [Inject] private readonly IActionUIService _actionUiService;
-        [Inject] private readonly IGameGlobalStateManager _gameGlobalStateManager;
-        [Inject] private readonly IRoomService _roomService;
-        [Inject] private readonly ICameraService _cameraService;
-        [Inject] private readonly IUIAnimationService _uiAnimationService;
+        [Inject] 
+        private readonly IUnitManager _unitManager;
+        [Inject]
+        private readonly IUnitConditionService _conditionService;
+        [Inject]
+        private readonly IBotExecutionTurnService _botExecutionTurnService;
+        [Inject]
+        private readonly IUnitPanelBarService _unitPanelBarService;
+        [Inject]
+        private readonly IActionUIService _actionUiService;
+        [Inject]
+        private readonly IGameGlobalStateManager _gameGlobalStateManager;
+        [Inject]
+        private readonly IRoomService _roomService;
+        [Inject]
+        private readonly ICameraService _cameraService;
+        [Inject]
+        private readonly IUIAnimationService _uiAnimationService;
+        [Inject]
+        private readonly IActionClickHandler _actionClickHandler;
 
         public async UniTask SceneStart()
         {
@@ -126,6 +137,12 @@ namespace Assets.Scripts.Managers
         public void EndCurrentTurn()
         {
             _turnCompletionSource?.TrySetResult();
+            var currentUnit = units[currentUnitIndex];
+
+            if (currentUnit.Characteristic.Side == SideType.UserSide)
+            {
+                _actionClickHandler.CancelAction();
+            }
         }
 
         public async UniTask SkipTurnAsync()
