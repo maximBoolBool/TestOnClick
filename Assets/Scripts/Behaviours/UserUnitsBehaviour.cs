@@ -333,8 +333,8 @@ namespace Assets.Scripts.Behaviours
             {
                 if (unit.ActualActionPoints <= 0)
                 {
-                    await _turnManager.DeactivateUnitAsync(unit);
-                    return; // Заменено с yield break
+                    _turnManager.EndCurrentTurn();
+                    return;
                 }
             }
 
