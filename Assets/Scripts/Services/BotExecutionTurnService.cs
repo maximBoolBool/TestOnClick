@@ -5,7 +5,6 @@ using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services.BotStrategy;
 using Cysharp.Threading.Tasks;
 using System;
-using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Services
