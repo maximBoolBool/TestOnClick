@@ -45,7 +45,6 @@ namespace Assets.Scripts.Services
             return result;
         }
     
-
         public int GetChanceToHit(
             int defendSkill,
             int attckSkill,
