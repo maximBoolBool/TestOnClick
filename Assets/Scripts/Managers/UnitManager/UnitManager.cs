@@ -294,7 +294,7 @@ namespace Assets.Scripts.Managers.UnitManager
             var i = 0;
             foreach (var unit in units)
             {
-                var generatePosition = _gridLayersManager.GetRoomCordinateFromGridCordinate(new Vector3Int((i + 1) * 2, (i + 1) * 2, 0));
+                var generatePosition = _gridLayersManager.GetRoomCordinateFromGridCordinate(new Vector3Int((i + 1) * -3, (i + 1) * -3, 0));
 
                 var isMonk = unit.Name == "Monk";
 
