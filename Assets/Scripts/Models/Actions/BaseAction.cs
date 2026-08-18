@@ -15,11 +15,6 @@ namespace Assets.Scripts.Models.Actions
         public BaseActionStep[] Steps { get; set; }
     }
 
-    public class SelfTargetAction : BaseAction
-    {
-        public override ActionTargetType Type => ActionTargetType.SelfPeak;
-    }
-
     public abstract class UnitTargetAction : BaseAction
     {
         public int Range { get; set; }

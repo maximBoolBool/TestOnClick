@@ -101,16 +101,6 @@ namespace Assets.Scripts.Behaviours
             {
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
-                    if (selectedAction.Type == ActionTargetType.SelfPeak)
-                    {
-                        _actionExecutionService.TryExecuteAction(
-                            executor: selectedUnit,
-                            action: selectedAction,
-                            target: null
-                        );
-                        reachableTiles = _hilightService.HilightReachebleTiles(selectedUnit, reachableTiles);
-                        return;
-                    }
                     var mousePosition = Mouse.current.position.ReadValue();
                     var worldPos = Camera.main.ScreenToWorldPoint(mousePosition);
                     worldPos.z = 0;

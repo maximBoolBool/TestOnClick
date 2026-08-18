@@ -58,7 +58,7 @@ namespace Assets.Scripts.Services
             {
                 if(_lastActionClick.Name == action.Name)
                 {
-                    SecondClick(action);
+                    SecondClick();
                     return;
                 }
             }
@@ -66,18 +66,9 @@ namespace Assets.Scripts.Services
             FirstButtonClick(action);
         }
 
-        private void SecondClick(BaseAction action)
+        private void SecondClick()
         {
-            switch (action.Type)
-            {
-                case ActionTargetType.SelfPeak:
-                    _lastActionClick = null;
-                    break;
-                case ActionTargetType.OtherSideUnitPeacks:
-                case ActionTargetType.AreaPeack:
-                    CancelAction();
-                    break;
-            }
+            CancelAction();
         }
 
         public void CancelAction()
@@ -124,8 +115,6 @@ namespace Assets.Scripts.Services
 
             switch (baseAction.Type)
             {
-                case ActionTargetType.SelfPeak:
-                    break;
                 case ActionTargetType.AreaPeack:
                     break;
                 case ActionTargetType.OtherSideUnitPeacks:

@@ -69,7 +69,6 @@ namespace Assets.Scripts.Services
                             action.PointCost
                         );
                         break;
-                    case ActionTargetType.SelfPeak:
                     default:
                         throw new NotImplementedException();
                 }
