@@ -117,7 +117,7 @@ namespace Assets.Scripts.Managers.UnitManager
 
         public void SetStartEquipment()
         {
-            _sharedEquipments.AddRange(EquipemntHelper.GetStartedEquipment().Select((x, i) => (x, i)));
+            _sharedEquipments.AddRange(EquipmentHelper.GetStartedEquipment().Select((x, i) => (x, i)));
         }
 
         public void RefreshUnitsActionPoints()
@@ -273,7 +273,7 @@ namespace Assets.Scripts.Managers.UnitManager
                         )
                         .ToList();
 
-                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await LoadUnitIconAsync(unit.Name, SideType.EnemySide);
+                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitLoadIconHelper.LoadUnitIconAsync(unit.Name, SideType.EnemySide);
 
                     unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -317,7 +317,7 @@ namespace Assets.Scripts.Managers.UnitManager
                     )
                     .ToList();
 
-                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await LoadUnitIconAsync(unit.Name, SideType.UserSide);
+                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitLoadIconHelper.LoadUnitIconAsync(unit.Name, SideType.UserSide);
 
                 unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -334,18 +334,6 @@ namespace Assets.Scripts.Managers.UnitManager
         private UnitEntity[] GetUnitsData(int[] ids)
         {
             return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
-        }
-
-        private static async UniTask<Sprite> LoadUnitIconAsync(string unitName, SideType side)
-        {
-            var sidePrefix = side switch
-            {
-                SideType.UserSide => "Blue",
-                SideType.EnemySide => "Red",
-                _ => throw new InvalidOperationException($"Unknown side type: {side}")
-            };
-        
-            return await Addressables.LoadAssetAsync<Sprite>($"{sidePrefix}{unitName}");
         }
 
         public void SwitchUnitVisual(RoomLayerType actualLayer, RoomLayerType? previousLayer)

@@ -52,17 +52,21 @@ namespace Assets.Scripts.Managers
         private readonly IUIAnimationService _uiAnimationService;
         [Inject]
         private readonly IActionClickHandler _actionClickHandler;
+        [Inject]
+        private readonly IUnitQueueUiService _unitQueueUiService;
 
         public async UniTask SceneStart()
         {
-            _uiAnimationService.ShakeCamera();
-            _uiAnimationService.MoveVeils();
             await _roomService.TrySwitchNextRoom(false);
 
             await _unitManager.GenerateUnits();
+            await _unitQueueUiService.SetUniticonsAsync();
             units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
+
+            _uiAnimationService.ShakeCamera();
+            _uiAnimationService.MoveVeils();
 
             if (units.Count > 0)
             {
@@ -170,7 +174,7 @@ namespace Assets.Scripts.Managers
 
         private void ActivateUserUnitInternal(Unit unit)
         {
-            _uiAnimationService.SwitchPanelUnitIconAsync($"Blue{unit.Name}");
+            _uiAnimationService.SwitchPanelUnitIconAsync($"Blue{unit.Name}").Forget();
 
             _unitPanelBarService.SetUnitHealthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,

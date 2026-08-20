@@ -79,8 +79,17 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject _unitInfoPanelIcon;
 
+        [SerializeField]
+        private GameObject _unitQueuePanel;
+
         public override void InstallBindings()
         {
+            Container.Bind<GameObject>()
+                .WithId(Constants.UnitQueuePanel)
+                .FromInstance(_unitQueuePanel)
+                .AsCached()
+                .NonLazy();
+
             Container.Bind<GameObject>()
                 .WithId(Constants.UnitInformationPanelIcon)
                 .FromInstance(_unitInfoPanelIcon)
@@ -264,6 +273,11 @@ namespace Assets.Scripts
 
             Container.Bind<IUnitManager>()
                 .To<UnitManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IUnitQueueUiService>()
+                .To<UnitQueueUiManager>()
                 .AsSingle()
                 .NonLazy();
 

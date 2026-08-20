@@ -18,6 +18,8 @@ namespace Assets.Scripts
         public const string HealthBarSlider = "HealthBarSlider";
         public const string HealthBarText = "HealthBarText";
         public const string UnitInformationPanelIcon = "UnitInformationPanelIcon";
+        public const string UnitQueuePanel = "UnitQueuePanel";
+        public const string UnitQueueItemPrefab = "UnitQueueItemPrefab";
 
         public const string ActionPointsBarSlider = "ActionPointsBarSlider";
         public const string ActionPointsBarText = "ActionPointsBarText";

@@ -18,7 +18,7 @@ namespace Assets.Scripts.Services
 
             switch (animation)
             {
-                case AttackAnimation attackAnimation:
+                case AttackAnimation _:
                     unitAnimator.SetTrigger(Constants.UnitAttackTrigger);
                     break;
                 case MoveAnimation moveAnimation:
@@ -38,10 +38,10 @@ namespace Assets.Scripts.Services
 
                     unitAnimator.SetBool(Constants.IsUnitMoving, moveAnimation.IsActive);
                     break;
-                case DeadAnimation deadAnimation:
+                case DeadAnimation _:
                     unitAnimator.SetTrigger(Constants.UnitDeadTrigger);
                     break;
-                case IdleAnimation idleAnimation:
+                case IdleAnimation _:
                 default:
                     throw new Exception();
             }

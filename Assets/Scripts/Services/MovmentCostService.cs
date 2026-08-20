@@ -11,7 +11,7 @@ namespace Assets.Scripts.Services
 {
     public interface IMovementCostService
     {
-        int GetMovementCost(Vector3Int pos, Vector3Int direction = default);
+        int GetMovementCost(Vector3Int pos, Vector3Int direction);
 
         bool IsWalkable(Unit unit, Vector3Int pos);
 
@@ -36,12 +36,8 @@ namespace Assets.Scripts.Services
 
         public int GetMovementCost(Vector3Int pos, Vector3Int direction)
         {
-            //PRT-9
-            return 1;
-            //var tile = _grid.GetTile(pos);
-            //var baseCost = movementCosts.ContainsKey(tile) ? movementCosts[tile] : 1;
-            //var isDiagonal = direction.x != 0 && direction.y != 0;
-            //return isDiagonal ? Mathf.CeilToInt(baseCost * 1.4f) : baseCost;
+            var isDiagonal = direction.x != 0 && direction.y != 0;
+            return isDiagonal ? 2 : 1;
         }
 
         public bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)

@@ -39,7 +39,7 @@ namespace Assets.Scripts.Services
             );
 
             var random = new Random();
-            var roll = random.Next(MAX_RANDOM_VALUE, MIN_RANDOM_VALUE);
+            var roll = random.Next(MIN_RANDOM_VALUE, MAX_RANDOM_VALUE + 1);
 
             var result = roll <= chance;
             return result;
@@ -52,7 +52,7 @@ namespace Assets.Scripts.Services
         )
         {
             var chance = attckSkill - defendSkill;
-            return Math.Clamp(chance, MAX_CHANCE_TO_HIT, MIN_CHANCE_TO_HIT);
+            return Math.Clamp(chance, MIN_CHANCE_TO_HIT, MAX_CHANCE_TO_HIT);
         }
     }
 

@@ -152,7 +152,7 @@ namespace Assets.Scripts.Services
 
         private void GenerateCharecterCells()
         {
-            foreach ((var type, var count) in EquipemntHelper.CHARECTER_EQUIPMENT_SLOTS)
+            foreach ((var type, var count) in EquipmentHelper.CHARECTER_EQUIPMENT_SLOTS)
             {
                 for (var i = 0; i < count; i++)
                 {
@@ -170,7 +170,7 @@ namespace Assets.Scripts.Services
                     var rect = charecterCell.GetComponent<RectTransform>();
                     if (!isBagCell)
                     {
-                        var (xCordinate, yCordinate) = EquipemntHelper.CHARECTER_EQUIPMENT_CORDINATES[(type, i)];
+                        var (xCordinate, yCordinate) = EquipmentHelper.CHARECTER_EQUIPMENT_CORDINATES[(type, i)];
                         rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
                         rect.anchoredPosition = new Vector2(xCordinate, yCordinate);
 
