@@ -117,6 +117,7 @@ namespace Assets.Scripts.Managers
         {
             _cameraService.MoveCamera(unit.transform.position);
 
+
             switch (unit.Characteristic.Side)
             {
                 case SideType.UserSide:
