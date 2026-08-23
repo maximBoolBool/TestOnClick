@@ -27,10 +27,8 @@ namespace Assets.Scripts.Services
         private const float MIN_ZOOM = 1f;
         private const float MAX_ZOOM = 5f;
 
-        private const float MOVE_SPEED = 12f;
-        private const float MIN_MOVE_DURATION = 0.05f;
         private const float ZOOM_DURATION = 0.08f;
-        private const float CAMERA_MOVE_DURATION = 4f;
+        private const float CAMERA_MOVE_DURATION = 2f;
 
         [Inject(Id = Constants.Camera)]
         private readonly Camera _camera;

@@ -21,7 +21,7 @@ namespace Assets.Scripts.Services
     public class UnitQueueUiManager : IUnitQueueUiService
     {
         private const int FADE_MIN_VALUE = 0;
-        private const float ANIMATION_DURATION = 4f;
+        private const float ANIMATION_DURATION = 2f;
         private const int ITEMS_Y_CORDINATES = 0;
         private const int FIRST_ITEM_DELETE_RADIUS = 150;
         private const int ICON_GAP_ITEMS = 50;
