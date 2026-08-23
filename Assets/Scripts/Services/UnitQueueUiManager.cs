@@ -25,7 +25,7 @@ namespace Assets.Scripts.Services
         private const int ITEMS_Y_CORDINATES = 0;
         private const int FIRST_ITEM_DELETE_RADIUS = 50;
         private const int ICON_GAP_ITEMS = 50;
-        private static readonly int[] itemsCordinates = { -100, -50, /* 0, 50, 100 */ };
+        private static readonly int[] itemsCordinates = { -100, -50, 0, 50, 100 };
 
         [Inject]
         private readonly IUnitManager _unitManager;
