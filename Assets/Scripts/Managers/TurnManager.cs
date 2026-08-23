@@ -169,7 +169,6 @@ namespace Assets.Scripts.Managers
             {
                 EndCurrentTurn();
             }
-            await UniTask.CompletedTask;
         }
 
         private async UniTask AdvanceToNextUnit()
@@ -208,6 +207,7 @@ namespace Assets.Scripts.Managers
         private void DeactivateUnitInternal(Unit unit)
         {
             _actionUiService.HideActions();
+            unit.ActualActionPoints = 0;
             unit.IsSelected = false;
             _gameGlobalStateManager.SelectedUnit = null;
         }

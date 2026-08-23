@@ -23,7 +23,7 @@ namespace Assets.Scripts.Services
         private const int FADE_MIN_VALUE = 0;
         private const float ANIMATION_DURATION = 2f;
         private const int ITEMS_Y_CORDINATES = 0;
-        private const int FIRST_ITEM_DELETE_RADIUS = 150;
+        private const int FIRST_ITEM_DELETE_RADIUS = 50;
         private const int ICON_GAP_ITEMS = 50;
         private static readonly int[] ITEMS_X_CORDINATES = { -100, -50, 0, 50, 100 };
 
@@ -94,7 +94,7 @@ namespace Assets.Scripts.Services
 
             var sequence = DOTween.Sequence();
 
-            var actualUnitIconTargetposition = actualUnitIcon.transform.position + new Vector3Int(-FIRST_ITEM_DELETE_RADIUS, -FIRST_ITEM_DELETE_RADIUS, 0);
+            var actualUnitIconTargetposition = actualUnitIcon.transform.position + new Vector3Int(-FIRST_ITEM_DELETE_RADIUS, 0, 0);
             var actualIconImage = actualUnitIcon.transform.Find("Image").GetComponent<Image>();
 
             sequence.Join(actualUnitIcon.transform.DOMove(actualUnitIconTargetposition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
@@ -104,6 +104,17 @@ namespace Assets.Scripts.Services
             {
                 var targetPosition = item.transform.position + new Vector3Int(-ICON_GAP_ITEMS, 0, 0);
                 sequence.Join(item.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
+            }
+
+            var zz = _unitManager
+                .Units
+                .Where(x => !x.IsDead)
+                .Where(x => x.ActualActionPoints == x.Characteristic.ActiveActionPoints)
+                .Count() != _queueItems.Count;
+
+            if (zz)
+            {
+
             }
 
             await sequence.AsyncWaitForCompletion();
