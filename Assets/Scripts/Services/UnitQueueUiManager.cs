@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using Zenject;
-using static UnityEditor.Progress;
 
 namespace Assets.Scripts.Services
 {
@@ -22,9 +21,10 @@ namespace Assets.Scripts.Services
     public class UnitQueueUiManager : IUnitQueueUiService
     {
         private const int FADE_MIN_VALUE = 0;
-        private const float ANIMATION_DURATION = 0.5f;
+        private const float ANIMATION_DURATION = 4f;
         private const int ITEMS_Y_CORDINATES = 0;
-        private const int FIRST_ITEM_DELETE_RADIUS = 100;
+        private const int FIRST_ITEM_DELETE_RADIUS = 150;
+        private const int ICON_GAP_ITEMS = 50;
         private static readonly int[] ITEMS_X_CORDINATES = { -100, -50, 0, 50, 100 };
 
         [Inject]
@@ -92,9 +92,7 @@ namespace Assets.Scripts.Services
             var actualUnitIcon = _queueItems[0];
             _queueItems.RemoveAt(0);
 
-            var sequence = DOTween.Sequence()
-                .Pause()
-                .SetAutoKill(false);
+            var sequence = DOTween.Sequence();
 
             var actualUnitIconTargetposition = actualUnitIcon.transform.position + new Vector3Int(-FIRST_ITEM_DELETE_RADIUS, -FIRST_ITEM_DELETE_RADIUS, 0);
             var actualIconImage = actualUnitIcon.transform.Find("Image").GetComponent<Image>();
@@ -102,9 +100,16 @@ namespace Assets.Scripts.Services
             sequence.Join(actualUnitIcon.transform.DOMove(actualUnitIconTargetposition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
             sequence.Join(actualIconImage.DOFade(FADE_MIN_VALUE, ANIMATION_DURATION));
 
-            sequence.Play();
+            foreach (var item in _queueItems)
+            {
+                var targetPosition = item.transform.position + new Vector3Int(-ICON_GAP_ITEMS, 0, 0);
+                sequence.Join(item.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
+            }
 
-            Object.Destroy(actualUnitIcon);
+            sequence.onComplete += () =>
+            {
+                Object.Destroy(actualUnitIcon);
+            };
         }
 
         private void ClearQueueItems()

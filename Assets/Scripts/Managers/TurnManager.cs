@@ -22,9 +22,9 @@ namespace Assets.Scripts.Managers
 
     public class TurnManager : ITurnManager
     {
-        private int currentUnitIndex = 0;
-        private int turnCount = 0;
-        private List<Unit> units;
+        private int _currentUnitIndex = 0;
+        private int _turnCount = 0;
+        private List<Unit> _units;
 
         private UniTaskCompletionSource _turnCompletionSource;
         private bool _isGameEnded = false;
@@ -60,7 +60,7 @@ namespace Assets.Scripts.Managers
             await _roomService.TrySwitchNextRoom(false);
 
             await _unitManager.GenerateUnits();            
-            units = _unitManager.Units;
+            _units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
 
@@ -68,9 +68,9 @@ namespace Assets.Scripts.Managers
             _uiAnimationService.MoveVeils();
             await _unitQueueUiService.SetUniticonsAsync();
 
-            if (units.Count > 0)
+            if (_units.Count > 0)
             {
-                turnCount = 1;
+                _turnCount = 1;
                 UpdateMoveCounterDisplay();
                 StartTurnLoopAsync().Forget();
             }
@@ -83,9 +83,17 @@ namespace Assets.Scripts.Managers
         {
             while (!_isGameEnded)
             {
-                if (units == null || units.Count == 0) return;
+                if (_units == null || _units.Count == 0)
+                {
+                    return;
+                }
 
-                var currentUnit = units[currentUnitIndex];
+                var currentUnit = _units[_currentUnitIndex];
+
+                if (_currentUnitIndex != 0)
+                {
+                    await _unitQueueUiService.MoveQueueUiAsync();
+                }
 
                 _conditionService.ExecuteConditionEffect(currentUnit, ConditionEffectStartType.OnTurnStart);
 
@@ -142,7 +150,7 @@ namespace Assets.Scripts.Managers
         public void EndCurrentTurn()
         {
             _turnCompletionSource?.TrySetResult();
-            var currentUnit = units[currentUnitIndex];
+            var currentUnit = _units[_currentUnitIndex];
 
             if (currentUnit.Characteristic.Side == SideType.UserSide)
             {
@@ -152,7 +160,7 @@ namespace Assets.Scripts.Managers
 
         public async UniTask SkipTurnAsync()
         {
-            var currentUnit = units[currentUnitIndex];
+            var currentUnit = _units[_currentUnitIndex];
             if (currentUnit.Characteristic.Side == SideType.UserSide)
             {
                 EndCurrentTurn();
@@ -162,12 +170,12 @@ namespace Assets.Scripts.Managers
 
         private async UniTask AdvanceToNextUnit()
         {
-            currentUnitIndex = (currentUnitIndex + 1) % units.Count;
+            _currentUnitIndex = (_currentUnitIndex + 1) % _units.Count;
 
-            if (currentUnitIndex == 0)
+            if (_currentUnitIndex == 0)
             {
-                turnCount++;
-                Debug.LogWarning($"Turn #{turnCount} done");
+                _turnCount++;
+                Debug.LogWarning($"Turn #{_turnCount} done");
                 _unitManager.RefreshUnitsActionPoints();
                 UpdateMoveCounterDisplay();
                 await _unitQueueUiService.SetUniticonsAsync();
@@ -202,7 +210,7 @@ namespace Assets.Scripts.Managers
 
         private void UpdateMoveCounterDisplay()
         {
-            SetTurnTextAsync($"Turn: {turnCount}").Forget();
+            SetTurnTextAsync($"Turn: {_turnCount}").Forget();
         }
 
         private async UniTask<bool> CheckForGameOverAsync()
@@ -234,8 +242,8 @@ namespace Assets.Scripts.Managers
                             withDeleteActual: true
                         );
 
-                        units = _unitManager.Units;
-                        currentUnitIndex = 0;
+                        _units = _unitManager.Units;
+                        _currentUnitIndex = 0;
                         return false;
                     }
                 }
