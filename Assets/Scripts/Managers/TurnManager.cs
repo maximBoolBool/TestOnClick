@@ -90,11 +90,6 @@ namespace Assets.Scripts.Managers
 
                 var currentUnit = _units[_currentUnitIndex];
 
-                if (_currentUnitIndex != 0)
-                {
-                    await _unitQueueUiService.MoveQueueUiAsync();
-                }
-
                 _conditionService.ExecuteConditionEffect(currentUnit, ConditionEffectStartType.OnTurnStart);
 
                 if (currentUnit.IsDead)
@@ -123,8 +118,17 @@ namespace Assets.Scripts.Managers
 
         private async UniTask ProcessUnitTurnAsync(Unit unit)
         {
-            _cameraService.MoveCamera(unit.transform.position);
+            var tasks = new List<UniTask>
+            {
+                _cameraService.MoveCameraAsync(unit.transform.position)
+            };
 
+            if (_currentUnitIndex != 0)
+            {
+                tasks.Add(_unitQueueUiService.MoveQueueUiAsync());
+            }
+
+            await UniTask.WhenAll(tasks);
 
             switch (unit.Characteristic.Side)
             {

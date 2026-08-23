@@ -106,6 +106,8 @@ namespace Assets.Scripts.Services
                 sequence.Join(item.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
             }
 
+            await sequence.AsyncWaitForCompletion();
+
             sequence.onComplete += () =>
             {
                 Object.Destroy(actualUnitIcon);
