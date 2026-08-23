@@ -59,14 +59,14 @@ namespace Assets.Scripts.Managers
         {
             await _roomService.TrySwitchNextRoom(false);
 
-            await _unitManager.GenerateUnits();
-            await _unitQueueUiService.SetUniticonsAsync();
+            await _unitManager.GenerateUnits();            
             units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
 
             _uiAnimationService.ShakeCamera();
             _uiAnimationService.MoveVeils();
+            await _unitQueueUiService.SetUniticonsAsync();
 
             if (units.Count > 0)
             {
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Managers
 
                 if (currentUnit.IsDead)
                 {
-                    AdvanceToNextUnit();
+                    await AdvanceToNextUnit();
                     continue;
                 }
 
@@ -109,7 +109,7 @@ namespace Assets.Scripts.Managers
 
                 DeactivateUnitInternal(currentUnit);
 
-                AdvanceToNextUnit();
+                await AdvanceToNextUnit();
             }
         }
 
@@ -159,7 +159,7 @@ namespace Assets.Scripts.Managers
             await UniTask.CompletedTask;
         }
 
-        private void AdvanceToNextUnit()
+        private async UniTask AdvanceToNextUnit()
         {
             currentUnitIndex = (currentUnitIndex + 1) % units.Count;
 
@@ -169,6 +169,7 @@ namespace Assets.Scripts.Managers
                 Debug.LogWarning($"Turn #{turnCount} done");
                 _unitManager.RefreshUnitsActionPoints();
                 UpdateMoveCounterDisplay();
+                await _unitQueueUiService.SetUniticonsAsync();
             }
         }
 

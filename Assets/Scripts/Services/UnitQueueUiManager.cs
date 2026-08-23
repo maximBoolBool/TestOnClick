@@ -85,6 +85,9 @@ namespace Assets.Scripts.Services
 
         public async UniTask MoveQueueUiAsync()
         {
+            var actialUnitIcon = _queueItems[0];
+
+
 
         }
 
