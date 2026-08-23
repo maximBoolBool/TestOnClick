@@ -25,13 +25,13 @@ namespace Assets.Scripts.Services
         private const int ITEMS_Y_CORDINATES = 0;
         private const int FIRST_ITEM_DELETE_RADIUS = 50;
         private const int ICON_GAP_ITEMS = 50;
-        private static readonly int[] ITEMS_X_CORDINATES = { -100, -50, 0, 50, 100 };
+        private static readonly int[] itemsCordinates = { -100, -50, /* 0, 50, 100 */ };
 
         [Inject]
         private readonly IUnitManager _unitManager;
 
         [Inject(Id = Constants.UnitQueuePanel)]
-        private readonly GameObject queue;
+        private readonly GameObject _queue;
 
         private Dictionary<string, Sprite> _unitIconSprites = new();
 
@@ -63,8 +63,8 @@ namespace Assets.Scripts.Services
 
             var items = await GameObject.InstantiateAsync<GameObject>(
                 original: queueItemPrefab,
-                count: livingUnits.Length,
-                parent: queue.transform
+                count: itemsCordinates.Length,
+                parent: _queue.transform
             );
 
             for (int i = 0; i < items.Length; i++)
@@ -77,7 +77,7 @@ namespace Assets.Scripts.Services
                 item.transform.localScale = Vector3.one;
                 item.transform.localRotation = Quaternion.identity;
 
-               item.transform.localPosition = new Vector3(ITEMS_X_CORDINATES[i], ITEMS_Y_CORDINATES, 0);
+                item.transform.localPosition = new Vector3(itemsCordinates[i], ITEMS_Y_CORDINATES, 0);
 
                 var iconName = UnitLoadIconHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
                 if (_unitIconSprites.TryGetValue(iconName, out var sprite))
@@ -106,15 +106,44 @@ namespace Assets.Scripts.Services
                 sequence.Join(item.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
             }
 
-            var zz = _unitManager
+            var needCreateNewItem = _unitManager
                 .Units
                 .Where(x => !x.IsDead)
                 .Where(x => x.ActualActionPoints == x.Characteristic.ActiveActionPoints)
                 .Count() != _queueItems.Count;
 
-            if (zz)
+            if (needCreateNewItem)
             {
+                var queueItemPrefab = await Addressables.LoadAssetAsync<GameObject>(Constants.UnitQueueItemPrefab);
 
+                var newQueueItem = (await GameObject.InstantiateAsync<GameObject>(
+                    original: queueItemPrefab,
+                    count: 1,
+                    parent: _queue.transform
+                ))
+                .First();
+
+                var unit = _unitManager
+                    .Units
+                    .Where(x => !x.IsDead)
+                    .Where(x => x.ActualActionPoints == x.Characteristic.ActiveActionPoints)
+                    .Skip(_queueItems.Count)
+                    .First();
+
+                newQueueItem.transform.localScale = Vector3.one;
+                newQueueItem.transform.localRotation = Quaternion.identity;
+                newQueueItem.transform.localPosition = new Vector3(itemsCordinates.Last() + 50, ITEMS_Y_CORDINATES, 0);
+
+                var iconName = UnitLoadIconHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
+                if (_unitIconSprites.TryGetValue(iconName, out var sprite))
+                {
+                    newQueueItem.transform.Find("Image").GetComponent<Image>().sprite = sprite;
+                }
+
+                var targetPosition = newQueueItem.transform.position + new Vector3Int(-ICON_GAP_ITEMS, 0, 0);
+                sequence.Join(newQueueItem.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
+
+                _queueItems.Add(newQueueItem);
             }
 
             await sequence.AsyncWaitForCompletion();
