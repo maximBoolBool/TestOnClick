@@ -21,6 +21,7 @@ namespace Assets.Scripts.Services
     public class UnitQueueUiManager : IUnitQueueUiService
     {
         private const int FADE_MIN_VALUE = 0;
+        private const int FADE_MAX_VALUE = 1;
         private const float ANIMATION_DURATION = 2f;
         private const int ITEMS_Y_CORDINATES = 0;
         private const int FIRST_ITEM_DELETE_RADIUS = 50;
@@ -135,12 +136,18 @@ namespace Assets.Scripts.Services
                 newQueueItem.transform.localPosition = new Vector3(itemsCordinates.Last() + 50, ITEMS_Y_CORDINATES, 0);
 
                 var iconName = UnitLoadIconHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
+                var newIconImage = newQueueItem.transform.Find("Image").GetComponent<Image>();
                 if (_unitIconSprites.TryGetValue(iconName, out var sprite))
                 {
-                    newQueueItem.transform.Find("Image").GetComponent<Image>().sprite = sprite;
+                    var color = newIconImage.color;
+                    color.a = 0f;
+                    newIconImage.color = color;
+                    newIconImage.sprite = sprite;
                 }
 
                 var targetPosition = newQueueItem.transform.position + new Vector3Int(-ICON_GAP_ITEMS, 0, 0);
+                sequence.Join(newIconImage.DOFade(FADE_MAX_VALUE, ANIMATION_DURATION));
+
                 sequence.Join(newQueueItem.transform.DOMove(targetPosition, ANIMATION_DURATION).SetEase(Ease.InOutCubic));
 
                 _queueItems.Add(newQueueItem);
