@@ -11,11 +11,16 @@ using Zenject;
 
 namespace Assets.Scripts.Managers
 {
-    public static class StaticAdressableResourceNames
+    public static class TilesAdressableResourceNames
     {
         public const string SHADOW_TILE_NAME = "ShadowTile";
         public const string HIGHLIGHT_TILE_NAME = "HighlightTile";
         public const string HOVER_TILE_NAME = "HoverTile";
+    }
+
+    public static class PrefabsAdressableResourceNames
+    {
+    
     }
 
     public interface IAddresableResourceManager
@@ -99,9 +104,9 @@ namespace Assets.Scripts.Managers
         {
             var tileNames = new string[]
             {
-                StaticAdressableResourceNames.HIGHLIGHT_TILE_NAME,
-                StaticAdressableResourceNames.HOVER_TILE_NAME,
-                StaticAdressableResourceNames.SHADOW_TILE_NAME
+                TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME,
+                TilesAdressableResourceNames.HOVER_TILE_NAME,
+                TilesAdressableResourceNames.SHADOW_TILE_NAME
             };
 
             _tilesHandle = Addressables.LoadAssetsAsync<TileBase>(tileNames, null, Addressables.MergeMode.Union);
@@ -154,7 +159,15 @@ namespace Assets.Scripts.Managers
             var prefabNames = new string[]
             {
 
-            };            
+            };
+
+            _prefabsHandle = Addressables.LoadAssetsAsync<GameObject>(prefabNames, null, Addressables.MergeMode.Union);
+            var prefabs = await _prefabsHandle.Task;
+
+            foreach (var prefab in prefabs)
+            {
+                _prefabs[prefab.name] = prefab;
+            }
         }
 
         #endregion
