@@ -38,6 +38,7 @@ namespace Assets.Scripts
         private GameObject _actionButtonPanel;
 
         [SerializeField]
+        // prt-10
         private GameObject _actionButtonPrefab;
 
         [SerializeField]
@@ -50,6 +51,7 @@ namespace Assets.Scripts
         private GameObject _equipmentPanel;
 
         [SerializeField]
+        // prt-10
         private GameObject _equipmentSlotPrefab;
 
         [SerializeField]

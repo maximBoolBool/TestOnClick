@@ -20,7 +20,9 @@ namespace Assets.Scripts.Managers
 
     public static class PrefabsAdressableResourceNames
     {
-    
+        public const string ACTION_BUTTON_PREFAB = "ActionButtonPrefab";
+        public const string EQUIPMENT_SLOT_PREFAB = "EquipmentSlotPrefab";
+        public const string UNIT_QUEUE_ITEM_PREFAB = "UnitQueueItemPrefab";
     }
 
     public interface IAddresableResourceManager
@@ -158,7 +160,9 @@ namespace Assets.Scripts.Managers
         {
             var prefabNames = new string[]
             {
-
+                PrefabsAdressableResourceNames.ACTION_BUTTON_PREFAB,
+                PrefabsAdressableResourceNames.EQUIPMENT_SLOT_PREFAB,
+                PrefabsAdressableResourceNames.UNIT_QUEUE_ITEM_PREFAB
             };
 
             _prefabsHandle = Addressables.LoadAssetsAsync<GameObject>(prefabNames, null, Addressables.MergeMode.Union);

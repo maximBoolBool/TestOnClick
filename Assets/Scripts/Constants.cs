@@ -8,18 +8,15 @@ namespace Assets.Scripts
         public const string HighlightTile = "HighlightTile";
         public const string HoverTile = "HoverTile";
         public const string ActionButtonPanel = "ActionButtonPanel";
-        public const string ActionButtonPrefab = "ActionButtonPrefab";
         public const string TurnCountText = "TurnCountText";
         public const string EnemyInfoPanel = "EnemyInfoPanel";
         public const string EquipemntPanel = "EquipmentPanel";
-        public const string EquipemntSlotPrefab = "EquipemntSlotPrefab";
         public const string Camera = "MainCamera";
 
         public const string HealthBarSlider = "HealthBarSlider";
         public const string HealthBarText = "HealthBarText";
         public const string UnitInformationPanelIcon = "UnitInformationPanelIcon";
         public const string UnitQueuePanel = "UnitQueuePanel";
-        public const string UnitQueueItemPrefab = "UnitQueueItemPrefab";
 
         public const string ActionPointsBarSlider = "ActionPointsBarSlider";
         public const string ActionPointsBarText = "ActionPointsBarText";
