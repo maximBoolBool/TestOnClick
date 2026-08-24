@@ -3,59 +3,54 @@ using Assets.Scripts.Managers.UnitManager;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Managers
 {
+    public static class StaticAdressableResourceNames
+    {
+        public const string SHADOW_TILE_NAME = "ShadowTile";
+        public const string HIGHLIGHT_TILE_NAME = "HighlightTile";
+        public const string HOVER_TILE_NAME = "HoverTile";
+    }
+
     public interface IAddresableResourceManager
     {
         UniTask LoadGameResourceAsync();
-
         UniTask LoadLevelResourceAsync();
-
         UniTask FreeLevelResourceAsync();
-
         UniTask FreeGameResourceAsync();
     }
 
     public class AddresableResourceManager : IAddresableResourceManager
     {
-        #region Inject
-
         [Inject]
         private readonly IUnitManager _unitManager;
 
+        #region States (Cache)
+        private readonly Dictionary<string, Sprite> _unitIcons = new();
+        private readonly Dictionary<string, TileBase> _tiles = new();
+        private readonly Dictionary<string, AnimatorOverrideController> _overrideAnimationControllers = new();
+        private readonly Dictionary<string, GameObject> _prefabs = new();
         #endregion
 
-        #region States
-
-        private Dictionary<string, Sprite> _unitIcons = new();
-
-        private Dictionary<string, Tile> _tiles = new();
-
-        private Dictionary<string, AnimatorOverrideController> _overrideAnimationControllers = new();
-
+        #region Handles (For Memory Management)
+        private AsyncOperationHandle<IList<TileBase>> _tilesHandle;
+        private AsyncOperationHandle<IList<Sprite>> _unitIconsHandle;
+        private AsyncOperationHandle<IList<AnimatorOverrideController>> _animControllersHandle;
+        private AsyncOperationHandle<IList<GameObject>> _prefabsHandle;
         #endregion
 
-        #region Public Methodes
-
-        public async UniTask FreeGameResourceAsync()
-        {
-
-        }
-
-        public async UniTask FreeLevelResourceAsync()
-        {
-
-        }
+        #region Public Methods
 
         public async UniTask LoadGameResourceAsync()
         {
             await LoadTilesInternalAsync();
+            await LoadPrefabsAsync();
         }
 
         public async UniTask LoadLevelResourceAsync()
@@ -64,13 +59,58 @@ namespace Assets.Scripts.Managers
             await LoadUnitIconsAsync();
         }
 
+        public async UniTask FreeGameResourceAsync()
+        {
+            if (_tilesHandle.IsValid())
+            {
+                Addressables.Release(_tilesHandle);
+            }
+
+            if (_prefabsHandle.IsValid())
+            {
+                Addressables.Release(_prefabsHandle);
+            }
+
+            _prefabs.Clear();
+            _tiles.Clear();
+        }
+
+        public async UniTask FreeLevelResourceAsync()
+        {
+            if (_unitIconsHandle.IsValid())
+            {
+                Addressables.Release(_unitIconsHandle);
+            }
+
+            if (_animControllersHandle.IsValid())
+            {
+                Addressables.Release(_animControllersHandle);
+            }
+
+            _unitIcons.Clear();
+            _overrideAnimationControllers.Clear();
+        }
+
         #endregion
-        
-        #region Private Methodes
+
+        #region Private Methods
 
         private async UniTask LoadTilesInternalAsync()
         {
+            var tileNames = new string[]
+            {
+                StaticAdressableResourceNames.HIGHLIGHT_TILE_NAME,
+                StaticAdressableResourceNames.HOVER_TILE_NAME,
+                StaticAdressableResourceNames.SHADOW_TILE_NAME
+            };
 
+            _tilesHandle = Addressables.LoadAssetsAsync<TileBase>(tileNames, null, Addressables.MergeMode.Union);
+            var tiles = await _tilesHandle.Task;
+
+            foreach (var tile in tiles)
+            {
+                _tiles[tile.name] = tile;
+            }
         }
 
         private async UniTask LoadUnitIconsAsync()
@@ -80,11 +120,10 @@ namespace Assets.Scripts.Managers
                 .Distinct()
                 .ToArray();
 
-            var sprites = await Addressables.LoadAssetsAsync<Sprite>(
-                iconNames,
-                callback: null,
-                Addressables.MergeMode.Union
-            );
+            if (iconNames.Length == 0) return;
+
+            _unitIconsHandle = Addressables.LoadAssetsAsync<Sprite>(iconNames, null, Addressables.MergeMode.Union);
+            var sprites = await _unitIconsHandle.Task;
 
             foreach (var sprite in sprites)
             {
@@ -93,22 +132,29 @@ namespace Assets.Scripts.Managers
         }
 
         private async UniTask LoadAnimationControllersAsync()
-        {            
+        {
             var overrideControllerNames = _unitManager.Units
                 .Select(x => UnitAdressableLoaderHelper.GetUnitOverrideAnimationAddressableName(x.Name, x.Characteristic.Side))
                 .Distinct()
                 .ToArray();
-            
-            var overrideControllers = await Addressables.LoadAssetsAsync<AnimatorOverrideController>(
-                overrideControllerNames,
-                callback: null,
-                Addressables.MergeMode.Union
-            );
+
+            if (overrideControllerNames.Length == 0) return;
+
+            _animControllersHandle = Addressables.LoadAssetsAsync<AnimatorOverrideController>(overrideControllerNames, null, Addressables.MergeMode.Union);
+            var overrideControllers = await _animControllersHandle.Task;
 
             foreach (var controller in overrideControllers)
             {
                 _overrideAnimationControllers[controller.name] = controller;
             }
+        }
+
+        private async UniTask LoadPrefabsAsync()
+        {
+            var prefabNames = new string[]
+            {
+
+            };            
         }
 
         #endregion

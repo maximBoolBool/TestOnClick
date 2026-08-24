@@ -23,12 +23,6 @@ namespace Assets.Scripts
         private Tilemap _highlighTilemap;
 
         [SerializeField]
-        private TileBase _highlightTile;
-
-        [SerializeField]
-        private TileBase _hoverTile;
-
-        [SerializeField]
         private GameObject _healthBarSliderGO;
 
         [SerializeField]
@@ -221,16 +215,6 @@ namespace Assets.Scripts
             Container.Bind<Tilemap>()
                 .WithId(Constants.HighlightTilemap)
                 .FromInstance(_highlighTilemap)
-                .AsCached();
-
-            Container.Bind<TileBase>()
-                .WithId(Constants.HighlightTile)
-                .FromInstance(_highlightTile)
-                .AsCached();
-
-            Container.Bind<TileBase>()
-                .WithId(Constants.HoverTile)
-                .FromInstance(_hoverTile)
                 .AsCached();
 
             Container.Bind<GameObject>()
