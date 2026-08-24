@@ -273,7 +273,7 @@ namespace Assets.Scripts.Managers.UnitManager
                         )
                         .ToList();
 
-                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitLoadIconHelper.LoadUnitIconAsync(unit.Name, SideType.EnemySide);
+                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitAdressableLoaderHelper.LoadUnitIconAsync(unit.Name, SideType.EnemySide);
 
                     unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -317,7 +317,7 @@ namespace Assets.Scripts.Managers.UnitManager
                     )
                     .ToList();
 
-                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitLoadIconHelper.LoadUnitIconAsync(unit.Name, SideType.UserSide);
+                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitAdressableLoaderHelper.LoadUnitIconAsync(unit.Name, SideType.UserSide);
 
                 unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 

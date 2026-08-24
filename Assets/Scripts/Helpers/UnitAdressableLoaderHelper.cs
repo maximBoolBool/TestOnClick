@@ -1,12 +1,9 @@
 ﻿using Assets.UnitsCharacteristics;
-using Cysharp.Threading.Tasks;
 using System;
-using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace Assets.Scripts.Helpers
 {
-    public static class UnitLoadIconHelper
+    public static class UnitAdressableLoaderHelper
     {
         public static string GetUnitIconAddressableName(string unitName, SideType side)
         {
@@ -19,9 +16,18 @@ namespace Assets.Scripts.Helpers
             return $"{sidePrefix}{unitName}";
         }
 
-        public static async UniTask<Sprite> LoadUnitIconAsync(string unitName, SideType side)
+        public static string GetUnitOverrideAnimationAddressableName(string unitName, SideType side)
         {
-            return await Addressables.LoadAssetAsync<Sprite>(GetUnitIconAddressableName(unitName, side));
+            if (side == SideType.EnemySide)
+            {
+                return unitName == "Monk"
+                    ? "RedMonkAnimatorOverrideController"
+                    : "RedWarriorAnimatorOverrideContoller";
+            }
+
+            return unitName == "Monk"
+                ? "BlueMonkAnimatorController"
+                : "BlueWarriorAnimatorController";
         }
     }
 }

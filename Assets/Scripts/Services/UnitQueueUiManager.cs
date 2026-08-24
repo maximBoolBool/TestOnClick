@@ -48,10 +48,11 @@ namespace Assets.Scripts.Services
 
             if (livingUnits.Length == 0) return;
 
+            //вынести в Manager
             var queueItemPrefab = await Addressables.LoadAssetAsync<GameObject>(Constants.UnitQueueItemPrefab);
 
             var iconNames = livingUnits
-                .Select(x => UnitLoadIconHelper.GetUnitIconAddressableName(x.Name, x.Characteristic.Side))
+                .Select(x => UnitAdressableLoaderHelper.GetUnitIconAddressableName(x.Name, x.Characteristic.Side))
                 .Distinct()
                 .ToArray();
 
@@ -80,7 +81,7 @@ namespace Assets.Scripts.Services
 
                 item.transform.localPosition = new Vector3(itemsCordinates[i], ITEMS_Y_CORDINATES, 0);
 
-                var iconName = UnitLoadIconHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
+                var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
                 if (_unitIconSprites.TryGetValue(iconName, out var sprite))
                 {
                     item.transform.Find("Image").GetComponent<Image>().sprite = sprite;
@@ -115,6 +116,7 @@ namespace Assets.Scripts.Services
 
             if (needCreateNewItem)
             {
+                // вынести в Manager
                 var queueItemPrefab = await Addressables.LoadAssetAsync<GameObject>(Constants.UnitQueueItemPrefab);
 
                 var newQueueItem = (await GameObject.InstantiateAsync<GameObject>(
@@ -135,7 +137,7 @@ namespace Assets.Scripts.Services
                 newQueueItem.transform.localRotation = Quaternion.identity;
                 newQueueItem.transform.localPosition = new Vector3(itemsCordinates.Last() + 50, ITEMS_Y_CORDINATES, 0);
 
-                var iconName = UnitLoadIconHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
+                var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, unit.Characteristic.Side);
                 var newIconImage = newQueueItem.transform.Find("Image").GetComponent<Image>();
                 if (_unitIconSprites.TryGetValue(iconName, out var sprite))
                 {

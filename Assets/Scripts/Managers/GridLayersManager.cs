@@ -303,7 +303,7 @@ namespace Assets.Scripts.Managers
                 .ToArray();
 
             _cordinatesToShadow = _cordinatesToShadow.Where(x => !cordinatesToIgnor.Contains(x)).ToHashSet();
-
+            // вынести в Manager
             var shadowTile = await Addressables.LoadAssetAsync<Tile>("ShadowTile");
 
             foreach (var cordinate in _cordinatesToShadow)

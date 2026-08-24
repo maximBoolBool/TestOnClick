@@ -8,6 +8,7 @@ namespace Assets.Scripts.Services
     {
         public static async UniTask<AnimatorOverrideController> LoadAnimatorController(string key)
         {
+            // вынести в Manager
             var controller = await Addressables.LoadAssetAsync<AnimatorOverrideController>(key).ToUniTask();
 
             if (controller == null)

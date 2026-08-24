@@ -79,6 +79,7 @@ namespace Assets.Scripts.Services
 
             sequence.Append(iconImage.DOFade(FADE_MIN_VALUE, FADE_DURATION));
 
+            // вынести в Manager
             sequence.AppendCallback(async () => 
             { 
                 var sprite = await Addressables.LoadAssetAsync<Sprite>(unitName);
