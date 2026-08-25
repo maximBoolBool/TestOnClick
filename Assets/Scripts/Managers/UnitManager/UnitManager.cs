@@ -275,7 +275,7 @@ namespace Assets.Scripts.Managers.UnitManager
                         )
                         .ToList();
 
-                    var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, SideType.UserSide);
+                    var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, SideType.EnemySide);
 
                     unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = _addresableResourceManager.GetUnitIconSprite(iconName);
 

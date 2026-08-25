@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: HilightTiile
+  m_Name: HighlightTile
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
   m_Sprite: {fileID: 1683330927682603841, guid: 4e95caa1d4ceb7b43a96d0fa081fcd61, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.47058824}
