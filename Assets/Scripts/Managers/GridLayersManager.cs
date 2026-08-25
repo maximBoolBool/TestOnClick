@@ -4,9 +4,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Tilemaps;
 using Zenject;
 
@@ -44,6 +42,9 @@ namespace Assets.Scripts.Managers
 
         [Inject]
         private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         //Порядоек важен
         private static readonly RoomLayerType[] _roomLayerTypes = new RoomLayerType[]
@@ -304,7 +305,7 @@ namespace Assets.Scripts.Managers
 
             _cordinatesToShadow = _cordinatesToShadow.Where(x => !cordinatesToIgnor.Contains(x)).ToHashSet();
             // вынести в Manager
-            var shadowTile = await Addressables.LoadAssetAsync<Tile>("ShadowTile");
+            TileBase shadowTile = _addresableResourceManager.GetTileBase("ShadowTile");
 
             foreach (var cordinate in _cordinatesToShadow)
             {

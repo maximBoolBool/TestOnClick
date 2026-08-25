@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.UnitManager;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -30,7 +31,8 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly IUnitManager _unitManager;
-
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
         [Inject(Id = Constants.UnitQueuePanel)]
         private readonly GameObject _queue;
 
@@ -49,7 +51,7 @@ namespace Assets.Scripts.Services
             if (livingUnits.Length == 0) return;
 
             //вынести в Manager
-            var queueItemPrefab = await Addressables.LoadAssetAsync<GameObject>(Constants.UnitQueueItemPrefab);
+            GameObject queueItemPrefab = _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.UNIT_QUEUE_ITEM_PREFAB);
 
             var iconNames = livingUnits
                 .Select(x => UnitAdressableLoaderHelper.GetUnitIconAddressableName(x.Name, x.Characteristic.Side))
@@ -117,7 +119,7 @@ namespace Assets.Scripts.Services
             if (needCreateNewItem)
             {
                 // вынести в Manager
-                var queueItemPrefab = await Addressables.LoadAssetAsync<GameObject>(Constants.UnitQueueItemPrefab);
+                GameObject queueItemPrefab = _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.UNIT_QUEUE_ITEM_PREFAB);
 
                 var newQueueItem = (await GameObject.InstantiateAsync<GameObject>(
                     original: queueItemPrefab,

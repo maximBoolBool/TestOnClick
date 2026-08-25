@@ -1,5 +1,6 @@
-﻿using Assets.Scripts.Helpers;
-using Assets.Scripts.Managers.UnitManager;
+﻿using Assets.Db;
+using Assets.Db.Models;
+using Assets.Scripts.Helpers;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +32,23 @@ namespace Assets.Scripts.Managers
         UniTask LoadLevelResourceAsync();
         UniTask FreeLevelResourceAsync();
         UniTask FreeGameResourceAsync();
+        public Sprite GetUnitIconSprite(string key);
+        public TileBase GetTileBase(string key);
+        public AnimatorOverrideController GetUnitOverrideAnimationController(string key);
+        public GameObject GetPrefab(string key);
     }
 
     public class AddresableResourceManager : IAddresableResourceManager
     {
+        #region Injections
+
         [Inject]
-        private readonly IUnitManager _unitManager;
+        private readonly IGameGlobalStateManager _gameGlobalStateManager;
+
+        [Inject]
+        private readonly StaticDb _staticDb;
+
+        #endregion
 
         #region States (Cache)
         private readonly Dictionary<string, Sprite> _unitIcons = new();
@@ -98,6 +110,28 @@ namespace Assets.Scripts.Managers
             _overrideAnimationControllers.Clear();
         }
 
+        public Sprite GetUnitIconSprite(string key)
+        {
+            return _unitIcons.GetValueOrDefault(key);
+        }
+
+        public TileBase GetTileBase(string key)
+        {
+            return _tiles.GetValueOrDefault(key);
+        }
+
+        public AnimatorOverrideController GetUnitOverrideAnimationController(string key)
+        {
+            return _overrideAnimationControllers.GetValueOrDefault(key);
+        }
+
+        public GameObject GetPrefab(string key)
+        {
+            var z = key;
+
+            return _prefabs.GetValueOrDefault(key);
+        }
+
         #endregion
 
         #region Private Methods
@@ -122,8 +156,8 @@ namespace Assets.Scripts.Managers
 
         private async UniTask LoadUnitIconsAsync()
         {
-            var iconNames = _unitManager.Units
-                .Select(x => UnitAdressableLoaderHelper.GetUnitIconAddressableName(x.Name, x.Characteristic.Side))
+            var iconNames = GetUnits()
+                .Select(x => UnitAdressableLoaderHelper.GetUnitIconAddressableName(x.Name, x.Side))
                 .Distinct()
                 .ToArray();
 
@@ -140,8 +174,8 @@ namespace Assets.Scripts.Managers
 
         private async UniTask LoadAnimationControllersAsync()
         {
-            var overrideControllerNames = _unitManager.Units
-                .Select(x => UnitAdressableLoaderHelper.GetUnitOverrideAnimationAddressableName(x.Name, x.Characteristic.Side))
+            var overrideControllerNames = GetUnits()
+                .Select(x => UnitAdressableLoaderHelper.GetUnitOverrideAnimationAddressableName(x.Name, x.Side))
                 .Distinct()
                 .ToArray();
 
@@ -172,6 +206,54 @@ namespace Assets.Scripts.Managers
             {
                 _prefabs[prefab.name] = prefab;
             }
+        }
+
+        #endregion
+
+        #region regin ToOptimiste
+
+        public Dictionary<int, int> GetEnemyUnitIdCountsPairs(int roomId, int waveOrder)
+        {
+            var wave = _staticDb.WaveRooms
+                .Where(x => x.RoomId == roomId)
+                .Where(x => x.Order == waveOrder)
+                .Select(x => x.WaveId)
+                .First();
+
+            var units = _staticDb
+                .WaveEnemies
+                .Where(x => x.WaveId == wave)
+                .Select(x => new { x.UnitId, x.Count })
+                .ToDictionary(x => x.UnitId, x => x.Count);
+
+            return units;
+        }
+
+        private UnitEntity[] GetUnitsData(int[] ids)
+        {
+            return _staticDb.Units.Where(x => ids.Contains(x.Id)).ToArray();
+        }
+
+        private static int[] GetUserUnitIds()
+        {
+            return new[] { 1, 2 };
+        }
+
+        private UnitEntity[] GetUnits()
+        {
+            var enemyids = GetEnemyUnitIdCountsPairs
+                (
+                    roomId: _gameGlobalStateManager.ActualRoomId,
+                    waveOrder: _gameGlobalStateManager.ActualWaveOrder
+                )
+                .Keys
+                .ToArray();
+
+            var userUnitIds = GetUserUnitIds();
+
+            var unitIds = enemyids.Concat(userUnitIds).Distinct().ToArray();
+
+            return GetUnitsData(unitIds);
         }
 
         #endregion

@@ -14,7 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Prefabs
   m_GUID: 1629408289b6e054eacdf50d94f1ad00
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 404edcfddb50339438c3656d19a35beb
+    m_Address: EquipmentSlotPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0184f34368cf6646b721196401ea977
+    m_Address: ActionButtonPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 45dc52ef89bfdaf40a66a5eb7731269b, type: 2}
   m_SchemaSet:

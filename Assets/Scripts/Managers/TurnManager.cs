@@ -54,10 +54,15 @@ namespace Assets.Scripts.Managers
         private readonly IActionClickHandler _actionClickHandler;
         [Inject]
         private readonly IUnitQueueUiService _unitQueueUiService;
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         public async UniTask SceneStart()
         {
             await _roomService.TrySwitchNextRoom(false);
+
+            await _addresableResourceManager.LoadGameResourceAsync();
+            await _addresableResourceManager.LoadLevelResourceAsync();
 
             await _unitManager.GenerateUnits();            
             _units = _unitManager.Units;

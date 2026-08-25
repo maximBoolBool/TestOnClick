@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using Zenject;
 
 namespace Assets.Scripts.Managers.UnitManager
@@ -85,6 +84,9 @@ namespace Assets.Scripts.Managers.UnitManager
 
         [Inject]
         private readonly IGridLayersManager _gridLayersManager;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         public static UnitManager Instance {  get; private set; }
 
@@ -265,15 +267,17 @@ namespace Assets.Scripts.Managers.UnitManager
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                     animator.runtimeAnimatorController = isMonk
-                        ? await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedMonkAnimatorOverrideController")                       
-                        : await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("RedWarriorAnimatorOverrideContoller");
+                        ? _addresableResourceManager.GetUnitOverrideAnimationController("RedMonkAnimatorOverrideController")                       
+                        : _addresableResourceManager.GetUnitOverrideAnimationController("RedWarriorAnimatorOverrideContoller");
                     unitItem.Actions = (isMonk
                             ? BotActionHelper.GetEnemyMonkActions()
                             : BotActionHelper.GetEnemyWarriorActions()
                         )
                         .ToList();
 
-                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitAdressableLoaderHelper.LoadUnitIconAsync(unit.Name, SideType.EnemySide);
+                    var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, SideType.UserSide);
+
+                    unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = _addresableResourceManager.GetUnitIconSprite(iconName);
 
                     unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
@@ -308,8 +312,8 @@ namespace Assets.Scripts.Managers.UnitManager
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                 animator.runtimeAnimatorController = isMonk
-                    ? await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueMonkAnimatorController") 
-                    : await UnitAnimatorOverrideControllerLoader.LoadAnimatorController("BlueWarriorAnimatorController");
+                    ? _addresableResourceManager.GetUnitOverrideAnimationController("BlueMonkAnimatorController") 
+                    : _addresableResourceManager.GetUnitOverrideAnimationController("BlueWarriorAnimatorController");
 
                 unitItem.Actions = (isMonk
                         ? BotActionHelper.GetEnemyMonkActions()
@@ -317,7 +321,9 @@ namespace Assets.Scripts.Managers.UnitManager
                     )
                     .ToList();
 
-                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = await UnitAdressableLoaderHelper.LoadUnitIconAsync(unit.Name, SideType.UserSide);
+                var iconName = UnitAdressableLoaderHelper.GetUnitIconAddressableName(unit.Name, SideType.UserSide);
+
+                unitItem.GetUnitIcon().GetComponent<SpriteRenderer>().sprite = _addresableResourceManager.GetUnitIconSprite(iconName);
 
                 unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 

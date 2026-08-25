@@ -1,5 +1,6 @@
 using Assets.Db.Enums;
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Actions;
 using System.Collections.Generic;
@@ -33,9 +34,6 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
-        [Inject(Id = Constants.HoverTile)]
-        private readonly TileBase _hoverTile;
-
         [Inject]
         private readonly IActionCostService _actionCostService;
 
@@ -44,6 +42,9 @@ namespace Assets.Scripts.Services
 
         [Inject]
         private readonly IGridService _gridService;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         private List<Vector3Int> _actionChooseVectors = new();
         private BaseAction? _lastActionClick = null;
@@ -132,9 +133,12 @@ namespace Assets.Scripts.Services
                         .Select(x => _gridService.ToGridCordinates(x));
 
                     _actionChooseVectors.AddRange(enemiesAdjacentVectors);
+
+                    var hoverTile = _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HOVER_TILE_NAME);
+
                     foreach (var enemiVector in _actionChooseVectors)
                     {
-                        _highlightTilemap.SetTile(enemiVector, _hoverTile);
+                        _highlightTilemap.SetTile(enemiVector, hoverTile);
                     }
 
                     break;

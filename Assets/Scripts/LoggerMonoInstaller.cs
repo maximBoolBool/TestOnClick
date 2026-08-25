@@ -38,10 +38,6 @@ namespace Assets.Scripts
         private GameObject _actionButtonPanel;
 
         [SerializeField]
-        // prt-10
-        private GameObject _actionButtonPrefab;
-
-        [SerializeField]
         private TextMeshProUGUI _moveCounterText;
 
         [SerializeField]
@@ -49,10 +45,6 @@ namespace Assets.Scripts
 
         [SerializeField]
         private GameObject _equipmentPanel;
-
-        [SerializeField]
-        // prt-10
-        private GameObject _equipmentSlotPrefab;
 
         [SerializeField]
         private Camera _camera;
@@ -178,12 +170,7 @@ namespace Assets.Scripts
                 .To<UIAnimationService>()
                 .AsSingle()
                 .NonLazy();
-
-            Container.Bind<GameObject>()
-                .WithId(Constants.EquipemntSlotPrefab)
-                .FromInstance(_equipmentSlotPrefab)
-                .AsCached();
-
+            
             Container.Bind<GameObject>()
                 .WithId(Constants.EquipemntPanel)
                 .FromInstance(_equipmentPanel)
@@ -224,11 +211,6 @@ namespace Assets.Scripts
                 .FromInstance(_actionButtonPanel)
                 .AsCached();
 
-            Container.Bind<GameObject>()
-                .WithId(Constants.ActionButtonPrefab)
-                .FromInstance(_actionButtonPrefab)
-                .AsCached();
-
             Container.Bind<TextMeshProUGUI>()
                 .WithId(Constants.HealthBarText)
                 .FromInstance(_healthBarText)
@@ -259,6 +241,11 @@ namespace Assets.Scripts
 
             Container.Bind<IUnitManager>()
                 .To<UnitManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IAddresableResourceManager>()
+                .To<AddresableResourceManager>()
                 .AsSingle()
                 .NonLazy();
 

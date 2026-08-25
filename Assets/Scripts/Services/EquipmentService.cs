@@ -1,4 +1,3 @@
-using Assets.Scripts;
 using Assets.Scripts.Behaviours;
 using Assets.Scripts.Helpers;
 using Assets.Scripts.Managers;
@@ -40,16 +39,13 @@ namespace Assets.Scripts.Services
 
         private readonly IUnitManager _unitManager;
 
+        private readonly IAddresableResourceManager _addresableResourceManager;
+
         private readonly IUiService _uiService;
 
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
 
         private readonly GameObject _equipmentPanel;
-
-        private readonly GameObject _equipmentSlotPrefab;
-
-        // переделать под кнопку персонажа
-        private readonly GameObject _actionButtonPrefab;
 
         private readonly GameObject _inventoryGrid;
 
@@ -73,16 +69,13 @@ namespace Assets.Scripts.Services
 
         public EquipmentService(
             [Inject(Id = Constants.EquipemntPanel)] GameObject equipemntPanel,
-            [Inject(Id = Constants.EquipemntSlotPrefab)] GameObject equipmentSlotPrefab,
-            [Inject(Id = Constants.ActionButtonPrefab)] GameObject actionButtonPrefab,
             [Inject] IUiService uiService,
             [Inject] IUnitManager unitManager,
-            [Inject] IGameGlobalStateManager gameGlobalStateManager
+            [Inject] IGameGlobalStateManager gameGlobalStateManager,
+            [Inject] IAddresableResourceManager addresableResourceManager
         )
         {
             _equipmentPanel = equipemntPanel;
-            _equipmentSlotPrefab = equipmentSlotPrefab;
-            _actionButtonPrefab = actionButtonPrefab;
 
             var equipmentPanelTransform = _equipmentPanel.transform;
 
@@ -91,6 +84,7 @@ namespace Assets.Scripts.Services
             _charecterBagPanel = _charecterPanel.transform.Find(CHARECTER_PAG_PANEL_NAME).gameObject;
             _charecterChoosePanel = equipmentPanelTransform.Find(CHARECTER_CHOOSE_PANEL_NAME).gameObject;
             _charecterNamePanelText = _charecterPanel.transform.Find(CHARACTER_NAME_PANEL_NAME).gameObject.GetComponentInChildren<TextMeshProUGUI>();
+            _addresableResourceManager = addresableResourceManager;
 
             _unitManager = unitManager;
             _uiService = uiService;
@@ -135,7 +129,7 @@ namespace Assets.Scripts.Services
             for (var i = 0; i < Constants.MAX_EQUIPMENT_ITEMS_CELL_COUNT; i++)
             {
                 var cell = Object.Instantiate(
-                    original: _equipmentSlotPrefab,
+                    original: _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.EQUIPMENT_SLOT_PREFAB),
                     parent: _inventoryGrid.transform
                 );
 
@@ -158,7 +152,7 @@ namespace Assets.Scripts.Services
                 {
                     var isBagCell = type == CharacterEquipmentSlotType.Bag;
                     var charecterCell = Object.Instantiate(
-                        original: _equipmentSlotPrefab,
+                        original: _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.EQUIPMENT_SLOT_PREFAB),
                         parent: isBagCell ? _charecterBagPanel.transform : _charecterPanel.transform
                     );
 
@@ -615,7 +609,7 @@ namespace Assets.Scripts.Services
             foreach (var unit in userUnits)
             {
                 var buttonGO = Object.Instantiate(
-                    original: _actionButtonPrefab,
+                    original: _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.ACTION_BUTTON_PREFAB),
                     parent: _charecterChoosePanel.transform
                 );
 

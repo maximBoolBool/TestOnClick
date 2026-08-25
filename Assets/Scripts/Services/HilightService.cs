@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers;
 using Assets.UnitsCharacteristics;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,14 +28,14 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
-        [Inject(Id = Constants.HighlightTile)]
-        private readonly TileBase _highlightTile;
-
         [Inject]
         private readonly IGridService _gridService;
 
         [Inject]
         private readonly IMovementCostService _movementCostService;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         public void HighlightTiles(bool highlight, List<Vector3Int> reachableTiles, Unit unit)
         {
@@ -50,9 +51,11 @@ namespace Assets.Scripts.Services
                 return;
             }
 
+            var highlightTile = _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME);
+
             foreach (var pos in reachableTiles)
             {
-                _highlightTilemap.SetTile(pos, _highlightTile);
+                _highlightTilemap.SetTile(pos, highlightTile);
             }            
         }
 

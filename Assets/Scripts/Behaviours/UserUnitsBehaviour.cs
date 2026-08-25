@@ -1,4 +1,3 @@
-using Assets.Db.Enums;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Animations;
@@ -20,12 +19,6 @@ namespace Assets.Scripts.Behaviours
     {
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
-
-        [Inject(Id = Constants.HighlightTile)]
-        private readonly TileBase _highlightTile;
-
-        [Inject(Id = Constants.HoverTile)]
-        private readonly TileBase _hoverTile;
 
         [Inject]
         private readonly IUnitManager _unitManager;
@@ -59,6 +52,9 @@ namespace Assets.Scripts.Behaviours
 
         [Inject]
         private readonly IMovementCostService _movementCostService;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         private List<Vector3Int> reachableTiles = new();
         private List<Vector3Int> path = new();
@@ -137,16 +133,16 @@ namespace Assets.Scripts.Behaviours
                         {
                             if (isHovering)
                             {
-                                _highlightTilemap.SetTile(lastHoveredTile, _highlightTile);
+                                _highlightTilemap.SetTile(lastHoveredTile, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME));
                             }
-                            _highlightTilemap.SetTile(mouseTilePos, _hoverTile);
+                            _highlightTilemap.SetTile(mouseTilePos, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HOVER_TILE_NAME));
                             lastHoveredTile = mouseTilePos;
                             isHovering = true;
                         }
                     }
                     else if (isHovering)
                     {
-                        _highlightTilemap.SetTile(lastHoveredTile, _highlightTile);
+                        _highlightTilemap.SetTile(lastHoveredTile, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME));
                         isHovering = false;
                     }
                 }

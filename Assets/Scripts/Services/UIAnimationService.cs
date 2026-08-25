@@ -1,7 +1,7 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Assets.Scripts.Managers;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using Zenject;
 
@@ -35,6 +35,9 @@ namespace Assets.Scripts.Services
 
         [Inject(Id = Constants.UnitInformationPanelIcon)]
         private readonly GameObject _unitInformationPanelIcon;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         private const float TARGET_ORTHO_SIZE = 4f;
         private const float VEILS_VECTOR_MOVE = 1200f;
@@ -81,8 +84,8 @@ namespace Assets.Scripts.Services
 
             // вынести в Manager
             sequence.AppendCallback(async () => 
-            { 
-                var sprite = await Addressables.LoadAssetAsync<Sprite>(unitName);
+            {
+                Sprite sprite = _addresableResourceManager.GetUnitIconSprite(unitName);
                 iconImage.sprite = sprite;
             });
 

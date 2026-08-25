@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services
@@ -14,23 +13,14 @@ namespace Assets.Scripts.Services
 
     public class PathFinderService : IPathFinderService
     {
-        private Dictionary<TileBase, int> movementCosts = new();
-
-        [Inject(Id = Constants.Grid)]
-        private readonly Grid _grid;
-
         [Inject]
         private readonly IGridService _gridService;
-
-        [Inject]
-        private readonly IUnitManager _unitManager;
 
         [Inject]
         private readonly IMovementCostService _movementCostService;
 
         public (Vector3Int, int)[] FindPath(Vector3Int start, Vector3Int end, Unit currentUnit)
         {
-            var pathResult = new List<Vector3Int>();
             var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
             var gCost = new Dictionary<Vector3Int, int>();
             var fCost = new Dictionary<Vector3Int, int>();

@@ -5,8 +5,6 @@ namespace Assets.Scripts
         #region Zenject Game Object Ids
         public const string Grid = "Grid";
         public const string HighlightTilemap = "Highlight";
-        public const string HighlightTile = "HighlightTile";
-        public const string HoverTile = "HoverTile";
         public const string ActionButtonPanel = "ActionButtonPanel";
         public const string TurnCountText = "TurnCountText";
         public const string EnemyInfoPanel = "EnemyInfoPanel";
