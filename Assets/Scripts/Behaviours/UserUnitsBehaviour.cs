@@ -1,10 +1,12 @@
-using Assets.Db.Enums;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
+using Assets.Scripts.Models.Animations;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -13,27 +15,13 @@ using Zenject;
 
 namespace Assets.Scripts.Behaviours
 {
-    // Вынести в общий сервис movementCosts/IsWalkable/GetMovementCost
     public class UserUnitsBehaviour : MonoBehaviour
     {
-        // перейти на сервис
-        [SerializeField]
-        private Dictionary<TileBase, int> movementCosts = new();
-
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
-        [Inject(Id = Constants.HighlightTile)]
-        private readonly TileBase _highlightTile;
-
-        [Inject(Id = Constants.HoverTile)]
-        private readonly TileBase _hoverTile;
-
         [Inject]
         private readonly IUnitManager _unitManager;
-
-        [Inject]
-        private readonly IActionUIService _actionUIService;
 
         [Inject]
         private readonly IActionClickHandler _actionClickHandler;
@@ -65,6 +53,9 @@ namespace Assets.Scripts.Behaviours
         [Inject]
         private readonly IMovementCostService _movementCostService;
 
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
+
         private List<Vector3Int> reachableTiles = new();
         private List<Vector3Int> path = new();
         private Vector3Int lastHoveredTile;
@@ -73,7 +64,7 @@ namespace Assets.Scripts.Behaviours
         private bool isShowingUnitInfo = false;
         private const float moveSpeed = 3f;
 
-        private void Update()
+        private async UniTaskVoid Update()
         {
             if (_gameGlobalStateManager.SelectedUnit == null)
             {
@@ -106,16 +97,6 @@ namespace Assets.Scripts.Behaviours
             {
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
-                    if (selectedAction.Type == ActionTargetType.SelfPeak)
-                    {
-                        _actionExecutionService.TryExecuteAction(
-                            executor: selectedUnit,
-                            action: selectedAction,
-                            target: null
-                        );
-                        reachableTiles = _hilightService.HilightReachebleTiles(selectedUnit, reachableTiles);
-                        return;
-                    }
                     var mousePosition = Mouse.current.position.ReadValue();
                     var worldPos = Camera.main.ScreenToWorldPoint(mousePosition);
                     worldPos.z = 0;
@@ -152,16 +133,16 @@ namespace Assets.Scripts.Behaviours
                         {
                             if (isHovering)
                             {
-                                _highlightTilemap.SetTile(lastHoveredTile, _highlightTile);
+                                _highlightTilemap.SetTile(lastHoveredTile, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME));
                             }
-                            _highlightTilemap.SetTile(mouseTilePos, _hoverTile);
+                            _highlightTilemap.SetTile(mouseTilePos, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HOVER_TILE_NAME));
                             lastHoveredTile = mouseTilePos;
                             isHovering = true;
                         }
                     }
                     else if (isHovering)
                     {
-                        _highlightTilemap.SetTile(lastHoveredTile, _highlightTile);
+                        _highlightTilemap.SetTile(lastHoveredTile, _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME));
                         isHovering = false;
                     }
                 }
@@ -174,7 +155,7 @@ namespace Assets.Scripts.Behaviours
                             _enemyPanelServic.HideUnitInfo();
                             isShowingUnitInfo = false;
                             FindPath(_gridService.ToGridCordinates(selectedUnit), mouseTilePos, selectedUnit);
-                            StartCoroutine(MovePath(selectedUnit));
+                            await MovePathAsync(selectedUnit);
                         }
                     }
                     if (Mouse.current.rightButton.wasPressedThisFrame)
@@ -239,7 +220,7 @@ namespace Assets.Scripts.Behaviours
                 foreach (Vector3Int dir in directions)
                 {
                     Vector3Int neighbor = current + dir;
-                    if (closed.Contains(neighbor) || !IsWalkable(unit, neighbor))
+                    if (closed.Contains(neighbor) || !_movementCostService.IsWalkable(unit, neighbor))
                     {
                         continue;
                     }
@@ -255,14 +236,48 @@ namespace Assets.Scripts.Behaviours
             }
         }
 
-        IEnumerator MovePath(Unit unit)
+        public async UniTask MovePathAsync(Unit unit, CancellationToken cancellationToken = default)
         {
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, true);
+            // Если токен не передан извне, берем токен отмены при OnDestroy у Monobehaviour/Unit
+            if (cancellationToken == default)
+            {
+                cancellationToken = this.GetCancellationTokenOnDestroy();
+            }
+
+            if (path == null || path.Count < 2)
+                return;
+
+            var direction = path[1] - path[0];
+
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation
+                {
+                    IsActive = true,
+                    Direction = direction
+                }
+            );
 
             isUnitMoving = true;
             _hilightService.HighlightTiles(false, reachableTiles, unit);
+
             for (var i = 1; i < path.Count; i++)
             {
+                var newDirection = path[i] - path[i - 1];
+
+                if (newDirection.x != direction.x)
+                {
+                    direction = newDirection;
+                    _animationService.SwitchUnitAnimation(
+                        unit,
+                        new MoveAnimation
+                        {
+                            IsActive = true,
+                            Direction = direction
+                        }
+                    );
+                }
+
                 var step = path[i];
                 var prevStep = path[i - 1];
                 var dir = step - prevStep;
@@ -272,29 +287,40 @@ namespace Assets.Scripts.Behaviours
                 unit.ActualActionPoints -= stepCost;
 
                 var worldTarget = _gridService.FromGridCordinates(step);
-            
+
                 var distance = Vector3.Distance(unit.transform.position, worldTarget);
                 var duration = distance / moveSpeed;
                 var elapsed = 0f;
                 var startPos = unit.transform.position;
+
                 while (elapsed < duration)
                 {
                     unit.transform.position = Vector3.Lerp(startPos, worldTarget, elapsed / duration);
                     elapsed += Time.deltaTime;
-                    yield return null;
+
+                    // Вместо yield return null используем UniTask.Yield
+                    await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
                 }
+
                 unit.transform.position = worldTarget;
             }
 
             isUnitMoving = false;
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation
+                {
+                    IsActive = false,
+                    Direction = null
+                }
+            );
 
             if (unit.Characteristic.Side == SideType.UserSide)
             {
                 if (unit.ActualActionPoints <= 0)
                 {
-                    _turnManager.DeactivateUnit(unit);
-                    yield break;
+                    _turnManager.EndCurrentTurn();
+                    return;
                 }
             }
 
@@ -306,12 +332,15 @@ namespace Assets.Scripts.Behaviours
             reachableTiles = _hilightService.HilightReachebleTiles(unit, reachableTiles);
         }
 
-        private int Heuristic(Vector3Int a, Vector3Int b)
+        private static int Heuristic(Vector3Int a, Vector3Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        private List<Vector3Int> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)
+        private static List<Vector3Int> ReconstructPath(
+            Dictionary<Vector3Int, Vector3Int> cameFrom,
+            Vector3Int current
+        )
         {
             List<Vector3Int> path = new() { current };
             while (cameFrom.ContainsKey(current))
@@ -321,27 +350,6 @@ namespace Assets.Scripts.Behaviours
             }
             path.Reverse();
             return path;
-        }
-
-        private bool IsWalkable(Unit unit, Vector3Int pos)
-        {
-            //PRT-9
-            return true;
-            /*
-            if (pos == _gridService.ToGridCordinates(unit))
-            {
-                return false;
-            }
-            var ocuppaitedTiles = _unitManager.Units
-                .Select(x => _gridService.ToGridCordinates(x))
-                .ToArray();
-            if (ocuppaitedTiles.Contains(pos))
-            {
-                return false;
-            }
-            var tile = _groundTilemap.GetTile(pos);
-            return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-            */
         }
     }
 }

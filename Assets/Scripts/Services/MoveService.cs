@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Models.Animations;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services
 {
     public interface IMoveService
     {
-        IEnumerator MovePath(Unit unit, Vector3Int[] path);
+        UniTask MovePathAsync(Unit unit, Vector3Int[] path);
     }
 
     public class MoveService : IMoveService
@@ -23,18 +23,42 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IMovementCostService _movementCostService;
 
-        public IEnumerator MovePath(Unit unit, Vector3Int[] path)
+        public async UniTask MovePathAsync(Unit unit, Vector3Int[] path)
         {
             if (path.Length <= 1)
             {
-                yield break;
+                return;
             }
+            
+            var direction = path[1] - path[0];
 
             // Включаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, true);
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation()
+                {
+                    IsActive = true,
+                    Direction = direction
+                }
+            );
 
             for (int i = 1; i < path.Length; i++)
             {
+                var newDirection = path[i] - path[i - 1];
+
+                if (newDirection.x != direction.x)
+                {
+                    direction = newDirection;
+                    _animationService.SwitchUnitAnimation(
+                        unit,
+                        new MoveAnimation
+                        {
+                            IsActive = true,
+                            Direction = direction
+                        }
+                    );
+                }
+
                 Vector3Int step = path[i];
                 Vector3Int prevStep = path[i - 1];
                 Vector3Int dir = step - prevStep;
@@ -49,16 +73,25 @@ namespace Assets.Scripts.Services
 
                 while (elapsed < duration)
                 {
-                    unit.transform.position = Vector3.Lerp(startPos, worldTarget, elapsed / duration);
                     elapsed += Time.deltaTime;
-                    yield return null;
+                    float t = elapsed / duration;
+                    unit.transform.position = Vector3.Lerp(startPos, worldTarget, t);
+
+                    await UniTask.Yield(PlayerLoopTiming.Update);
                 }
 
                 unit.transform.position = worldTarget;
             }
 
             // Выключаем анимацию движения
-            _animationService.SwitchUnitAnimation(unit, UnitAnimationType.Move, false);
+            _animationService.SwitchUnitAnimation(
+                unit,
+                new MoveAnimation() 
+                {
+                    IsActive = false,
+                    Direction = null
+                }
+            );
         }
     }
 }

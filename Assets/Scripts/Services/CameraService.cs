@@ -2,6 +2,7 @@
 using UnityEngine;
 using Zenject;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Scripts.Services
 {
@@ -11,9 +12,9 @@ namespace Assets.Scripts.Services
 
         void SetCameraCordinates(float2 cordinates);
 
-        void MoveCamera(float2 cordinates);
+        UniTask MoveCameraAsync(float2 cordinates);
 
-        void MoveCamera(Vector2 vector);
+        UniTask MoveCameraAsync(Vector2 vector);
 
         void ZoomCamera(float zoomDelta);
     }
@@ -26,13 +27,11 @@ namespace Assets.Scripts.Services
         private const float MIN_ZOOM = 1f;
         private const float MAX_ZOOM = 5f;
 
-        private const float MOVE_SPEED = 12f;
-        private const float MIN_MOVE_DURATION = 0.05f;
         private const float ZOOM_DURATION = 0.08f;
+        private const float CAMERA_MOVE_DURATION = 2f;
 
         [Inject(Id = Constants.Camera)]
         private readonly Camera _camera;
-
         private Tweener _moveTween;
         private Tweener _zoomTween;
         private float _targetZoom;
@@ -62,7 +61,7 @@ namespace Assets.Scripts.Services
             _camera.transform.position = new Vector3(normalizedCordinates.x, normalizedCordinates.y, _camera.transform.position.z);
         }
 
-        public void MoveCamera(float2 cordinates)
+        public async UniTask MoveCameraAsync(float2 cordinates)
         {
             var normalizedCordinates = GetNormalizedValue(cordinates.x, cordinates.y);
             var targetPosition = new Vector3(normalizedCordinates.x, normalizedCordinates.y, _camera.transform.position.z);
@@ -79,11 +78,10 @@ namespace Assets.Scripts.Services
                 _moveTween.Kill();
             }
 
-            var duration = math.max(distance / MOVE_SPEED, MIN_MOVE_DURATION);
-            _moveTween = _camera.transform.DOMove(targetPosition, duration).SetEase(Ease.OutQuad);
+            _moveTween = _camera.transform.DOMove(targetPosition, CAMERA_MOVE_DURATION).SetEase(Ease.OutQuad);
         }
 
-        public void MoveCamera(Vector2 vector)
+        public async UniTask MoveCameraAsync(Vector2 vector)
         {
             float2 cordinates = new()
             {
@@ -91,7 +89,7 @@ namespace Assets.Scripts.Services
                 y = vector.y
             };
 
-            MoveCamera(cordinates);
+            await MoveCameraAsync(cordinates);
         }
 
         public void ZoomCamera(float zoomDelta)

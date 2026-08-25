@@ -7,6 +7,7 @@ using System.Linq;
 using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Models.Equipment;
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.Services
 {
@@ -24,12 +25,12 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.ActionButtonPanel)]
         private readonly GameObject _actionButtonPanel;
 
-        [Inject(Id = Constants.ActionButtonPrefab)]
-        private readonly GameObject _actionButtonPrefab;
-
         [Inject]
         private readonly IUnitPanelBarService _unitPanelBarService;
-         
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
+
         [Inject]
         private readonly IActionClickHandler _actionClickHandler;
 
@@ -40,7 +41,7 @@ namespace Assets.Scripts.Services
             foreach (var action in GetUnitActions(unit))
             {
                 var buttonObj = Object.Instantiate(
-                    original: _actionButtonPrefab,
+                    original: _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.ACTION_BUTTON_PREFAB),
                     parent: _actionButtonPanel.transform
                 );
 

@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers;
 using Assets.UnitsCharacteristics;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,14 +28,14 @@ namespace Assets.Scripts.Services
         [Inject(Id = Constants.HighlightTilemap)]
         private readonly Tilemap _highlightTilemap;
 
-        [Inject(Id = Constants.HighlightTile)]
-        private readonly TileBase _highlightTile;
-
         [Inject]
         private readonly IGridService _gridService;
 
         [Inject]
         private readonly IMovementCostService _movementCostService;
+
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
         public void HighlightTiles(bool highlight, List<Vector3Int> reachableTiles, Unit unit)
         {
@@ -50,11 +51,12 @@ namespace Assets.Scripts.Services
                 return;
             }
 
+            var highlightTile = _addresableResourceManager.GetTileBase(TilesAdressableResourceNames.HIGHLIGHT_TILE_NAME);
+
             foreach (var pos in reachableTiles)
             {
-                _highlightTilemap.SetTile(pos, _highlightTile);
-            }
-            ;
+                _highlightTilemap.SetTile(pos, highlightTile);
+            }            
         }
 
         public List<Vector3Int> HilightReachebleTiles(Unit unit, List<Vector3Int> reachableTiles)
@@ -80,26 +82,26 @@ namespace Assets.Scripts.Services
                     continue;
                 }
 
-                if (IsWalkable(unit, pos))
+                if (_movementCostService.IsWalkable(unit, pos))
                 {
                     newReachableTiles.Add(pos);
                 }
 
                 Vector3Int[] directions = {
-                new(1, 0, 0),
-                new(-1, 0, 0),
-                new(0, 1, 0),
-                new(0, -1, 0),
-                new(1, 1, 0),
-                new(-1, 1, 0),
-                new(1, -1, 0),
-                new(-1, -1, 0)
-            };
+                    new(1, 0, 0),
+                    new(-1, 0, 0),
+                    new(0, 1, 0),
+                    new(0, -1, 0),
+                    new(1, 1, 0),
+                    new(-1, 1, 0),
+                    new(1, -1, 0),
+                    new(-1, -1, 0)
+                };
 
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = pos + dir;
-                    if (!costs.ContainsKey(neighbor) && IsWalkable(unit, neighbor))
+                    if (!costs.ContainsKey(neighbor) && _movementCostService.IsWalkable(unit, neighbor))
                     {
                         int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
@@ -119,27 +121,6 @@ namespace Assets.Scripts.Services
             );
 
             return newReachableTiles;
-        }
-
-        private bool IsWalkable(Unit unit, Vector3Int pos)
-        {
-            //PRT-9
-            return true;
-            //if (pos == _gridService.ToGridCordinates(unit))
-            //{
-            //    return false;
-            //}
-
-            //var ocuppaitedTiles = _unitManager.Units
-            //    .Select(x => _gridService.ToGridCordinates(x))
-            //    .ToArray();
-            //if (ocuppaitedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
         }
     }
 }

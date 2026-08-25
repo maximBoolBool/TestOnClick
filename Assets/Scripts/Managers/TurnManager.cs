@@ -1,9 +1,9 @@
-using Assets.Db.Enums;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
 using Assets.UnitsCharacteristics;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -15,132 +15,184 @@ namespace Assets.Scripts.Managers
 {
     public interface ITurnManager
     {
-        public void SceneStart();
-
-        public void EndTurn();
-
-        public void SkipTurn();
-
-        public void ActivateUnit(Unit unit);
-
-        public void DeactivateUnit(Unit unit);
+        UniTask SceneStart();
+        UniTask SkipTurnAsync();
+        void EndCurrentTurn();
     }
 
     public class TurnManager : ITurnManager
     {
-        private int currentUnitIndex = 0;
-        private int turnCount = 0;
-        private List<Unit> units;
+        private int _currentUnitIndex = 0;
+        private int _turnCount = 0;
+        private List<Unit> _units;
+
+        private UniTaskCompletionSource _turnCompletionSource;
+        private bool _isGameEnded = false;
 
         [Inject(Id = Constants.TurnCountText)]
         private readonly TextMeshProUGUI _moveCounterText;
 
-        [Inject]
+        [Inject] 
         private readonly IUnitManager _unitManager;
-
         [Inject]
-        private readonly IConditionService _conditionService;
-
+        private readonly IUnitConditionService _conditionService;
         [Inject]
         private readonly IBotExecutionTurnService _botExecutionTurnService;
-
         [Inject]
         private readonly IUnitPanelBarService _unitPanelBarService;
-
         [Inject]
         private readonly IActionUIService _actionUiService;
-
         [Inject]
         private readonly IGameGlobalStateManager _gameGlobalStateManager;
-
         [Inject]
         private readonly IRoomService _roomService;
-
         [Inject]
         private readonly ICameraService _cameraService;
-
         [Inject]
         private readonly IUIAnimationService _uiAnimationService;
+        [Inject]
+        private readonly IActionClickHandler _actionClickHandler;
+        [Inject]
+        private readonly IUnitQueueUiService _unitQueueUiService;
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
 
-        private Coroutine _textAnimationCoroutine;
-
-        public void SceneStart()
+        public async UniTask SceneStart()
         {
-            _uiAnimationService.ShakeCamera();
-            _uiAnimationService.MoveVeils();
-            _roomService.TrySwitchNextRoom(false);
+            await _roomService.TrySwitchNextRoom(false);
 
-            _unitManager.GenerateUnits();
-            // Пока убираем
-            //_unitManager.SetStartEquipment();
-            units = _unitManager.Units;
+            await _addresableResourceManager.LoadGameResourceAsync();
+            await _addresableResourceManager.LoadLevelResourceAsync();
+
+            await _unitManager.GenerateUnits();            
+            _units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
 
-            if (units.Count > 0)
+            _uiAnimationService.ShakeCamera();
+            _uiAnimationService.MoveVeils();
+            await _unitQueueUiService.SetUniticonsAsync();
+
+            if (_units.Count > 0)
             {
-                turnCount = 1;
+                _turnCount = 1;
                 UpdateMoveCounterDisplay();
-                ActivateUnit(units[currentUnitIndex]);
+                StartTurnLoopAsync().Forget();
             }
         }
 
-        public void EndTurn()
+        /// <summary>
+        /// Главный линейный цикл смены ходов (избавляет от рекурсии)
+        /// </summary>
+        private async UniTask StartTurnLoopAsync()
         {
-            currentUnitIndex = (currentUnitIndex + 1) % units.Count;
-
-            if (currentUnitIndex == 0)
+            while (!_isGameEnded)
             {
-                turnCount++;
-                Debug.LogWarning($"Turn #{turnCount} done");
-                _unitManager.RefreshUnitsActionPoints();
-                UpdateMoveCounterDisplay();
+                if (_units == null || _units.Count == 0)
+                {
+                    return;
+                }
 
+                var currentUnit = _units[_currentUnitIndex];
+
+                _conditionService.ExecuteConditionEffect(currentUnit, ConditionEffectStartType.OnTurnStart);
+
+                if (currentUnit.IsDead)
+                {
+                    await AdvanceToNextUnit();
+                    continue;
+                }
+
+                if (await CheckForGameOverAsync())
+                {
+                    _isGameEnded = true;
+                    break;
+                }
+
+                _turnCompletionSource = new UniTaskCompletionSource();
+
+                await ProcessUnitTurnAsync(currentUnit);
+
+                await _turnCompletionSource.Task;
+
+                DeactivateUnitInternal(currentUnit);
+
+                await AdvanceToNextUnit();
             }
-
-            ActivateUnit(units[currentUnitIndex]);
         }
 
-        public void SkipTurn()
+        private async UniTask ProcessUnitTurnAsync(Unit unit)
         {
-            if (units[currentUnitIndex].Characteristic.Side == SideType.UserSide)
+            var tasks = new List<UniTask>
             {
-                DeactivateUnit(units[currentUnitIndex]);
-            }
-        }
+                _cameraService.MoveCameraAsync(unit.transform.position)
+            };
 
-        public void ActivateUnit(Unit unit)
-        {
-            _conditionService.ExecuteConditionEffect(unit, ConditionEffectStartType.OnTurnStart);
-
-            if (unit.IsDead)
+            if (_currentUnitIndex != 0)
             {
-                DeactivateUnit(units[currentUnitIndex]);
-                return;
+                tasks.Add(_unitQueueUiService.MoveQueueUiAsync());
             }
 
-            CheckForGameOver();
-
-            _cameraService.MoveCamera(unit.transform.position);
+            await UniTask.WhenAll(tasks);
 
             switch (unit.Characteristic.Side)
             {
                 case SideType.UserSide:
-                    ActivateUserUnitIternal(unit);
+                    ActivateUserUnitInternal(unit);
                     break;
+
                 case SideType.EnemySide:
-                    Debug.Log("Ai turn start");
-                    ActivateEnemyUnitIternal(unit);
-                    Debug.Log("Ai turn start");
+                    Debug.Log("AI turn start");
+                    await _botExecutionTurnService.ExecuteBotTurnAsync(unit);
+                    Debug.Log("AI turn end");
+                    EndCurrentTurn();
                     break;
+
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void ActivateUserUnitIternal(Unit unit)
+        /// <summary>
+        /// Вызывается UI-кнопками или событиями окончания ходов
+        /// </summary>
+        public void EndCurrentTurn()
         {
-            _uiAnimationService.SwitchPanelUnitIcon($"Blue{unit.Name}");
+            _turnCompletionSource?.TrySetResult();
+            var currentUnit = _units[_currentUnitIndex];
+
+            if (currentUnit.Characteristic.Side == SideType.UserSide)
+            {
+                _actionClickHandler.CancelAction();
+            }
+        }
+
+        public async UniTask SkipTurnAsync()
+        {
+            var currentUnit = _units[_currentUnitIndex];
+            if (currentUnit.Characteristic.Side == SideType.UserSide)
+            {
+                EndCurrentTurn();
+            }
+        }
+
+        private async UniTask AdvanceToNextUnit()
+        {
+            _currentUnitIndex = (_currentUnitIndex + 1) % _units.Count;
+
+            if (_currentUnitIndex == 0)
+            {
+                _turnCount++;
+                Debug.LogWarning($"Turn #{_turnCount} done");
+                _unitManager.RefreshUnitsActionPoints();
+                UpdateMoveCounterDisplay();
+                await _unitQueueUiService.SetUniticonsAsync();
+            }
+        }
+
+        private void ActivateUserUnitInternal(Unit unit)
+        {
+            _uiAnimationService.SwitchPanelUnitIconAsync($"Blue{unit.Name}").Forget();
 
             _unitPanelBarService.SetUnitHealthPoints(
                 actualHealthPoints: unit.ActualHealthPoints,
@@ -153,98 +205,74 @@ namespace Assets.Scripts.Managers
                 actualActionPoint: unit.ActualActionPoints,
                 maxActionPoint: unit.Characteristic.ActiveActionPoints
             );
-             
+
             unit.IsSelected = true;
         }
 
-        private void ActivateEnemyUnitIternal(Unit unit)
-        {
-            _botExecutionTurnService.ExecuteBotTurn(unit);
-        }
-
-        public void DeactivateUnit(Unit unit)
+        private void DeactivateUnitInternal(Unit unit)
         {
             _actionUiService.HideActions();
+            unit.ActualActionPoints = 0;
             unit.IsSelected = false;
             _gameGlobalStateManager.SelectedUnit = null;
-            EndTurn();
         }
 
         private void UpdateMoveCounterDisplay()
         {
-            if (_moveCounterText != null)
-            {
-                if (_textAnimationCoroutine != null)
-                {
-                    _moveCounterText.StopCoroutine(_textAnimationCoroutine);
-                }
-
-                _textAnimationCoroutine = _moveCounterText.StartCoroutine(SetTurnText($"Turn: {turnCount}"));
-            }
-            else
-            {
-                Debug.LogWarning("MoveCounterText не назначен в инспекторе!");
-            }
+            SetTurnTextAsync($"Turn: {_turnCount}").Forget();
         }
 
-        private void CheckForGameOver()
+        private async UniTask<bool> CheckForGameOverAsync()
         {
             var sides = _unitManager.Units
                 .GroupBy(x => x.Characteristic.Side)
                 .ToDictionary(
                     x => x.Key,
-                    x => x.Where(y => !y.IsDead).Any()
+                    x => x.Any(y => !y.IsDead)
                 );
 
-            foreach (var side in sides)
+            if (sides.Values.Any(hasAlive => !hasAlive))
             {
-                Debug.Log($"{side.Key} {side.Value}");
-            }
-
-            if (sides.Values.Any(x => !x))
-            {
-                if (sides.ContainsKey(SideType.UserSide) && !sides[SideType.UserSide])
+                if (sides.TryGetValue(SideType.UserSide, out var userAlive) && !userAlive)
                 {
                     Debug.Log("Все юниты игрока мертвы! Поражение.");
                 }
-                else if (sides.ContainsKey(SideType.EnemySide) && !sides[SideType.EnemySide])
+                else if (sides.TryGetValue(SideType.EnemySide, out var enemyAlive) && !enemyAlive)
                 {
                     Debug.Log("Все враги мертвы! Победа.");
 
-                    if (_roomService.TrySwitchNextRoom(true))
+                    if (await _roomService.TrySwitchNextRoom(true))
                     {
                         Debug.Log("Переход в следующую комнату");
 
-                        _unitManager.GenerateWaveUnits(
+                        await _unitManager.GenerateWaveUnits(
                             roomId: _gameGlobalStateManager.ActualRoomId,
                             waveOrder: _gameGlobalStateManager.ActualWaveOrder,
                             withDeleteActual: true
                         );
-                        return;
+
+                        _units = _unitManager.Units;
+                        _currentUnitIndex = 0;
+                        return false;
                     }
                 }
 
                 SceneManager.LoadScene("MainMenuScene");
-                return;
+                return true;
             }
+
+            return false;
         }
 
-        IEnumerator SetTurnText(string fullText)
+        private async UniTask SetTurnTextAsync(string fullText)
         {
             string currentText = "";
-
             for (int i = 0; i < fullText.Length; i++)
             {
                 currentText += fullText[i];
                 _moveCounterText.text = currentText;
-
-                yield return new WaitForSeconds(0.1f);
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
             }
         }
     }
-}
-
-public static class StartConfiguration
-{
-    public const LocationType LOCATION_TYPE = LocationType.Forest;
 }

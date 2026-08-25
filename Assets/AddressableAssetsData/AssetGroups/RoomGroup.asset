@@ -15,8 +15,23 @@ MonoBehaviour:
   m_GroupName: RoomGroup
   m_GUID: 318a3bc67100ad14185e0c56781cdf2c
   m_SerializeEntries:
-  - m_GUID: 35b545489d31813469207d64e324460e
+  - m_GUID: 0792acc2453f0d04883f6d398e24003f
     m_Address: Room_1_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 607478652762c0f4fb998415a0800947
+    m_Address: UnitPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c5a97cd99cccd74da1544cc9a87d3dd
+    m_Address: DownArrowIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dccbb60afacbb3e40bbfb8feb0b8cef5
+    m_Address: UnitQueueItemPrefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

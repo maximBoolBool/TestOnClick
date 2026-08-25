@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Assets.Scripts.Managers.UnitManager;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Zenject;
 
 namespace Assets.Scripts.Services
@@ -14,23 +13,14 @@ namespace Assets.Scripts.Services
 
     public class PathFinderService : IPathFinderService
     {
-        private Dictionary<TileBase, int> movementCosts = new();
-
-        [Inject(Id = Constants.Grid)]
-        private readonly Grid _grid;
-
         [Inject]
         private readonly IGridService _gridService;
-
-        [Inject]
-        private readonly IUnitManager _unitManager;
 
         [Inject]
         private readonly IMovementCostService _movementCostService;
 
         public (Vector3Int, int)[] FindPath(Vector3Int start, Vector3Int end, Unit currentUnit)
         {
-            var pathResult = new List<Vector3Int>();
             var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
             var gCost = new Dictionary<Vector3Int, int>();
             var fCost = new Dictionary<Vector3Int, int>();
@@ -61,7 +51,7 @@ namespace Assets.Scripts.Services
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = current + dir;
-                    if (closed.Contains(neighbor) || !IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
+                    if (closed.Contains(neighbor) || !_movementCostService.IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
                     {
                         continue;
                     }
@@ -82,34 +72,5 @@ namespace Assets.Scripts.Services
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
-
-        private bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)
-        {
-            //PRT-9
-            return true;
-            //if (pos == currentPosition)
-            //{
-            //    return false;
-            //}
-            //var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
-            //if (occupiedTiles.Contains(pos))
-            //{
-            //    return false;
-            //}
-            //var tile = _grid.GetTile(pos);
-            //return tile != null && (!movementCosts.ContainsKey(tile) || movementCosts[tile] > 0);
-        }
-
-        /*private List<(Vector3Int, int)> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int current)
-        {
-            var path = new List<Vector3Int> { current };
-            while (cameFrom.ContainsKey(current))
-            {
-                current = cameFrom[current];
-                path.Add(current);
-            }
-            path.Reverse();
-            return path;
-        }*/
     }
 }

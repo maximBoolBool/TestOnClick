@@ -1,7 +1,7 @@
-﻿using Assets.UnitsCharacteristics;
+﻿using Assets.Scripts.Managers.UnitManager;
+using Assets.UnitsCharacteristics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -98,7 +98,7 @@ namespace Assets.Scripts.Services.BotStrategy
                 Vector3Int pos = queue.Dequeue();
                 int currentCost = costs[pos];
                 if (currentCost > currentUnit.ActualActionPoints) continue;
-                if (IsWalkable(pos, _gridService.ToGridCordinates(currentUnit)))
+                if (_movementCostService.IsWalkable(pos, _gridService.ToGridCordinates(currentUnit)))
                 {
                     reachableTiles.Add(pos);
                 }
@@ -116,7 +116,7 @@ namespace Assets.Scripts.Services.BotStrategy
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = pos + dir;
-                    if (!costs.ContainsKey(neighbor) && IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
+                    if (!costs.ContainsKey(neighbor) && _movementCostService.IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
                     {
                         int tileCost = _movementCostService.GetMovementCost(neighbor, dir);
                         int newCost = currentCost + tileCost;
@@ -134,6 +134,10 @@ namespace Assets.Scripts.Services.BotStrategy
 
         public Vector3Int[] FindPath(Vector3Int start, Vector3Int end, Unit currentUnit)
         {
+            if (start == end) {
+                return Array.Empty<Vector3Int>();
+            }
+
             var pathResult = new List<Vector3Int>();
             var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
             var gCost = new Dictionary<Vector3Int, int>();
@@ -165,7 +169,7 @@ namespace Assets.Scripts.Services.BotStrategy
                 foreach (var dir in directions)
                 {
                     Vector3Int neighbor = current + dir;
-                    if (closed.Contains(neighbor) || !IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
+                    if (closed.Contains(neighbor) || !_movementCostService.IsWalkable(neighbor, _gridService.ToGridCordinates(currentUnit)))
                     {
                         continue;
                     }
@@ -180,22 +184,6 @@ namespace Assets.Scripts.Services.BotStrategy
                 }
             }
             return Array.Empty<Vector3Int>();
-        }
-
-        private bool IsWalkable(Vector3Int pos, Vector3Int currentPosition)
-        {
-            if (pos == currentPosition)
-            {
-                return false;
-            }
-            var occupiedTiles = _unitManager.Units.Select(x => _gridService.ToGridCordinates(x)).ToList();
-            if (occupiedTiles.Contains(pos))
-            {
-                return false;
-            }
-
-            //PRT-9
-            return true;
         }
 
         private int GetPathCostTo(
@@ -227,7 +215,7 @@ namespace Assets.Scripts.Services.BotStrategy
                 foreach (var dir in directions)
                 {
                     var neighbor = pos + dir;
-                    if (costs.ContainsKey(neighbor) || !IsWalkable(neighbor, currentPosition))
+                    if (costs.ContainsKey(neighbor) || !_movementCostService.IsWalkable(neighbor, currentPosition))
                     {
                         continue;
                     }

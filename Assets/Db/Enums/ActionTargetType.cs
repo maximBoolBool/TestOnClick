@@ -2,9 +2,8 @@
 {
     public enum ActionTargetType
     {
-        SelfPeak = 0,
-        OtherSideUnitPeacks = 1,
-        AreaPeack = 2,
-        SideUnitPeack = 3
+        OtherSideUnitPeacks = 0,
+        AreaPeack = 1,
+        SideUnitPeack = 2
     }
 }

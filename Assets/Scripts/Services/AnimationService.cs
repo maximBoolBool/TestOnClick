@@ -1,41 +1,50 @@
+using Assets.Scripts.Helpers;
+using Assets.Scripts.Models.Animations;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Services
 {
     public interface IAnimationService
     {
-        void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive);
+        void SwitchUnitAnimation(Unit unit, BaseAnimation animation);
     }
 
     public class AnimationService : IAnimationService
     {
-        public void SwitchUnitAnimation(Unit unit, UnitAnimationType type, bool isActive)
+        public void SwitchUnitAnimation(Unit unit, BaseAnimation animation)
         {
-            var unitAnimator = unit.GetComponent<Animator>();
+            var unitAnimator = unit.GetUnitAnimator().GetComponent<Animator>();
 
-            switch (type)
+            switch (animation)
             {
-                case UnitAnimationType.Attack:
+                case AttackAnimation _:
                     unitAnimator.SetTrigger(Constants.UnitAttackTrigger);
                     break;
-                case UnitAnimationType.Move:
-                    unitAnimator.SetBool(Constants.IsUnitMoving, isActive);
+                case MoveAnimation moveAnimation:
+                    if (moveAnimation.Direction.HasValue)
+                    {
+                        var spriteRender = unit.GetUnitAnimator().GetComponent<SpriteRenderer>();
+
+                        if (moveAnimation.Direction.Value.x < 0)
+                        {
+                            spriteRender.flipX = true;
+                        }
+                        else if(moveAnimation.Direction.Value.x > 0)
+                        {
+                            spriteRender.flipX = false;
+                        }
+                    }
+
+                    unitAnimator.SetBool(Constants.IsUnitMoving, moveAnimation.IsActive);
                     break;
-                case UnitAnimationType.Dead:
+                case DeadAnimation _:
                     unitAnimator.SetTrigger(Constants.UnitDeadTrigger);
                     break;
-                case UnitAnimationType.Idle:
+                case IdleAnimation _:
                 default:
-                    throw new System.Exception();
+                    throw new Exception();
             }
         }
-    }
-
-    public enum UnitAnimationType
-    {
-        Idle = 0,
-        Attack = 1,
-        Move = 2,
-        Dead = 3,
     }
 }

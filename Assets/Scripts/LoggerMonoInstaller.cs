@@ -2,6 +2,7 @@ using Assets.Db;
 using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Services;
 using Assets.Scripts.Services.BotStrategy;
 using System.IO;
@@ -22,12 +23,6 @@ namespace Assets.Scripts
         private Tilemap _highlighTilemap;
 
         [SerializeField]
-        private TileBase _highlightTile;
-
-        [SerializeField]
-        private TileBase _hoverTile;
-
-        [SerializeField]
         private GameObject _healthBarSliderGO;
 
         [SerializeField]
@@ -43,9 +38,6 @@ namespace Assets.Scripts
         private GameObject _actionButtonPanel;
 
         [SerializeField]
-        private GameObject _actionButtonPrefab;
-
-        [SerializeField]
         private TextMeshProUGUI _moveCounterText;
 
         [SerializeField]
@@ -53,9 +45,6 @@ namespace Assets.Scripts
 
         [SerializeField]
         private GameObject _equipmentPanel;
-
-        [SerializeField]
-        private GameObject _equipmentSlotPrefab;
 
         [SerializeField]
         private Camera _camera;
@@ -78,8 +67,17 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject _unitInfoPanelIcon;
 
+        [SerializeField]
+        private GameObject _unitQueuePanel;
+
         public override void InstallBindings()
         {
+            Container.Bind<GameObject>()
+                .WithId(Constants.UnitQueuePanel)
+                .FromInstance(_unitQueuePanel)
+                .AsCached()
+                .NonLazy();
+
             Container.Bind<GameObject>()
                 .WithId(Constants.UnitInformationPanelIcon)
                 .FromInstance(_unitInfoPanelIcon)
@@ -172,12 +170,7 @@ namespace Assets.Scripts
                 .To<UIAnimationService>()
                 .AsSingle()
                 .NonLazy();
-
-            Container.Bind<GameObject>()
-                .WithId(Constants.EquipemntSlotPrefab)
-                .FromInstance(_equipmentSlotPrefab)
-                .AsCached();
-
+            
             Container.Bind<GameObject>()
                 .WithId(Constants.EquipemntPanel)
                 .FromInstance(_equipmentPanel)
@@ -213,24 +206,9 @@ namespace Assets.Scripts
                 .FromInstance(_highlighTilemap)
                 .AsCached();
 
-            Container.Bind<TileBase>()
-                .WithId(Constants.HighlightTile)
-                .FromInstance(_highlightTile)
-                .AsCached();
-
-            Container.Bind<TileBase>()
-                .WithId(Constants.HoverTile)
-                .FromInstance(_hoverTile)
-                .AsCached();
-
             Container.Bind<GameObject>()
                 .WithId(Constants.ActionButtonPanel)
                 .FromInstance(_actionButtonPanel)
-                .AsCached();
-
-            Container.Bind<GameObject>()
-                .WithId(Constants.ActionButtonPrefab)
-                .FromInstance(_actionButtonPrefab)
                 .AsCached();
 
             Container.Bind<TextMeshProUGUI>()
@@ -263,6 +241,16 @@ namespace Assets.Scripts
 
             Container.Bind<IUnitManager>()
                 .To<UnitManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IAddresableResourceManager>()
+                .To<AddresableResourceManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IUnitQueueUiService>()
+                .To<UnitQueueUiManager>()
                 .AsSingle()
                 .NonLazy();
 
@@ -306,8 +294,8 @@ namespace Assets.Scripts
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<IConditionService>()
-                .To<ConditionService>()
+            Container.Bind<IUnitConditionService>()
+                .To<UnitConditionService>()
                 .AsSingle()
                 .NonLazy();
 

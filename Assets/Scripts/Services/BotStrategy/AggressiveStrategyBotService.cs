@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Actions;
 using Assets.Scripts.Models.BotTurnSteps;
 using System.Collections.Generic;
@@ -114,6 +115,11 @@ namespace Assets.Scripts.Services.BotStrategy
                 unit
             );
             var path = _sharedBotStrategyService.FindPath(_gridService.ToGridCordinates(unit), bestTile, unit);
+
+            if(path.Length == 0)
+            {
+                return null;
+            }
 
             return new MoveBotCommand() { Path = path };
         }
