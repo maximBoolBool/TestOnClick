@@ -18,29 +18,29 @@ namespace Assets.Scripts.Services
 
     class UIAnimationService : IUIAnimationService
     {
-        [Inject(Id = Constants.Camera)]
+        [Inject(Id = Constants.CAMERA)]
         private readonly Camera _camera;
 
-        [Inject(Id = Constants.TopVeilCloudPart)]
+        [Inject(Id = Constants.TOP_VEIL_CLOUD_PART)]
         private readonly GameObject _topCloudVeil;
 
-        [Inject(Id = Constants.BottomVeilCloudPart)]
+        [Inject(Id = Constants.BOTTOM_VEIL_CLOUD_PART)]
         private readonly GameObject _bottomCloudVeil;
 
-        [Inject(Id = Constants.LeftVeilCloudPart)]
+        [Inject(Id = Constants.LEFT_VEIL_CLOUD_PART)]
         private readonly GameObject _leftCloudVeil;
 
-        [Inject(Id = Constants.RightVeilCloudPart)]
+        [Inject(Id = Constants.RIGHT_VEIL_CLOUD_PART)]
         private readonly GameObject _rightCloudVeil;
 
-        [Inject(Id = Constants.UnitInformationPanelIcon)]
+        [Inject(Id = Constants.UNIT_INFORMATION_PANEL_ICON)]
         private readonly GameObject _unitInformationPanelIcon;
 
         [Inject]
         private readonly IAddresableResourceManager _addresableResourceManager;
 
         private const float TARGET_ORTHO_SIZE = 4f;
-        private const float VEILS_VECTOR_MOVE = 1200f;
+        private const float VEILS_VECTOR_MOVE = 2400f;
         private const float ANIMATION_DURATION = 10f;
         private const float FADE_MIN_VALUE = 0;
         private const float FADE_MAX_VALUE = 1;

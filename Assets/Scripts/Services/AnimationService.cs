@@ -19,7 +19,7 @@ namespace Assets.Scripts.Services
             switch (animation)
             {
                 case AttackAnimation _:
-                    unitAnimator.SetTrigger(Constants.UnitAttackTrigger);
+                    unitAnimator.SetTrigger(Constants.UNIT_ATTACK_TRIGGER);
                     break;
                 case MoveAnimation moveAnimation:
                     if (moveAnimation.Direction.HasValue)
@@ -36,10 +36,10 @@ namespace Assets.Scripts.Services
                         }
                     }
 
-                    unitAnimator.SetBool(Constants.IsUnitMoving, moveAnimation.IsActive);
+                    unitAnimator.SetBool(Constants.IS_UNIT_MOVING, moveAnimation.IsActive);
                     break;
                 case DeadAnimation _:
-                    unitAnimator.SetTrigger(Constants.UnitDeadTrigger);
+                    unitAnimator.SetTrigger(Constants.UNIT_DEAD_TRIGGER);
                     break;
                 case IdleAnimation _:
                 default:

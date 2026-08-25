@@ -15,7 +15,7 @@ namespace Assets.Scripts.Services
 
     public class GridService : IGridService
     {
-        [Inject(Id = Constants.Grid)]
+        [Inject(Id = Constants.GRID)]
         private readonly Grid _grid;
 
         public Vector3Int ToGridCordinates(Unit unit)

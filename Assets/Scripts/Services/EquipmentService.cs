@@ -29,13 +29,19 @@ namespace Assets.Scripts.Services
         private const string CELL_IMAGE_CHILDREN_NAME = "Image";
         private const string CHARECTER_PANEL_NAME = "CharacterPanel";
         private const string CHARECTER_PAG_PANEL_NAME = "BagPanel";
-        private const string BACKGROUND_IMAGE_NAME = "BackgroundImage";
+        private const string BACKGROUND_NAME = "Background";
         private const string CHARECTER_CHOOSE_PANEL_NAME = "CharecterChoosePanel";
         private const string CHARACTER_NAME_PANEL_NAME = "CharacterNamePanel";
         private const string RUNE_PANEL_NAME = "RunePanel";
+        private const string LEFT_TOP_NAME = "LeftTop";
+        private const string RIGHT_TOP_NAME = "RightTop";
+        private const string LEFT_BOTTOM_NAME = "LeftBottom";
+        private const string RIGHT_BOTTOM_NAME = "RightBottom";
+        private const string BODY_NAME = "Body";
+        private const string HEAD_NAME = "Head";
 
-        private static readonly Color _cellActiveBackGroundColor = new(161 / 255f, 92 / 255f, 42 / 255f, 128 / 255f);
-        private static readonly Color _cellUnActiveBackgroundColor = new(161 / 255f, 92 / 255f, 42 / 255f, 255 / 255f);
+        private static readonly Color _cellActiveBackGroundColor = new(128f / 255f, 128f / 255f, 128f / 255f, 128f / 255f);
+        private static readonly Color _cellUnActiveBackgroundColor = new(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
 
         private readonly IUnitManager _unitManager;
 
@@ -47,11 +53,15 @@ namespace Assets.Scripts.Services
 
         private readonly GameObject _equipmentPanel;
 
+        private readonly GameObject _equipmentPanelBody;
+
         private readonly GameObject _inventoryGrid;
 
         private readonly GameObject _charecterPanel;
 
         private readonly GameObject _charecterBagPanel;
+
+        private readonly GameObject _charecterBody;
 
         private readonly GameObject _charecterChoosePanel;
 
@@ -68,7 +78,7 @@ namespace Assets.Scripts.Services
         public static EquipmentService Instance { get; private set; }
 
         public EquipmentService(
-            [Inject(Id = Constants.EquipemntPanel)] GameObject equipemntPanel,
+            [Inject(Id = Constants.EQUIPMENT_SCREEN)] GameObject equipemntPanel,
             [Inject] IUiService uiService,
             [Inject] IUnitManager unitManager,
             [Inject] IGameGlobalStateManager gameGlobalStateManager,
@@ -76,20 +86,41 @@ namespace Assets.Scripts.Services
         )
         {
             _equipmentPanel = equipemntPanel;
-
-            var equipmentPanelTransform = _equipmentPanel.transform;
-
-            _inventoryGrid = equipmentPanelTransform.Find(EQUIPMENT_ITEMS_PANEL_NAME).Find(INVENTORY_GRID_NAME).gameObject;
-            _charecterPanel = equipmentPanelTransform.Find(CHARECTER_PANEL_NAME).gameObject;
-            _charecterBagPanel = _charecterPanel.transform.Find(CHARECTER_PAG_PANEL_NAME).gameObject;
-            _charecterChoosePanel = equipmentPanelTransform.Find(CHARECTER_CHOOSE_PANEL_NAME).gameObject;
-            _charecterNamePanelText = _charecterPanel.transform.Find(CHARACTER_NAME_PANEL_NAME).gameObject.GetComponentInChildren<TextMeshProUGUI>();
+            _equipmentPanelBody = equipemntPanel
+                .transform
+                .Find(BODY_NAME)
+                .gameObject;
+            var equipmentPanelTransform = _equipmentPanelBody.transform;
+            _inventoryGrid = equipmentPanelTransform
+                .Find(EQUIPMENT_ITEMS_PANEL_NAME)
+                .Find(INVENTORY_GRID_NAME)
+                .gameObject;
+            _charecterPanel = equipmentPanelTransform
+                .Find(CHARECTER_PANEL_NAME)
+                .Find(BODY_NAME)
+                .gameObject;
+            _charecterBagPanel = _charecterPanel
+                .transform
+                .Find(CHARECTER_PAG_PANEL_NAME)
+                .gameObject;
+            _charecterChoosePanel = _charecterPanel
+                .transform
+                .Find(CHARECTER_CHOOSE_PANEL_NAME)
+                .gameObject;
+            _charecterNamePanelText = _charecterPanel
+                .transform
+                .Find(HEAD_NAME)
+                .Find(CHARACTER_NAME_PANEL_NAME)
+                .gameObject
+                .GetComponentInChildren<TextMeshProUGUI>();
+            _charecterBody = _charecterPanel
+                .transform
+                .Find(BODY_NAME)
+                .gameObject;
             _addresableResourceManager = addresableResourceManager;
-
             _unitManager = unitManager;
             _uiService = uiService;
             _gameGlobalStateManager = gameGlobalStateManager;
-
             Instance = this;
         }
 
@@ -153,7 +184,7 @@ namespace Assets.Scripts.Services
                     var isBagCell = type == CharacterEquipmentSlotType.Bag;
                     var charecterCell = Object.Instantiate(
                         original: _addresableResourceManager.GetPrefab(PrefabsAdressableResourceNames.EQUIPMENT_SLOT_PREFAB),
-                        parent: isBagCell ? _charecterBagPanel.transform : _charecterPanel.transform
+                        parent: isBagCell ? _charecterBagPanel.transform : _charecterBody.transform
                     );
 
                     var slotInfo = charecterCell.AddComponent<SlotInfo>();
@@ -306,9 +337,7 @@ namespace Assets.Scripts.Services
             var backgroundColor = isSetActive ? _cellActiveBackGroundColor : _cellUnActiveBackgroundColor;
             foreach (var cell in hilightCells)
             {
-                var backGroundImageGO = cell.transform.Find(BACKGROUND_IMAGE_NAME);
-                var backGroundImage = backGroundImageGO.GetComponent<Image>();
-                backGroundImage.color = backgroundColor;
+                CellSetBackgroundColor(cell, backgroundColor);
             }
 
             if (slotType == CharacterEquipmentSlotType.Rune)
@@ -321,9 +350,7 @@ namespace Assets.Scripts.Services
                     }
 
                     var cell = _sharedCells.FirstOrDefault(x => x.GetComponent<SlotInfo>().Order == order) ?? throw new System.Exception();
-                    var backGroundImageGO = cell.transform.Find(BACKGROUND_IMAGE_NAME);
-                    var backGroundImage = backGroundImageGO.GetComponent<Image>();
-                    backGroundImage.color = backgroundColor;
+                    CellSetBackgroundColor(cell, backgroundColor);
                 }
             }
         }
@@ -704,6 +731,21 @@ namespace Assets.Scripts.Services
             {
                 Object.Destroy(child.gameObject);
             }
+        }
+
+        private void CellSetBackgroundColor(GameObject cell, Color color)
+        {
+            var backGroundImageGO = cell.transform.Find(BACKGROUND_NAME);
+
+            var lefttop = backGroundImageGO.transform.Find(LEFT_TOP_NAME);
+            var rightTop = backGroundImageGO.transform.Find(RIGHT_TOP_NAME);
+            var leftBottom = backGroundImageGO.transform.Find(LEFT_BOTTOM_NAME);
+            var rightBottom = backGroundImageGO.transform.Find(RIGHT_BOTTOM_NAME);
+
+            lefttop.GetComponent<Image>().color = color;
+            rightTop.GetComponent<Image>().color = color;
+            leftBottom.GetComponent<Image>().color = color;
+            rightBottom.GetComponent<Image>().color = color;
         }
     }
 }

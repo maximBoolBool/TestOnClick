@@ -59,7 +59,7 @@ namespace Assets.Scripts.Managers.UnitManager
 
     public partial class UnitManager : IUnitManager
     {
-        #region Manager States
+        #region States
 
         private readonly List<Unit> _units = new();
         private List<(ISlotEquipment Equipment, int Order)> _sharedEquipments = new();
@@ -87,6 +87,9 @@ namespace Assets.Scripts.Managers.UnitManager
 
         [Inject]
         private readonly IAddresableResourceManager _addresableResourceManager;
+
+        [Inject(Id = Constants.UNITS_GAME_OBJECT_NAME)]
+        private readonly GameObject _unitsGameObject;
 
         public static UnitManager Instance {  get; private set; }
 
@@ -285,6 +288,7 @@ namespace Assets.Scripts.Managers.UnitManager
                     _unitSessionIds.TryAdd(unitItem.UnitSessionId, unitLayer);
 
                     _units.Add(unitItem);
+                    unitItem.transform.SetParent(_unitsGameObject.transform);
                 }
 
                 i += 2;
@@ -308,7 +312,6 @@ namespace Assets.Scripts.Managers.UnitManager
 
                 var unitLayer = _gridLayersManager.GetCordinateRoomLayerType(generatePosition);
                 _unitSessionIds.TryAdd(unitItem.UnitSessionId, unitLayer);
-
                 unitItem.SetCharacterictics(unit);
                 var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
                 animator.runtimeAnimatorController = isMonk
@@ -328,6 +331,7 @@ namespace Assets.Scripts.Managers.UnitManager
                 unitItem.SwitchUnitVisual(UnitVisualType.Animation);
 
                 _units.Add(unitItem);
+                unitItem.transform.SetParent(_unitsGameObject.transform);
                 i++;
             }
         }

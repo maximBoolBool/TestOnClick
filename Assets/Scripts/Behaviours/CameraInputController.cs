@@ -18,7 +18,7 @@ namespace Assets.Scripts.Behaviours
         [Inject]
         private readonly ICameraService _cameraService;
 
-        [Inject(Id = Constants.Camera)]
+        [Inject(Id = Constants.CAMERA)]
         private readonly Camera _mainCamera;
 
         private float2 _targetCameraPosition;

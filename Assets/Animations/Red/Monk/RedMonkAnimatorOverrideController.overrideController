@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RedMonkAnimatorOverrideContoller
+  m_Name: RedMonkAnimatorOverrideController
   m_Controller: {fileID: 9100000, guid: 41e3cba21ac04aa48a5c752c7b6c77f9, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 1c0f078e2f58f2441830735568b1fdbe, type: 2}

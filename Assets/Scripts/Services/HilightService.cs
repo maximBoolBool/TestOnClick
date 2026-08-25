@@ -25,7 +25,7 @@ namespace Assets.Scripts.Services
 
     public class HiligthService : IHilightService
     {
-        [Inject(Id = Constants.HighlightTilemap)]
+        [Inject(Id = Constants.HIGHLIGHT_TILEMAP)]
         private readonly Tilemap _highlightTilemap;
 
         [Inject]

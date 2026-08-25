@@ -22,10 +22,10 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IGridLayersManager _gridLayersManager;
        
-        [Inject(Id = Constants.HighlightTilemap)]
+        [Inject(Id = Constants.HIGHLIGHT_TILEMAP)]
         private readonly Tilemap _highlightTilemap;
 
-        [Inject(Id = Constants.Grid)]
+        [Inject(Id = Constants.GRID)]
         private readonly Grid _grid;
 
         [Inject]

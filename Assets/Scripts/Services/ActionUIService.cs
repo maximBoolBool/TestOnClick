@@ -22,7 +22,7 @@ namespace Assets.Scripts.Services
 
     public class ActionUIService : IActionUIService
     {
-        [Inject(Id = Constants.ActionButtonPanel)]
+        [Inject(Id = Constants.ACTION_BUTTON_PANEL)]
         private readonly GameObject _actionButtonPanel;
 
         [Inject]

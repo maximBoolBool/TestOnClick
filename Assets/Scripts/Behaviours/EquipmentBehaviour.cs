@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers;
 using Assets.Scripts.Services;
 using UnityEngine;
 using Zenject;
@@ -5,16 +6,17 @@ using Zenject;
 namespace Assets.Scripts.Behaviours
 {
     public class EquipmentBehaviour : MonoBehaviour
-{
-    private bool isPannelShow = false;
+    {        
+        [Inject]
+        private readonly IEquipmentService _equipmentService;
 
-    [Inject]
-    private readonly IEquipmentService _equipmentService;
+        [Inject]
+        private readonly IEquipmentUiManager _equipmentUiManager;
 
-    public void OnEquipmentButtonCick()
-    {
-        isPannelShow = !isPannelShow;
-        _equipmentService.SetEquipemtPanelActive(isPannelShow);
-    }
+        public void OnEquipmentButtonCick()
+        {
+            _equipmentUiManager.SetEquipmentPanelActive(!_equipmentUiManager.IsEquipmentPanelActive);
+            _equipmentService.SetEquipemtPanelActive(_equipmentUiManager.IsEquipmentPanelActive);
+        }
     }
 }

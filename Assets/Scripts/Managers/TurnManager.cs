@@ -29,7 +29,7 @@ namespace Assets.Scripts.Managers
         private UniTaskCompletionSource _turnCompletionSource;
         private bool _isGameEnded = false;
 
-        [Inject(Id = Constants.TurnCountText)]
+        [Inject(Id = Constants.TURN_COUNT_TEXT)]
         private readonly TextMeshProUGUI _moveCounterText;
 
         [Inject] 
@@ -56,9 +56,16 @@ namespace Assets.Scripts.Managers
         private readonly IUnitQueueUiService _unitQueueUiService;
         [Inject]
         private readonly IAddresableResourceManager _addresableResourceManager;
+        [Inject]
+        private readonly ILocationService _locationService;
 
         public async UniTask SceneStart()
         {
+            if(_locationService.NeedGenerateLocationInfo())
+            {
+                _locationService.WriteLocationInfo();
+            }
+
             await _roomService.TrySwitchNextRoom(false);
 
             await _addresableResourceManager.LoadGameResourceAsync();
@@ -68,6 +75,7 @@ namespace Assets.Scripts.Managers
             _units = _unitManager.Units;
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
+            _unitManager.SetStartEquipment();
 
             _uiAnimationService.ShakeCamera();
             _uiAnimationService.MoveVeils();

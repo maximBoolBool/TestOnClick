@@ -7,10 +7,8 @@ namespace Assets.UnitsCharacteristics
     {
         public int HealthPoints { get; set; }
         public int ActiveActionPoints { get; set; }
-
         public int ReactionActionPoints { get; set; }
         public int Agility { get; set; }
-
         public int MeleeSkill { get; set; }
         public int DefendSkill { get; set; }
         public SideType Side { get; set; }

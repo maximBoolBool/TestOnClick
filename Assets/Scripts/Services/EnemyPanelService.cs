@@ -25,7 +25,7 @@ public class EnemyPanelService : IEnemyPanelService
     private readonly Slider _actionPointsSlider;
     private readonly TextMeshProUGUI _nameText;
 
-    public EnemyPanelService([Inject(Id = Constants.EnemyInfoPanel)] GameObject enemyPanel)
+    public EnemyPanelService([Inject(Id = Constants.ENEMY_INFO_PANEL)] GameObject enemyPanel)
     {
         _enemyPanel = enemyPanel;
 

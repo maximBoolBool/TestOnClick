@@ -31,7 +31,7 @@ namespace Assets.Scripts.Services
         [Inject]
         private readonly IUnitManager _unitManager;
 
-        [Inject(Id = Constants.HighlightTilemap)]
+        [Inject(Id = Constants.HIGHLIGHT_TILEMAP)]
         private readonly Tilemap _highlightTilemap;
 
         [Inject]

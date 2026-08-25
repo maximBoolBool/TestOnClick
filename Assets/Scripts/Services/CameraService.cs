@@ -3,6 +3,7 @@ using UnityEngine;
 using Zenject;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.Services
 {
@@ -30,8 +31,12 @@ namespace Assets.Scripts.Services
         private const float ZOOM_DURATION = 0.08f;
         private const float CAMERA_MOVE_DURATION = 2f;
 
-        [Inject(Id = Constants.Camera)]
+        [Inject(Id = Constants.CAMERA)]
         private readonly Camera _camera;
+
+        [Inject]
+        private readonly IEquipmentUiManager _equipmentUiManager;
+
         private Tweener _moveTween;
         private Tweener _zoomTween;
         private float _targetZoom;
@@ -41,6 +46,11 @@ namespace Assets.Scripts.Services
 
         public void SetCameraCordinates(Vector2 cordinates)
         {
+            if (_equipmentUiManager.IsEquipmentPanelActive)
+            {
+                return;
+            }
+
             if (_moveTween != null && _moveTween.IsActive())
             {
                 _moveTween.Kill();
@@ -52,6 +62,11 @@ namespace Assets.Scripts.Services
 
         public void SetCameraCordinates(float2 cordinates)
         {
+            if (_equipmentUiManager.IsEquipmentPanelActive)
+            {
+                return;
+            }
+
             if (_moveTween != null && _moveTween.IsActive())
             {
                 _moveTween.Kill();
@@ -63,6 +78,11 @@ namespace Assets.Scripts.Services
 
         public async UniTask MoveCameraAsync(float2 cordinates)
         {
+            if (_equipmentUiManager.IsEquipmentPanelActive)
+            {
+                return;
+            }
+
             var normalizedCordinates = GetNormalizedValue(cordinates.x, cordinates.y);
             var targetPosition = new Vector3(normalizedCordinates.x, normalizedCordinates.y, _camera.transform.position.z);
             var currentPosition = _camera.transform.position;
@@ -83,6 +103,11 @@ namespace Assets.Scripts.Services
 
         public async UniTask MoveCameraAsync(Vector2 vector)
         {
+            if (_equipmentUiManager.IsEquipmentPanelActive)
+            {
+                return;
+            }
+
             float2 cordinates = new()
             {
                 x = vector.x,
@@ -94,6 +119,11 @@ namespace Assets.Scripts.Services
 
         public void ZoomCamera(float zoomDelta)
         {
+            if(_equipmentUiManager.IsEquipmentPanelActive)
+            {
+                return;
+            }
+
             if (!_isTargetZoomInitialized)
             {
                 _targetZoom = _camera.orthographicSize;

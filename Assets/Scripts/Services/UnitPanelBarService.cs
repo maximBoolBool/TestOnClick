@@ -20,10 +20,10 @@ namespace Assets.Scripts.Services
         private readonly TextMeshProUGUI _actionPointsBarText;
 
         public UnitPanelBarService(
-            [Inject(Id = Constants.HealthBarSlider)] Slider healthBarSlider,
-            [Inject(Id = Constants.HealthBarText)] TextMeshProUGUI healthBarText,
-            [Inject(Id = Constants.ActionPointsBarSlider)] Slider actionPointsBarSlider,
-            [Inject(Id = Constants.ActionPointsBarText)] TextMeshProUGUI actionPointsBarText
+            [Inject(Id = Constants.HEALTH_BAR_SLIDER)] Slider healthBarSlider,
+            [Inject(Id = Constants.HEALTH_BAR_TEXT)] TextMeshProUGUI healthBarText,
+            [Inject(Id = Constants.ACTION_POINTS_BAR_SLIDER)] Slider actionPointsBarSlider,
+            [Inject(Id = Constants.ACTION_POINTS_BAR_TEXT)] TextMeshProUGUI actionPointsBarText
         )
         {
             _healthBarSlider = healthBarSlider;

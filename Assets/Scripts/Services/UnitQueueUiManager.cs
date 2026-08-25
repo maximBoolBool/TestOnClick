@@ -33,7 +33,7 @@ namespace Assets.Scripts.Services
         private readonly IUnitManager _unitManager;
         [Inject]
         private readonly IAddresableResourceManager _addresableResourceManager;
-        [Inject(Id = Constants.UnitQueuePanel)]
+        [Inject(Id = Constants.UNIT_QUEUE_PANEL)]
         private readonly GameObject _queue;
 
         private Dictionary<string, Sprite> _unitIconSprites = new();

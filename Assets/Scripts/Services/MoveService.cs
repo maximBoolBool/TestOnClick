@@ -14,7 +14,7 @@ namespace Assets.Scripts.Services
     {
         public float moveSpeed = 3f;
 
-        [Inject(Id = Constants.Grid)]
+        [Inject(Id = Constants.GRID)]
         private readonly Grid _grid;
 
         [Inject]

@@ -70,16 +70,25 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject _unitQueuePanel;
 
+        [SerializeField]
+        private GameObject _unitsGameObject;
+
         public override void InstallBindings()
         {
             Container.Bind<GameObject>()
-                .WithId(Constants.UnitQueuePanel)
+                .WithId(Constants.UNITS_GAME_OBJECT_NAME)
+                .FromInstance(_unitsGameObject)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.UNIT_QUEUE_PANEL)
                 .FromInstance(_unitQueuePanel)
                 .AsCached()
                 .NonLazy();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.UnitInformationPanelIcon)
+                .WithId(Constants.UNIT_INFORMATION_PANEL_ICON)
                 .FromInstance(_unitInfoPanelIcon)
                 .AsCached()
                 .NonLazy();
@@ -90,31 +99,31 @@ namespace Assets.Scripts
                 .NonLazy();
 
             Container.Bind<Grid>()
-                .WithId(Constants.Grid)
+                .WithId(Constants.GRID)
                 .FromInstance(_grid)
                 .AsCached()
                 .NonLazy();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.TopVeilCloudPart)
+                .WithId(Constants.TOP_VEIL_CLOUD_PART)
                 .FromInstance(_topCloudVeil)
                 .AsCached()
                 .NonLazy();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.BottomVeilCloudPart)
+                .WithId(Constants.BOTTOM_VEIL_CLOUD_PART)
                 .FromInstance(_bottomCloudVeil)
                 .AsCached()
                 .NonLazy();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.LeftVeilCloudPart)
+                .WithId(Constants.LEFT_VEIL_CLOUD_PART)
                 .FromInstance(_leftCloudVeil)
                 .AsCached()
                 .NonLazy();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.RightVeilCloudPart)
+                .WithId(Constants.RIGHT_VEIL_CLOUD_PART)
                 .FromInstance(_rightCloudVeil)
                 .AsCached()
                 .NonLazy();
@@ -133,6 +142,11 @@ namespace Assets.Scripts
 
             Container.BindInterfacesAndSelfTo<ProgressDb>()
                 .FromMethod(CreateProgressDb)
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IEquipmentUiManager>()
+                .To<EquipmentUiManager>()
                 .AsSingle()
                 .NonLazy();
 
@@ -162,7 +176,7 @@ namespace Assets.Scripts
                 .NonLazy();
 
             Container.Bind<Camera>()
-                .WithId(Constants.Camera)
+                .WithId(Constants.CAMERA)
                 .FromInstance(_camera)
                 .AsCached();
 
@@ -172,47 +186,47 @@ namespace Assets.Scripts
                 .NonLazy();
             
             Container.Bind<GameObject>()
-                .WithId(Constants.EquipemntPanel)
+                .WithId(Constants.EQUIPMENT_SCREEN)
                 .FromInstance(_equipmentPanel)
                 .AsCached();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.EnemyInfoPanel)
+                .WithId(Constants.ENEMY_INFO_PANEL)
                 .FromInstance(_enemyPanelInfo)
                 .AsCached();
 
             Container.Bind<TextMeshProUGUI>()
-                .WithId(Constants.TurnCountText)
+                .WithId(Constants.TURN_COUNT_TEXT)
                 .FromInstance(_moveCounterText)
                 .AsCached();
 
             Container.Bind<Slider>()
-                .WithId(Constants.HealthBarSlider)
+                .WithId(Constants.HEALTH_BAR_SLIDER)
                 .FromInstance(healthBarSlider)
                 .AsCached();
 
             Container.Bind<Slider>()
-                .WithId(Constants.ActionPointsBarSlider)
+                .WithId(Constants.ACTION_POINTS_BAR_SLIDER)
                 .FromInstance(actionPointsBarSlider)
                 .AsCached();
 
             Container.Bind<TextMeshProUGUI>()
-                .WithId(Constants.ActionPointsBarText)
+                .WithId(Constants.ACTION_POINTS_BAR_TEXT)
                 .FromInstance(_actionPointsBarText)
                 .AsCached();
 
             Container.Bind<Tilemap>()
-                .WithId(Constants.HighlightTilemap)
+                .WithId(Constants.HIGHLIGHT_TILEMAP)
                 .FromInstance(_highlighTilemap)
                 .AsCached();
 
             Container.Bind<GameObject>()
-                .WithId(Constants.ActionButtonPanel)
+                .WithId(Constants.ACTION_BUTTON_PANEL)
                 .FromInstance(_actionButtonPanel)
                 .AsCached();
 
             Container.Bind<TextMeshProUGUI>()
-                .WithId(Constants.HealthBarText)
+                .WithId(Constants.HEALTH_BAR_TEXT)
                 .FromInstance(_healthBarText)
                 .AsCached();
 

@@ -68,7 +68,7 @@ namespace Assets.Scripts.Services
         public bool NeedGenerateLocationInfo()
         {
             var  progressData = _progressDb.ProgressData
-                .Where( x => x.Type == Db.Enums.ProgressDataType.CurrentLocation )
+                .Where(x => x.Type == Db.Enums.ProgressDataType.CurrentLocation)
                 .ToArray();
 
             if ( progressData.Any(x => x.Type == Db.Enums.ProgressDataType.CurrentLocation))

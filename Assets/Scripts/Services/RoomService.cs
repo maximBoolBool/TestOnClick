@@ -31,7 +31,7 @@ namespace Assets.Scripts.Services
                 .Where(x => x.Type == ProgressDataType.OrderedRoomIds || x.Type == ProgressDataType.CurrentRoomOrder)
                 .ToArray();
 
-            var roomIds = JsonConvert.DeserializeObject<int[]>(progressData.First(x => x.Type == ProgressDataType.OrderedRoomIds).Value);
+            var orderedRoomIds = JsonConvert.DeserializeObject<int[]>(progressData.First(x => x.Type == ProgressDataType.OrderedRoomIds).Value);
             var currentRoomOrderData = progressData.FirstOrDefault(x => x.Type == ProgressDataType.CurrentRoomOrder);
 
             var newRoomOrder = currentRoomOrderData != null 
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Services
                     : int.Parse(currentRoomOrderData.Value)
                 : 0;
 
-            if (newRoomOrder > roomIds.Length - 1)
+            if (newRoomOrder > orderedRoomIds.Length - 1)
             {
                 return false;
             }
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Services
                 }
             });
 
-            var currentRoomId = roomIds[newRoomOrder];
+            var currentRoomId = orderedRoomIds[newRoomOrder];
  
             //PRT-9
             await _roomLoaderService.NewLoadRoomAsync("Room_1_1");

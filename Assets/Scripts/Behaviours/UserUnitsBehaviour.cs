@@ -17,7 +17,7 @@ namespace Assets.Scripts.Behaviours
 {
     public class UserUnitsBehaviour : MonoBehaviour
     {
-        [Inject(Id = Constants.HighlightTilemap)]
+        [Inject(Id = Constants.HIGHLIGHT_TILEMAP)]
         private readonly Tilemap _highlightTilemap;
 
         [Inject]

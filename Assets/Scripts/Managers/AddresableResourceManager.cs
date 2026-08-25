@@ -58,10 +58,10 @@ namespace Assets.Scripts.Managers
         #endregion
 
         #region Handles (For Memory Management)
-        private AsyncOperationHandle<IList<TileBase>> _tilesHandle;
-        private AsyncOperationHandle<IList<Sprite>> _unitIconsHandle;
-        private AsyncOperationHandle<IList<AnimatorOverrideController>> _animControllersHandle;
-        private AsyncOperationHandle<IList<GameObject>> _prefabsHandle;
+        private readonly List<AsyncOperationHandle> _tilesHandles = new();
+        private readonly List<AsyncOperationHandle> _unitIconsHandles = new();
+        private readonly List<AsyncOperationHandle> _animControllersHandles = new();
+        private readonly List<AsyncOperationHandle> _prefabsHandles = new();
         #endregion
 
         #region Public Methods
@@ -80,15 +80,17 @@ namespace Assets.Scripts.Managers
 
         public async UniTask FreeGameResourceAsync()
         {
-            if (_tilesHandle.IsValid())
+            foreach (var handle in _tilesHandles)
             {
-                Addressables.Release(_tilesHandle);
+                if (handle.IsValid()) Addressables.Release(handle);
             }
+            _tilesHandles.Clear();
 
-            if (_prefabsHandle.IsValid())
+            foreach (var handle in _prefabsHandles)
             {
-                Addressables.Release(_prefabsHandle);
+                if (handle.IsValid()) Addressables.Release(handle);
             }
+            _prefabsHandles.Clear();
 
             _prefabs.Clear();
             _tiles.Clear();
@@ -96,15 +98,17 @@ namespace Assets.Scripts.Managers
 
         public async UniTask FreeLevelResourceAsync()
         {
-            if (_unitIconsHandle.IsValid())
+            foreach (var handle in _unitIconsHandles)
             {
-                Addressables.Release(_unitIconsHandle);
+                if (handle.IsValid()) Addressables.Release(handle);
             }
+            _unitIconsHandles.Clear();
 
-            if (_animControllersHandle.IsValid())
+            foreach (var handle in _animControllersHandles)
             {
-                Addressables.Release(_animControllersHandle);
+                if (handle.IsValid()) Addressables.Release(handle);
             }
+            _animControllersHandles.Clear();
 
             _unitIcons.Clear();
             _overrideAnimationControllers.Clear();
@@ -127,8 +131,6 @@ namespace Assets.Scripts.Managers
 
         public GameObject GetPrefab(string key)
         {
-            var z = key;
-
             return _prefabs.GetValueOrDefault(key);
         }
 
@@ -145,12 +147,21 @@ namespace Assets.Scripts.Managers
                 TilesAdressableResourceNames.SHADOW_TILE_NAME
             };
 
-            _tilesHandle = Addressables.LoadAssetsAsync<TileBase>(tileNames, null, Addressables.MergeMode.Union);
-            var tiles = await _tilesHandle.Task;
+            var tasks = tileNames.Select(name =>
+            {
+                var handle = Addressables.LoadAssetAsync<TileBase>(name);
+                _tilesHandles.Add(handle);
+                return handle.ToUniTask();
+            });
+
+            var tiles = await UniTask.WhenAll(tasks);
 
             foreach (var tile in tiles)
             {
-                _tiles[tile.name] = tile;
+                if (tile != null)
+                {
+                    _tiles[tile.name] = tile;
+                }
             }
         }
 
@@ -163,12 +174,21 @@ namespace Assets.Scripts.Managers
 
             if (iconNames.Length == 0) return;
 
-            _unitIconsHandle = Addressables.LoadAssetsAsync<Sprite>(iconNames, null, Addressables.MergeMode.Union);
-            var sprites = await _unitIconsHandle.Task;
+            var tasks = iconNames.Select(name =>
+            {
+                var handle = Addressables.LoadAssetAsync<Sprite>(name);
+                _unitIconsHandles.Add(handle);
+                return handle.ToUniTask();
+            });
+
+            var sprites = await UniTask.WhenAll(tasks);
 
             foreach (var sprite in sprites)
             {
-                _unitIcons[sprite.texture.name] = sprite;
+                if (sprite != null)
+                {
+                    _unitIcons[sprite.texture.name] = sprite;
+                }
             }
         }
 
@@ -181,12 +201,21 @@ namespace Assets.Scripts.Managers
 
             if (overrideControllerNames.Length == 0) return;
 
-            _animControllersHandle = Addressables.LoadAssetsAsync<AnimatorOverrideController>(overrideControllerNames, null, Addressables.MergeMode.Union);
-            var overrideControllers = await _animControllersHandle.Task;
+            var tasks = overrideControllerNames.Select(name =>
+            {
+                var handle = Addressables.LoadAssetAsync<AnimatorOverrideController>(name);
+                _animControllersHandles.Add(handle);
+                return handle.ToUniTask();
+            });
+
+            var overrideControllers = await UniTask.WhenAll(tasks);
 
             foreach (var controller in overrideControllers)
             {
-                _overrideAnimationControllers[controller.name] = controller;
+                if (controller != null)
+                {
+                    _overrideAnimationControllers[controller.name] = controller;
+                }
             }
         }
 
@@ -199,12 +228,21 @@ namespace Assets.Scripts.Managers
                 PrefabsAdressableResourceNames.UNIT_QUEUE_ITEM_PREFAB
             };
 
-            _prefabsHandle = Addressables.LoadAssetsAsync<GameObject>(prefabNames, null, Addressables.MergeMode.Union);
-            var prefabs = await _prefabsHandle.Task;
+            var tasks = prefabNames.Select(name =>
+            {
+                var handle = Addressables.LoadAssetAsync<GameObject>(name);
+                _prefabsHandles.Add(handle);
+                return handle.ToUniTask();
+            });
+
+            var prefabs = await UniTask.WhenAll(tasks);
 
             foreach (var prefab in prefabs)
             {
-                _prefabs[prefab.name] = prefab;
+                if (prefab != null)
+                {
+                    _prefabs[prefab.name] = prefab;
+                }
             }
         }
 
