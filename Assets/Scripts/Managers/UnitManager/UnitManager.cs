@@ -266,6 +266,7 @@ namespace Assets.Scripts.Managers.UnitManager
                     var generatePosition = _gridLayersManager.GetRoomCordinateFromGridCordinate(new Vector3Int((i + j) * 3, (i + j) * 3, 0));
                     var unitItem = _unitFactory.Create();
                     unitItem.UnitSessionId = Guid.NewGuid();
+                    unitItem.gameObject.name = unitItem.UnitSessionId.ToString();
                     unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
                     unitItem.SetCharacterictics(unit);
                     var animator = unitItem.GetUnitAnimator().GetComponent<Animator>();
@@ -308,6 +309,7 @@ namespace Assets.Scripts.Managers.UnitManager
 
                 var unitItem = _unitFactory.Create();
                 unitItem.UnitSessionId = Guid.NewGuid();
+                unitItem.gameObject.name = unitItem.UnitSessionId.ToString();
                 unitItem.transform.position = _gridService.FromGridCordinates(generatePosition);
 
                 var unitLayer = _gridLayersManager.GetCordinateRoomLayerType(generatePosition);
