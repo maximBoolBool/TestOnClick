@@ -71,13 +71,22 @@ namespace Assets.Scripts
         private GameObject _unitQueuePanel;
 
         [SerializeField]
-        private GameObject _unitsGameObject;
+        private GameObject _unitsGO;
+
+        [SerializeField]
+        private GameObject _interactiveItemsGO;
 
         public override void InstallBindings()
         {
             Container.Bind<GameObject>()
-                .WithId(Constants.UNITS_GAME_OBJECT_NAME)
-                .FromInstance(_unitsGameObject)
+                .WithId(Constants.INTERACTIVE_ITEMS_GO_NAME)
+                .FromInstance(_interactiveItemsGO)
+                .AsCached()
+                .NonLazy();
+
+            Container.Bind<GameObject>()
+                .WithId(Constants.UNITS_GO_NAME)
+                .FromInstance(_unitsGO)
                 .AsCached()
                 .NonLazy();
 

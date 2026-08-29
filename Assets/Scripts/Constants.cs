@@ -16,7 +16,8 @@ namespace Assets.Scripts
         public const string UNIT_QUEUE_PANEL = "UnitQueuePanel";
         public const string ACTION_POINTS_BAR_SLIDER = "ActionPointsBarSlider";
         public const string ACTION_POINTS_BAR_TEXT = "ActionPointsBarText";
-        public const string UNITS_GAME_OBJECT_NAME = "UnitsGameObject";
+        public const string UNITS_GO_NAME = "UnitsGameObject";
+        public const string INTERACTIVE_ITEMS_GO_NAME = "InteractiveItemsGameObject";
         #endregion
 
         #region Cloud Veil Constants

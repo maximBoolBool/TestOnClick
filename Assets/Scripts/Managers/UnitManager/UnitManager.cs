@@ -88,7 +88,7 @@ namespace Assets.Scripts.Managers.UnitManager
         [Inject]
         private readonly IAddresableResourceManager _addresableResourceManager;
 
-        [Inject(Id = Constants.UNITS_GAME_OBJECT_NAME)]
+        [Inject(Id = Constants.UNITS_GO_NAME)]
         private readonly GameObject _unitsGameObject;
 
         public static UnitManager Instance {  get; private set; }

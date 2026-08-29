@@ -17,6 +17,7 @@ namespace Assets.Scripts.Managers
         public const string SHADOW_TILE_NAME = "ShadowTile";
         public const string HIGHLIGHT_TILE_NAME = "HighlightTile";
         public const string HOVER_TILE_NAME = "HoverTile";
+        public const string WRONG_TILE_NAME = "WrongTile";
     }
 
     public static class PrefabsAdressableResourceNames

@@ -4,6 +4,8 @@ namespace Assets.Scripts.Models.Actions
 {
     public abstract class BaseAction
     {
+        public int Range { get; set; }
+
         public int PointCost { get; set; }
 
         public string Name { get; set; }
@@ -34,8 +36,6 @@ namespace Assets.Scripts.Models.Actions
 
     public class AreaTargetAction: BaseAction
     {
-        public int Range { get; set; }
-
         public int Area { get; set; }
 
         public override ActionTargetType Type => ActionTargetType.AreaPeack;
