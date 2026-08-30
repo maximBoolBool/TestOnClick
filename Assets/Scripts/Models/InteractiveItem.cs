@@ -2,5 +2,5 @@
 
 namespace Assets.Scripts.Models
 {
-    public class EnvironmentItem : MonoBehaviour {}
+    public class InteractiveItem : MonoBehaviour {}
 }

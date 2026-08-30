@@ -3,6 +3,7 @@ using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.UnitManager;
+using Assets.Scripts.Models;
 using Assets.Scripts.Services;
 using Assets.Scripts.Services.BotStrategy;
 using System.IO;
@@ -18,6 +19,9 @@ namespace Assets.Scripts
     {
         [SerializeField] 
         private Unit _unitPrefab;
+
+        [SerializeField]
+        private InteractiveItem _interactiveItemPrefab;
 
         [SerializeField]
         private Tilemap _highlighTilemap;
@@ -238,6 +242,9 @@ namespace Assets.Scripts
                 .WithId(Constants.HEALTH_BAR_TEXT)
                 .FromInstance(_healthBarText)
                 .AsCached();
+
+            Container.BindFactory<InteractiveItem, InteractiveItemFactory>()
+                     .FromComponentInNewPrefab(_interactiveItemPrefab.gameObject);
 
             Container.BindFactory<Unit, UnitFactory>()
                      .FromComponentInNewPrefab(_unitPrefab.gameObject);

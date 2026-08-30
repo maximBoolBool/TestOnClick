@@ -5714,8 +5714,8 @@ MonoBehaviour:
   _grid: {fileID: 960274618}
   _unitInfoPanelIcon: {fileID: 858159669}
   _unitQueuePanel: {fileID: 20971851}
-  _unitsGameObject: {fileID: 1104723661}
-  _interactiveItemsGameObject: {fileID: 657983669}
+  _unitsGO: {fileID: 1104723661}
+  _interactiveItemsGO: {fileID: 657983669}
 --- !u!1 &924341031
 GameObject:
   m_ObjectHideFlags: 0
