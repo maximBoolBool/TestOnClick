@@ -5697,6 +5697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoggerMonoInstaller
   _unitPrefab: {fileID: 5306867330639188065, guid: 607478652762c0f4fb998415a0800947, type: 3}
+  _interactiveItemPrefab: {fileID: 6177730504363971230, guid: 572987eb7939a7042b98f2ec3d4ff63b, type: 3}
   _highlighTilemap: {fileID: 1121810541}
   _healthBarSliderGO: {fileID: 2138966839}
   _healthBarText: {fileID: 1381748391}
