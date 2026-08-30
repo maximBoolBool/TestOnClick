@@ -25,6 +25,9 @@ namespace Assets.Scripts.Managers.InteractiveItemManager
         [Inject]
         private readonly IGridService _gridService;
 
+        [Inject]
+        private readonly IAddresableResourceManager _addresableResourceManager;
+
         #endregion
 
         #region States

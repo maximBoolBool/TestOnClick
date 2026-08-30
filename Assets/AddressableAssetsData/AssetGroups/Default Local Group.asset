@@ -31,8 +31,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27aacae088d7cbb48a53b01d083d65ba
+    m_Address: AnimatorOverrideControllerGoldenStone4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3996a769f1529084ea4b3753c75f7a89
+    m_Address: AnimatorOverrideControllerBush2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 404edcfddb50339438c3656d19a35beb
     m_Address: EquipmentSlotPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58538f895469cf64791155a9065936a6
+    m_Address: AnimatorOverrideControllerStump3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -47,8 +62,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b00e2a579a1b5647851db93f0ea9905
+    m_Address: AnimatorOverrideControllerBush4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 72434764ffbc5034bbb4a79df8b26375
     m_Address: HoverTile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8045b0cb4e2c28b42857db749bb5b27e
+    m_Address: AnimatorOverrideControllerBush3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -67,6 +92,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9bbc20bc812b380449a49dad13c17205
+    m_Address: AnimatorOverrideControllerGoldenStone1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a85095e6853f290428edc9ed50bba0dc
     m_Address: BlueWarrior
     m_ReadOnly: 0
@@ -78,8 +108,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bad81452aa27eaa4d9761ef940b0424f
+    m_Address: AnimatorOverrideControllerStump4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc66eb915aa9c1546b4b59997c6b655a
     m_Address: HighlightTile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf3710d52d58d1d45a422b8d98f68359
+    m_Address: AnimatorOverrideControllerGoldenStone2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8df5b2424818624790c9eed476648e1
+    m_Address: AnimatorOverrideControllerBush1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -88,8 +133,38 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de0bdc64203b314429a716bf492536e7
+    m_Address: AnimatorOverrideControllerStump1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df7d7a60d84ceb1429e0cbd8d6751fa4
+    m_Address: AnimatorOverrideControllerTree4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed1f5688c4770d04389c4ea9e20960cd
+    m_Address: AnimatorOverrideControllerTree1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0184f34368cf6646b721196401ea977
     m_Address: ActionButtonPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1b2330ba451a2f4192c263ca5ad689c
+    m_Address: AnimatorOverrideControllerGoldenStone3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa57a11257dd1f045bbca61f7d7fa8dc
+    m_Address: AnimatorOverrideControllerTree2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb0136bc3645c394d8189175e258b6a0
+    m_Address: AnimatorOverrideControllerStump2
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -98,6 +173,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fee663b3cb5074d439dce7aca409afba
+    m_Address: AnimatorOverrideControllerTree3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 45dc52ef89bfdaf40a66a5eb7731269b, type: 2}

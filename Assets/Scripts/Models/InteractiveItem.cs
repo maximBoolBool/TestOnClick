@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Managers;
+using UnityEngine;
 
 namespace Assets.Scripts.Models
 {
@@ -41,5 +42,32 @@ namespace Assets.Scripts.Models
         Stump_4 = 43
 
         #endregion
+    }
+
+    public static class InteractiveItemTypeExtensions
+    {
+        public static string GetAnimatorOverrideControllerName(this InteractiveItemType itemType)
+        {
+            return itemType switch
+            {
+                InteractiveItemType.Bush_1 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.BUSH_1,
+                InteractiveItemType.Bush_2 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.BUSH_2,
+                InteractiveItemType.Bush_3 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.BUSH_3,
+                InteractiveItemType.Bush_4 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.BUSH_4,
+                InteractiveItemType.Tree_1 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.TREE_1,
+                InteractiveItemType.Tree_2 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.TREE_2,
+                InteractiveItemType.Tree_3 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.TREE_3,
+                InteractiveItemType.Tree_4 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.TREE_4,
+                InteractiveItemType.GoldStone_1 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.GOLDEN_STONE_1,
+                InteractiveItemType.GoldStone_2 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.GOLDEN_STONE_2,
+                InteractiveItemType.GoldStone_3 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.GOLDEN_STONE_3,
+                InteractiveItemType.GoldStone_4 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.GOLDEN_STONE_4,
+                InteractiveItemType.Stump_1 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.STUMP_1,
+                InteractiveItemType.Stump_2 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.STUMP_2,
+                InteractiveItemType.Stump_3 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.STUMP_3,
+                InteractiveItemType.Stump_4 => InteractiveItemsAnimatorOverrideControllerAdressableResourceNames.STUMP_4,
+                _ => throw new System.ArgumentOutOfRangeException(nameof(itemType), itemType, null)
+            };
+        }
     }
 }
