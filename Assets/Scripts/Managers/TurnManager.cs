@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers.InteractiveItemManager;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models.Conditions;
 using Assets.Scripts.Services;
@@ -34,6 +35,8 @@ namespace Assets.Scripts.Managers
 
         [Inject] 
         private readonly IUnitManager _unitManager;
+        [Inject]
+        private readonly IInteractiveItemsManager _interactiveItemsManager;
         [Inject]
         private readonly IUnitConditionService _conditionService;
         [Inject]
@@ -76,6 +79,7 @@ namespace Assets.Scripts.Managers
             _unitManager.RefreshUnitsActionPoints();
             _unitManager.SetActualHealthPoins();
             _unitManager.SetStartEquipment();
+            _interactiveItemsManager.GenerateInteractiveItems();
 
             _uiAnimationService.ShakeCamera();
             _uiAnimationService.MoveVeils();

@@ -2,6 +2,7 @@ using Assets.Db;
 using Assets.Scripts.Behaviours;
 using Assets.Scripts.Factory;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.InteractiveItemManager;
 using Assets.Scripts.Managers.UnitManager;
 using Assets.Scripts.Models;
 using Assets.Scripts.Services;
@@ -271,6 +272,11 @@ namespace Assets.Scripts
 
             Container.Bind<IUnitManager>()
                 .To<UnitManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IInteractiveItemsManager>()
+                .To<InteractiveItemsManager>()
                 .AsSingle()
                 .NonLazy();
 
